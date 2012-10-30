@@ -1,0 +1,101 @@
+PHDLIF, the PHDL Intermediate Format
+====================================
+Version 0.0.0, Unreleased
+
+Requirements
+------------
+
+The PHDL Intermediate Format (PHDLIF) is intended to be a format that is easily
+readable by both humans and machines to transfer design and netlist information
+between compiler passes, between the front-end and back-end, between PHDL core
+tools, and/or between between 3rd party tools that wish to work easily with
+PHDL without needed to reinvent the entire language front-end infrastructure.
+
+With that in mind, we believe that PHDLIF has the following requirements. Some
+of these are strict requirements that arise from the nature of the task; others
+arise from an attempt to use good practices that are in line with a solid
+architecture and easy of use by a vibrant community.
+
+Basic Information
+~~~~~~~~~~~~~~~~~
+
+Every PHDLIF file needs to contain the following information, at a minimum, in
+order to capture basic design information:
+
+* For each instance:
+** Name
+** Attributes
+** For each pin:
+*** Name
+*** Attributes
+
+* For each net:
+** Name
+** Attributes
+** For each connection:
+*** Instance name
+*** Pin name
+*** Attributes
+
+Hierarchical Names
+~~~~~~~~~~~~~~~~~~
+
+The information in a PHDLIF file is the flattened design, but names are still
+hierarchical. The hierarchy separator needs to be a sequence that cannot
+normally appear in a PHDL identifier. For this reason, the hierarchy separator
+is the character +.+, as this character is never valid in an identifier, and is
+already familiar from it's use in PHDL proper as a hierarchical separator.
+
+Example: +some.hierarchical.name+
+
+Attributes
+~~~~~~~~~~
+
+All attributes are string to string mappings. There are two types. The primary
+source of attributes is those that are passed through from the user via
+definitions in the PHDL, called user attributes.
+
+Example: +some_user_attribute+
+
+Other attributes, specific to PHDLIF processing, are called processing
+attributes. These are useful to store any type of extended information, but
+must be easily distinguished from regular user-defined attributes. For this
+reason, all non-user attributes must start with +.+, as this is not a valid as
+an attribute prefix in PHDL.
+
+Example: +.some_processing_attribute+
+
+For maximum interoperability, tools processing PHDLIF are encouraged to only
+use attributes with well-defined names and semantics. Any attribute not known
+by a tool processing PHDLIF should be (but is not guaranteed to be) ignored and
+passed through without modification.
+
+Extended Information
+~~~~~~~~~~~~~~~~~~~~
+
+Besides the basic information that is required to describe a design, a PHDLIF
+file may also contain extended information that helps map the compiled design
+back to the original PHDL source. This can be done in a simple, uniform way by
+annotating each of the basic information elements with the following processing
+attributes:
+
++.phdl_source_file_name+:: PHDL source file name
++.phdl_source_file_line+:: PHDL source file line number
++.phdl_source_file_column+:: PHDL source file column
+
+Other information relating to the PHDL source should be standardized in this
+document and use the +.phdl_source_+ prefix.
+
+Technology Requirements
+~~~~~~~~~~~~~~~~~~~~~~~
+
+PHDLIF is not an implementation detail of any particular compiler, but is an
+independent intermediate format intended to be able to be read, processed, and
+used easily by programs written in any language. To support this, the following
+are important requirements:
+
+* Be as simple as possible, while supporting the features we need.
+* Be based on a well-understood underlying format that won't cause surprises.
+* Be easy to parse and use without requiring lots of infrastructure.
+
+Some suggested formats that meet these criteria are for example JSON and XML.
