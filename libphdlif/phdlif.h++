@@ -44,6 +44,7 @@ namespace phdlif {
 		Connections connections;
 		Attributes  attributes;
 	};
+	using Nets = std::map<Name,Net>;
 
 	struct Design {
 		Name       name;
