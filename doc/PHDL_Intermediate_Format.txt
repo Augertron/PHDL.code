@@ -9,7 +9,7 @@ The PHDL Intermediate Format (PHDLIF) is intended to be a format that is easily
 readable by both humans and machines to transfer design and netlist information
 between compiler passes, between the front-end and back-end, between PHDL core
 tools, and/or between between 3rd party tools that wish to work easily with
-PHDL without needed to reinvent the entire language front-end infrastructure.
+PHDL without needing to reinvent the entire language front-end infrastructure.
 
 With that in mind, we believe that PHDLIF has the following requirements. Some
 of these are strict requirements that arise from the nature of the task; others
