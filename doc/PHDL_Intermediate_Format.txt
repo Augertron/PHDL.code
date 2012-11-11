@@ -98,4 +98,145 @@ are important requirements:
 * Be based on a well-understood underlying format that won't cause surprises.
 * Be easy to parse and use without requiring lots of infrastructure.
 
-Some suggested formats that meet these criteria are for example JSON and XML.
+Specification
+-------------
+
+In line with all of the above requirements, the following specification
+describes the PHDL Intermediate Format itself.
+
+The PHDLIF format is a textual, line-based, UTF-8 stream. Each line contains
+one entry that defines one item of information. Generally each entries applies
+to its previous defined "parent" item.
+
+The way each of these entries applies, quoting rules, and other grammar details
+are all defined below. But first, here is a small example to illustrate the
+general idea:
+
+.......
+design Power_Waster
+instance Resistor(0)
+attribute refdes R1
+attribute package 0402
+pin +
+attribute package_pin 1
+pin -
+attribute package_pin 2
+instance Resistor(1)
+attribute refdes R2
+attribute package 0402
+pin +
+attribute package_pin 1
+pin -
+attribute package_pin 2
+instance Battery_Holder
+attribute refdes J1
+attribute package Battery\ Holder
+pin power
+attribute package_pin 1
+pin gnd
+attribute package_pin 2
+net power
+connection Resistor(0) +
+connection Resistor(1) +
+connection Battery_Holder power
+net gnd
+connection Resistor(0) -
+connection Resistor(1) -
+connection Battery_Holder gnd
+.......
+
+Entry Details
+~~~~~~~~~~~~~
+
+Here are the details of how each entry works:
+
+	* +design _name_+
+
+The +design+ entry must be the first entry in a PHDLIF file. There is only one
++design+ entry allowed.
+
+The given name is the name of the design (e.g. as given by the original PHDL).
+
+	* +instance _name_+
+
+Any number of +instance+ entries can appear in any order, any time after the
++design+ entry. The +instance+ entry defines a new instance with the given
+name, which must be unique among instances defined so far.
+
+	* +pin _name_+
+
+Any number of +pin+ entires can appear in any order, any time after an
++instance+ entry. The +pin+ entry defines a new pin with the given name, which
+must be unique among the pins defined so far.
+
+	* +net _name_+
+
+Any number of +net+ entries can appear in any order, any time after the
++design+ entry. The +net+ entry defines a new net with the given name, which
+must be unique among nets defined so far.
+
+	* +connection _instance_name_ _pin_name_+
+
+Any number of +connection+ entries can appear in any order, any time after a
++net+ entry. The +connection+ entries adds a connection to the most recently
+defined net, using the given instance name and pin name, which must be unique
+among the sets of instance name and pin name pairs defined on this net so far.
+
+	* +attribute _key_ _value_+
+
+Any number of +attribute+ entries can appear in any order, any time after any
+entry. The +attribute+ entry adds an attribute with the given key and value to
+the mostly recently defined item (design, instance, pin, net, or connection).
+The attribute key must be unique among the attributes defined so far on that
+particular item.
+
+Quoting Rules
+~~~~~~~~~~~~~
+
+All parameters given to each entry can be a plain containing any characters,
+except for backslash, space, or new line characters. If characters are
+necessary in a value, they usually disallowed characters can escaped by
+preceding them with a backslash.
+
+Examples:
+
+	* +Spaces\ in\ a\ value+
+	* +Embedded\\Backslash+
+
+Formal Grammar
+~~~~~~~~~~~~~~
+
+	* <Space> = (U+20)+
+	* <End_of_Line> = <Space>? (U+0A / U+0D)+ <Space>?
+	* <Backslash> = U+5C
+	* <Any_Character> = any valid Unicode character
+
+	* <Value> = <Quoted_Character> / <Plain_Character>
+	* <Quoted_Character> = <Backslash> <Any_Character>
+	* <Plain_Character> = <Any_Character> - <Quote> - <Space> - <End_of_Line>
+
+	* <Design_Entry> = "design" <Space> <Value> <End_of_Line>
+	* <Attribute_Entry> = "attribute" <Space> <Value> <Space> <Value> <End_of_Line>
+	* <Instance_Entry> = "instance" <Space> <Value> <End_of_Line>
+	* <Net_Entry> = "net" <Space> <Value> <End_of_Line>
+	* <Pin_Entry> = "pin" <Space> <Value> <End_of_Line>
+	* <Connection_Entry> = "connection" <Space> <Value> <Space> <Value> <End_of_Line>
+
+	* <Design> = <Design_Entry>
+	* <Attribute> = <Attribute_Entry>
+	* <Instance> = <Instance_Entry> <Attribute>* <Pin>*
+	* <Net> = <Net_Entry> <Attribute>* <Connection>*
+	* <Pin> = <Pin_Entry> <Attribute>*
+	* <Connection> = <Connection_Entry> <Attribute>*
+
+	* <PHDLIF> = <End_of_Line>* <Design> <Attribute>* (<Instance> / <Net>)* <End_of_Line>*
+
+Notes
+^^^^^
+
+	* +<Name>+ means _Name_ is a non-terminal.
+	* +*+ means zero or more of the preceding element.
+	* +++ means one or more of the preceding element.
+	* +?+ means the preceding element is optional.
+	* +/+ means ordered choice
+	* +U+xxxx+ means the Unicode character with that value in hexadecimal.
