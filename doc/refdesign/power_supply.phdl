@@ -1,46 +1,24 @@
-// This file contains the subdesign for the power supply of spartan_pcie_board.phdl.
-// We need 1.2V(core and GTP) and 3.3V(I/O) supplies for the FPGA.
-// These big FPGA supply voltages are created with switching regulators.
-// The DDR3 memory section needs +1.5V.
-
+// This file contains the subdesign for an LDO power supply.
 subdesign power_supply {
-    port +12V; // Raw +12V from the pci bus.
-    port +3V3; // FPGA AUX and I/O voltage.
-    port +1V8; // For configuration flash.
-    port +1V5; // For DDR3
-    port +1V2; // FPGA core and GTP.
-    port  gnd;
+    // These are the signals that connect up the next higher level.
+    port vin;  // input to be regulated down.
+    port vout; // regulated output.
+    port gnd;  // ground reference.
 
-    net +1V5_sense;
+    net v_sense;
 
-    // Here we create the 1.5V supply for the DDR3
-    inst LDO1 of LT3022 { refDes="U2"; NC=open; OUT=<+1V5>; ADJ_SENSE=+1V5_sense; AGND=<gnd>; SHDN_N=+3V3; PGND=<gnd>; IN=<+3V3>; GND_PAD=gnd; }
-    // A decoupling cap on the input and output.
+    // LDO regulator.
+    inst LDO1 of LT3022 { refDes="U1"; NC=open; OUT=<vout>; ADJ_SENSE=v_sense; AGND=<gnd>; SHDN_N=vin; PGND=<gnd>; IN=<+3V3>; GND_PAD=gnd; }
     // The resistors that set the output voltage.
-    inst R2 of res_0603   { refDes="R2"; value="1500/1%"; a=+1V5;      b=+1V5_sense; }
-    inst R3 of res_0603   { refDes="R3"; value="187/1%";  a=+1V5_sense; b=gnd;       }
-    // caps on +1V5.
-    inst bulk_cap_1V5_a of tant_cap_3528 { refDes="C42"; value="100UF/35mOhm/6.3V"; pos=+1V5; neg=gnd; }
-    inst bulk_cap_1V5_b of tant_cap_3528 { refDes="C43"; value="100UF/35mOhm/6.3V"; pos=+1V5; neg=gnd; }
-    inst C3  of capnp_0603 { refDes="C3";  value="1UF/X7R/10V";     a=+1V5; b=gnd; }
-    inst C4  of capnp_0603 { refDes="C4";  value="1UF/X7R/10V";     a=+1V5; b=gnd; }
-    inst C5  of capnp_0603 { refDes="C5";  value="0.1UF/X7R/10V";   a=+1V5; b=gnd; }
-    inst C6  of capnp_0603 { refDes="C6";  value="0.1UF/X7R/10V";   a=+1V5; b=gnd; }
-    inst C15 of capnp_0603 { refDes="C15"; value="0.1UF/X7R/10V";   a=+1V5; b=gnd; }
-    inst C16 of capnp_0603 { refDes="C16"; value="0.1UF/X7R/10V";   a=+1V5; b=gnd; }
-    inst C17 of capnp_0603 { refDes="C17"; value="0.022UF/X7R/10V"; a=+1V5; b=gnd; }
-    inst C18 of capnp_0603 { refDes="C18"; value="0.022UF/X7R/10V"; a=+1V5; b=gnd; }
-    // caps on +3V3.
-    inst bulk_cap_3V3_a of tant_cap_3528 { refDes="C40"; value="100UF/35mOhm/6.3V"; pos=+3V3; neg=gnd; }
-    inst bulk_cap_3V3_b of tant_cap_3528 { refDes="C41"; value="100UF/35mOhm/6.3V"; pos=+3V3; neg=gnd; }
-    inst C7  of capnp_0603 { refDes="C7";  value="1UF/X7R/10V";     a=+3V3; b=gnd; }
-    inst C8  of capnp_0603 { refDes="C8";  value="1UF/X7R/10V";     a=+3V3; b=gnd; }
-    inst C9  of capnp_0603 { refDes="C9";  value="0.1UF/X7R/10V";   a=+3V3; b=gnd; }
-    inst C10 of capnp_0603 { refDes="C10"; value="0.1UF/X7R/10V";   a=+3V3; b=gnd; }
-    inst C11 of capnp_0603 { refDes="C11"; value="0.1UF/X7R/10V";   a=+3V3; b=gnd; }
-    inst C12 of capnp_0603 { refDes="C12"; value="0.1UF/X7R/10V";   a=+3V3; b=gnd; }
-    inst C13 of capnp_0603 { refDes="C13"; value="0.022UF/X7R/10V"; a=+3V3; b=gnd; }
-    inst C14 of capnp_0603 { refDes="C14"; value="0.022UF/X7R/10V"; a=+3V3; b=gnd; }
-
+    inst R2 of res_0603   { refDes="R2"; value="1500/1%"; a=v_sense; b=vout; }
+    inst R3 of res_0603   { refDes="R3"; value="187/1%";  a=v_sense; b=gnd;  }
+    // A decoupling cap on the input.
+    inst bulk_cap_vin of tant_cap_3528 { refDes="C42"; value="100UF/35mOhm/6.3V"; pos=+1V5; neg=gnd; }
+    // caps on output voltage.
+    inst bulk_cap_vout of tant_cap_3528 { refDes="C43"; value="100UF/35mOhm/6.3V"; pos=+1V5; neg=gnd; }
+    inst C3  of capnp_0805 { refDes="C3"; value="1UF/X7R/10V";   a=+1V5; b=gnd; }
+    inst C4  of capnp_0805 { refDes="C4"; value="1UF/X7R/10V";   a=+1V5; b=gnd; }
+    inst C5  of capnp_0603 { refDes="C5"; value="0.1UF/X7R/10V"; a=+1V5; b=gnd; }
+    inst C5  of capnp_0603 { refDes="C5"; value="0.1UF/X7R/10V"; a=+1V5; b=gnd; }
 }
 
