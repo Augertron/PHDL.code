@@ -1,0 +1,64 @@
+PHDL Language Specification
+===========================
+Version 0.0.0, Unreleased
+
+Requirements
+------------
+
+The PHDL language is intended to be a simple hardware description 
+language (HDL) for printed circuit board (PCB) design. The objective is 
+to replace graphical schematic editors.
+
+With that in mind, we believe that the PHDL language has the following requirements. Some
+of these are strict requirements that arise from the nature of the task; others
+arise from an attempt to use good practices that are in line with a solid
+architecture and ease of use by a vibrant community.
+
+Basic Information
+~~~~~~~~~~~~~~~~~
+
+To create a design each component type must be declared, each net must be declared,
+then components are instantiated and their pins connected to nets. Hierarchical 
+design entry must also be supported. Therefore every design must contain the 
+following information.
+
+
+* Design Name
+
+** For each component:
+*** Device Name
+*** Device attributes
+**** Required Attributes
+**** Optional Attributes
+**** User Attributes
+*** Pins
+**** Pin Name
+**** Pin Numbers
+**** Pin Attributes ???
+
+* For each Net:
+** Net Declaration
+*** Net Name
+*** Net Range
+*** Net attribute ???
+
+* For each instance:
+** Instance Name
+*** Component Type
+*** Instance Attributes
+*** Pin-Net Assignments
+
+* For each subdesign:
+** A Complete SubDesign with the same structure as a Design but
+created for instantiation in a larger design.
+
+Specification
+-------------
+
+The following example code will illustrate the language.
+
+Formal Grammar
+~~~~~~~~~~~~~~
+
+
+

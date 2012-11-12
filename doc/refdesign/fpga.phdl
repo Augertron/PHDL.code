@@ -1,0 +1,143 @@
+// This file contains the subdesign for the FPGA and it's support circuits including 
+// the JTAG connector and the configuration flash memory.
+
+subDesign fpga {
+    // Power
+    port +1V2; // FPGA core and GTP.
+    port +3V3; // FPGA AUX and I/O voltage.
+    port +1V8; // For configuration flash.
+    port +1V5; // For DDR3
+    port  gnd;
+    // x1 PCIe interface.
+    port pcie_perst_n;
+    port pcie_refclk_p;
+    port pcie_refclk_n;
+    port pcie_tx0_p   ;
+    port pcie_tx0_n   ;
+    port pcie_rx0_p   ;
+    port pcie_rx0_n   ;
+    // // MCB1 DDR3 Interface
+    // port mcb1_c1_sys_clk_n;
+    // port mcb1_c1_sys_clk_p;
+    // port mcb1_c1_sys_rst_i;
+    // port mcb1_dram_a;
+    // port mcb1_dram_ba;
+    // port mcb1_dram_cas_n;
+    // port mcb1_dram_ck;
+    // port mcb1_dram_ck_n;
+    // port mcb1_dram_cke;
+    // port mcb1_dram_dm;
+    // port mcb1_dram_dq;
+    // port mcb1_dram_dqs;
+    // port mcb1_dram_dqs_n;
+    // port mcb1_dram_odt;
+    // port mcb1_dram_ras_n;
+    // port mcb1_dram_reset_n;
+    // port mcb1_dram_udm;
+    // port mcb1_dram_udqs;
+    // port mcb1_dram_udqs_n;
+    // port mcb1_dram_we_n;
+    // port mcb1_rzq;
+    // port mcb1_zio;
+    // // MCB3 DDR3 Interface
+    // port mcb3_c1_sys_clk_n;
+    // port mcb3_c1_sys_clk_p;
+    // port mcb3_c1_sys_rst_i;
+    // port mcb3_dram_a;
+    // port mcb3_dram_ba;
+    // port mcb3_dram_cas_n;
+    // port mcb3_dram_ck;
+    // port mcb3_dram_ck_n;
+    // port mcb3_dram_cke;
+    // port mcb3_dram_dm;
+    // port mcb3_dram_dq;
+    // port mcb3_dram_dqs;
+    // port mcb3_dram_dqs_n;
+    // port mcb3_dram_odt;
+    // port mcb3_dram_ras_n;
+    // port mcb3_dram_reset_n;
+    // port mcb3_dram_udm;
+    // port mcb3_dram_udqs;
+    // port mcb3_dram_udqs_n;
+    // port mcb3_dram_we_n;
+    // port mcb3_rzq;
+    // port mcb3_zio;
+
+
+    // Some USER LED's and their current limiting resistors. 
+    // (2.5V-2.0V)/0.005 Amps = 100 Ohms.
+    net[7:0] led, led_cathode;
+    inst LED1 of PG1113F_LED { refDes="D1"; anode=led[0]; cathode=led_cathode[0]; }
+    inst LED2 of PG1113F_LED { refDes="D2"; anode=led[1]; cathode=led_cathode[1]; }
+    inst LED3 of PG1113F_LED { refDes="D3"; anode=led[2]; cathode=led_cathode[2]; }
+    inst LED4 of PG1113F_LED { refDes="D4"; anode=led[3]; cathode=led_cathode[3]; }
+    inst LED5 of PG1113F_LED { refDes="D5"; anode=led[4]; cathode=led_cathode[4]; }
+    inst LED6 of PG1113F_LED { refDes="D6"; anode=led[5]; cathode=led_cathode[5]; }
+    inst LED7 of PG1113F_LED { refDes="D7"; anode=led[6]; cathode=led_cathode[6]; }
+    inst LED8 of PG1113F_LED { refDes="D8"; anode=led[7]; cathode=led_cathode[7]; }
+    inst led_res1 of res_0603 { refDes="R10"; value="100"; a=led_cathode[0]; b=gnd; }
+    inst led_res2 of res_0603 { refDes="R11"; value="100"; a=led_cathode[1]; b=gnd; }
+    inst led_res3 of res_0603 { refDes="R12"; value="100"; a=led_cathode[2]; b=gnd; }
+    inst led_res4 of res_0603 { refDes="R13"; value="100"; a=led_cathode[3]; b=gnd; }
+    inst led_res5 of res_0603 { refDes="R14"; value="100"; a=led_cathode[4]; b=gnd; }
+    inst led_res6 of res_0603 { refDes="R15"; value="100"; a=led_cathode[5]; b=gnd; }
+    inst led_res7 of res_0603 { refDes="R16"; value="100"; a=led_cathode[6]; b=gnd; }
+    inst led_res8 of res_0603 { refDes="R17"; value="100"; a=led_cathode[7]; b=gnd; }
+
+    // A dip switch. The "dip_io" bus goes to the FPGA and is pulled up in there.
+    net[1:8] dip_io;
+    inst dip_switch of dip8_smd { refDes="SW5"; a=dip_io; b=<gnd>; }
+
+    // Some Normally Open pushbuttons.
+    // They are $0.40 each so let's put a few.
+    net[1:4] pushbutton;
+    inst button1 of SPST_PB_NO { refDes="SW1"; a=<pushbutton[1]>; b=<gnd>; }
+    inst button2 of SPST_PB_NO { refDes="SW2"; a=<pushbutton[2]>; b=<gnd>; }
+    inst button3 of SPST_PB_NO { refDes="SW3"; a=<pushbutton[3]>; b=<gnd>; }
+    inst button4 of SPST_PB_NO { refDes="SW4"; a=<pushbutton[4]>; b=<gnd>; }
+ 
+    // JTAG connector.
+    net tms, tck, tdo, tdi;
+    inst jtag_connector of JTAG_CONN { refDes = "P2";
+        gnd  = <gnd>;
+        pgnd = open;
+        vref = +3V3;
+        tms  = tms;
+        tck  = tck;
+        tdo  = tdo;
+        tdi  = tdi;
+        nc   = open;
+    }
+
+    // Configuration flash.
+    net[25:1] cfg_addr;
+    net[15:0] cfg_data;
+    net cfg_we_n, cfg_oe_n, cfg_adv_n, cfg_wait, cfg_clk, cfg_reset_n, cfg_wp_n, cfg_ce_n;
+    inst config_flash of PC28F128P30 { refDes = "U2";
+        vss  = <gnd>;
+        vcc  = <+1V8>; // core voltage.
+        vpp  = +1V8; // Logic level programming voltage.
+        vccq = <+3V3>; // I/O voltage
+        a    = cfg_addr;
+        dq   = cfg_data;
+        rfu  = open;
+        we_n  = cfg_we_n;
+        oe_n  = cfg_oe_n;
+        adv_n = cfg_adv_n;
+        wait = cfg_wait;
+        clk  = cfg_clk;
+        rst_n = cfg_reset_n;
+        wp_n  = cfg_wp_n;
+        ce_n  = cfg_ce_n;
+    }
+    // Pull resistors on config interface.
+    inst cfg_reset_pullup of res_0603 { refDes="R1"; value="1K"; a=cfg_reset_n; b=+3V3; }
+    inst cfg_clk_pullup   of res_0603 { refDes="R2"; value="1K"; a=cfg_clk;     b=+3V3; }
+    inst cfg_we_pullup    of res_0603 { refDes="R3"; value="1K"; a=cfg_we_n;    b=+3V3; }
+    inst cfg_oe_pullup    of res_0603 { refDes="R4"; value="1K"; a=cfg_oe_n;    b=+3V3; }
+    inst cfg_ce_pullup    of res_0603 { refDes="R5"; value="1K"; a=cfg_ce_n;    b=+3V3; }
+    inst cfg_wp_pullup    of res_0603 { refDes="R6"; value="1K"; a=cfg_wp_n;    b=+3V3; }
+    inst cfg_adv_pulldown of res_0603 { refDes="R7"; value="1K"; a=cfg_adv_n;   b=gnd;  }
+
+}
+

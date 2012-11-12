@@ -1,0 +1,363 @@
+// This file holds all the device declarations for this board. :-)
+
+// LTM4619 dual switching regulator.
+device LTM4619 {
+    attr refPrefix  = "U";
+    attr library    = "pcie_lib";
+    attr package    = "LTM4619";
+    attr partNumber = "LTM4619EV#PBF";
+    attr mfgr       = "LINEAR";
+    attr pinCount   = "144";
+    pin[1:36] VIN  = {
+        J1,J2,J3,J10,J11,J12,
+        K1,K2,K3,K4,K9,K10,K11,K12,
+        L1,L2,L3,L4,L5,L8,L9,L10,L11,L12,
+        M1,M2,M3,M4,M5,M6,M7,M8,M9,M10,M11,M12};
+    pin[1:12] VOUT1 = { A10,B10,C10,D10, A11,B11,C11,D11, A12,B12,C12,D12};
+    pin[1:12] VOUT2 = { A1,B1,C1,D1, A2,B2,C2,D2, A3,B3,C3,D3};
+    pin[1:65] PGND = {
+        H1,H2,H4,H9,H11,H12,
+        G1,G2,G3,G4,G5,G6,G7,G8,G9,G10,G11,G12, F1,F2,F3,F4,F5,
+        F7,F8,F9,F10,F11,F12,
+        E1,E2,E3,E4,E5,E6,E7,E8,E9,E10,E11,E12,
+        D4,D5,D6,D7,D8,D9,
+        C4,C5,C6,C7,C8,C9, B4,B5,B6,B7,B8,B9, A4,A5,A6,A7,A8, A9};
+    pin INTVcc = {F6};
+    pin EXTVcc = {J4};
+    pin[1:4] SGND = {J6,J7,H6,H7};
+    pin MODE_PLLIN = {H8};
+    pin FREQ_PLLFLTR = {J8};
+    pin TK_SS1 = {K8};
+    pin TK_SS2 = {K5};
+    pin Vfb1 = {K7};
+    pin Vfb2 = {K6};
+    pin COMP1 = {L7};
+    pin COMP2 = {L6};
+    pin PGOOD = {H5};
+    pin RUN1 = {J9};
+    pin RUN2 = {J5};
+    pin SW1 = {H10};
+    pin SW2 = {H3};
+}
+
+
+// An 8 position dip switch.
+device dip8_smd {
+    attr refPrefix  = "SW";
+    attr refDes     = "";
+    attr package   = "CTS_219-8LPST";
+    attr library    = "pcie_lib";
+    attr partNumber = "219-8LPST";
+    attr mfgr       = "CTS";
+    pin[1:8] b     = { 1, 2, 3, 4, 5, 6, 7, 8};
+    pin[1:8] a     = {16,15,14,13,12,11,10, 9};
+}
+
+
+// A Normally Open pushbutton.
+device SPST_PB_NO {
+    attr refPrefix  = "SW";
+    attr refDes     = "";
+    attr package   = "PANASONIC_EVQ";
+    attr library    = "pcie_lib";
+    attr partNumber = "EVQ-Q2U01W";
+    attr mfgr       = "Panasonic";
+    pin[1:2] b     = {1,4}; // The B pins are tied together inside the switch.
+    pin[1:2] a     = {2,3}; // As are the A pins.
+}
+
+
+// A nice green LED.
+device PG1113F_LED {
+    attr refPrefix  = "D";
+    attr refDes     = "";
+    attr package   = "LED_1113F";
+    attr library    = "pcie_lib";
+    attr partNumber = "PG1113F";
+    attr mfgr       = "Stanley";
+    pin  anode   = {1};
+    pin  cathode = {2};
+}
+
+
+// This is a Numonyx StrataFlash that can be used for Xilinx FPGA configuration.
+device PC28F128P30 {
+    attr refPrefix  = "U";
+    attr refDes     = "";
+    attr package   = "PC28F128P30";
+    attr library    = "pcie_lib";
+    attr partNumber = "PC28F128P30TF65";
+    attr mfgr       = "Numonyx";
+    attr pinCount   = "64";
+    pin[1:4]  vss  = {B2,H2,H4,H6};
+    pin[1:2]  vcc  = {A6,H3};
+    pin[1:3]  vccq = {D5,D6,G4};
+    pin       vpp  = {A4};
+    pin[25:1] a    = {B6,H8,G1,A8,C8,C7,B7,A7,D8,D7,C5,B5,A5,C4,D3,C3,B3,A3,C2,A2,D2,D1,C1,B1,A1};
+    pin[15:0] dq   = {E7,G7,H5,F5,F4,F3,E3,E1,H7,G6,G5,E5,E4,G3,E2,F2};
+    pin[1:5]  rfu  = {H1,G2,F1,E8,B8};
+    pin       we_n  = {G8};
+    pin       oe_n  = {F8};
+    pin       adv_n = {F6};
+    pin       wait = {F7};
+    pin       clk  = {E6};
+    pin       rst_n = {D4};
+    pin       wp_n  = {C6};
+    pin       ce_n  = {B4};
+}
+
+
+
+// JTAG connector for Xilinx FPGA configuration and debugging.
+// This connector works with the Xilinx Platform Cable USB II.
+device JTAG_CONN {
+    attr refPrefix = "P";
+    attr refDes = "";
+    attr package = "MOLEX-87332-1420";
+    attr library    = "pcie_lib";
+    attr partNumber = "87332-1420";
+    attr mfgr = "Molex";
+    attr pinCount = "14";
+    pin[1:5] gnd  = {3,5,7,9,11};
+    pin      pgnd = {13};
+    pin      vref = {2};
+    pin      tms  = {4};
+    pin      tck  = {6};
+    pin      tdo  = {8};
+    pin      tdi  = {10};
+    pin[1:3] nc   = {12,14,1};
+}
+
+// This is the PCIe x1 edge connector.
+// The pin names come from the connector that gets installed on the motherboard so
+// watch out, this board drives the receive pins of the connector and received on the 
+// transmit pins of the connector.
+device PCIE_EDGE_CONN_X1 {
+    attr refPrefix = "P";
+    attr refDes = "";
+    attr name = "";
+    attr package = "PCIE_EDGE_CONN_X1";
+    attr library    = "pcie_lib";
+    attr pinCount = "36";
+
+    pin[1:4] +12V = {B1,B2,A2,A3};
+    pin[1:2] RSVD = {B3,B12};
+    pin[1:9] GND = {B4,B7,B13,B16,B18,A4,A12,A15,A18};
+    pin      SMCLK = {B5};
+    pin      SMDAT = {B6};
+    pin[1:3] +3_3V = {B8,A9,A10};
+    pin      TRST_N = {B9};
+    pin      +3_3V_AUX = {B10};
+    pin      WAKE_N = {B11};
+    pin      PETp0 = {B14};
+    pin      PETn0 = {B15};
+    pin      PRSNT2_N = {B17};
+    pin      PRSNT1_N = {A1};
+    pin      TCK = {A5};
+    pin      TDI = {A6};
+    pin      TDO = {A7};
+    pin      TMS = {A8};
+    pin      PERST_N = {A11};
+    pin      REFCLK+ = {A13};
+    pin      REFCLK- = {A14};
+    pin      PERp0 = {A16};
+    pin      PERn0 = {A17};
+}
+
+// A couple of through hole test point devices.
+device TP_ROUND {
+    attr refPrefix = "TP";
+    attr refDes = "";
+    attr name = "";
+    attr value = "";
+    attr package = "TP_ROUND";
+    attr library    = "pcie_lib";
+    pin sig = {1};
+}
+
+device TP_SQUARE {
+    attr refPrefix = "TP";
+    attr refDes = "";
+    attr name = "";
+    attr value = "";
+    attr package = "TP_SQUARE";
+    attr library    = "pcie_lib";
+    pin sig = {1};
+}
+
+
+
+// an SMA connector device declaration
+device SMA_CON {
+    attr refPrefix = "P";
+    attr refDes = "";
+    attr name = "";
+    attr value = "";
+    attr package = "SMA_AR";
+    attr library    = "pcie_lib";
+    attr mfgr = "AMP";
+    attr partNumber = "AMP221790-1";
+    attr cost = "4.97";
+
+    pin sig = {1};
+    pin[3:0] gnd = {5,4,3,2}; // gnd(3) maps to "5", gnd(2) maps to "4", gnd(1) maps to "3", gnd(0) maps to "2"
+}
+
+
+
+// a non-polarized surface mount capacitor device declaration
+device capnp_0603 {
+    attr refPrefix = "C";
+    attr refDes = "";
+    attr name = "";
+    attr value = "";
+    attr package = "CC0603";
+    attr library    = "pcie_lib";
+    attr mfgr = "";
+    attr partNumber = "";
+    attr cost = "0.03";
+
+    pin a = {1};
+    pin b = {2};
+}
+
+
+
+// a surface mount resistor declaration
+device res_0603 {
+    attr refPrefix = "R";
+    attr refDes = "";
+    attr name = "";
+    attr value = "";
+    attr package = "CR0603";
+    attr library    = "pcie_lib";
+    attr mfgr = "PANASONIC";
+    attr partNumber = "ERJ-3EKF1500V";
+    attr cost = "0.07";
+
+    pin a = {1};
+    pin b = {2};
+}
+
+
+
+// a tantalum capacitor declaration
+device tant_cap_3528 {
+    attr refPrefix = "C";
+    attr refDes = "";
+    attr name = "";
+    attr value = "";
+    attr package = "TANT3528";
+    attr library    = "pcie_lib";
+    attr mfgr = "AVX";
+    attr partNumber = "TCJB107M006R0045";
+    attr cost = "1.55";
+    pin pos = {1};
+    pin neg = {2};
+}
+
+
+device mount_hole_125 {
+    attr refPrefix = "MTG";
+    attr refDes = "";
+    attr name = "";
+    attr package = "MOUNT_HOLE_125";
+    attr library    = "pcie_lib";
+    attr cost = "0.00";
+    attr mfgr = "";
+    pin pin1 = {1};
+}
+
+
+
+device LT3022 {
+    attr refPrefix = "U";
+    attr package = "LT3022_MSOP16";
+    attr library    = "pcie_lib";
+    attr pinCount = "17";
+    attr refDes = "";
+    attr name = "";
+    attr value = "";
+    attr cost = "6.10";
+    attr mfgr = "LTC";
+    pin[1:5] NC = {1,2,8,15,16};
+    pin[1:2] OUT = {3,4};
+    pin ADJ_SENSE = {5};
+    pin[1:2] AGND = {6,7};
+    pin SHDN_N = {9};
+    pin[1:2] PGND = {10,11};
+    pin[1:3] IN = {12,13,14};
+    pin GND_PAD = {17};
+}
+
+
+// This is a balun from RFMD, 5 to 3000MHz.
+device RFXF9503 {
+    attr refPrefix = "T";
+    attr refDes = "";
+    attr name = "";
+    attr package = "RFMD_S20";
+    attr library    = "pcie_lib";
+    attr mfgr = "RFMD";
+    attr partNumber = "RFXF9503";
+    attr cost = "2.00";
+
+    pin sec = {1};
+    pin nc  = {2};
+    pin sec_dot = {3};
+    pin prim_dot = {4};
+    pin prim = {5};
+}
+
+// This is a clock buffer chip specifically designed for the AD9739 DAC.
+device ADCLK914 {
+    attr refPrefix = "U";
+    attr refDes = "";
+    attr name = "";
+    attr package = "ADCLK914";
+    attr library    = "pcie_lib";
+    attr mfgr = "Analog Devices";
+    attr partNumber = "ADCLK914BCPZ-R7";
+    attr cost = "16.00";
+
+    pin D_P = {1};
+    pin D_N = {2};
+    pin[1:6] NC = {3,4,5,6,9,10};
+    pin[1:2] Vee = {7,14};
+    pin[1:2] Vcc = {8,13};
+    pin Q_N = {11};
+    pin Q_P = {12};
+    pin Vref = {15};
+    pin Vt = {16};
+    pin THERMAL_PAD = {17};
+}
+
+
+
+// This part is a level translator.
+device SN74AVC4T245PW {
+    attr refPrefix = "U";
+    attr refDes = "";
+    attr name = "";
+    attr package = "SN74AVC4T245PW";
+    attr library    = "pcie_lib";
+    attr mfgr = "TI";
+    attr partNumber = "SN74AVC4T245PW";
+    attr cost = "16.00";
+    pin Vcca  = {1};
+    pin P1DIR  = {2};
+    pin P2DIR  = {3};
+    pin P1A1   = {4};
+    pin P1A2   = {5};
+    pin P2A1   = {6};
+    pin P2A2   = {7};
+    pin[1:2] GND   = {8,9};
+    pin P2B2   = {10};
+    pin P2B1   = {11};
+    pin P1B2   = {12};
+    pin P1B1   = {13};
+    pin P2OE_n = {14};
+    pin P1OE_n = {15};
+    pin Vccb  = {16};
+}
+
