@@ -1,0 +1,43 @@
+
+#Created by Constraints Editor (xc9536xl-vq44-7) - 2012/11/13
+NET "clk" TNM_NET = "clk";
+TIMESPEC TS_clk = PERIOD "clk" 200 MHz HIGH 50 %;
+
+# PlanAhead Generated IO constraints 
+
+NET "led[15]" IOSTANDARD = LVCMOS33;
+NET "led[14]" IOSTANDARD = LVCMOS33;
+NET "led[13]" IOSTANDARD = LVCMOS33;
+NET "led[12]" IOSTANDARD = LVCMOS33;
+NET "led[11]" IOSTANDARD = LVCMOS33;
+NET "led[10]" IOSTANDARD = LVCMOS33;
+NET "led[9]" IOSTANDARD = LVCMOS33;
+NET "led[8]" IOSTANDARD = LVCMOS33;
+NET "led[7]" IOSTANDARD = LVCMOS33;
+NET "led[6]" IOSTANDARD = LVCMOS33;
+NET "led[5]" IOSTANDARD = LVCMOS33;
+NET "led[4]" IOSTANDARD = LVCMOS33;
+NET "led[3]" IOSTANDARD = LVCMOS33;
+NET "led[2]" IOSTANDARD = LVCMOS33;
+NET "led[1]" IOSTANDARD = LVCMOS33;
+NET "led[0]" IOSTANDARD = LVCMOS33;
+
+# PlanAhead Generated physical constraints 
+
+NET "led[11]" LOC = P93;
+NET "led[3]" LOC = P96;
+NET "led[10]" LOC = P90;
+NET "led[2]" LOC = P84;
+NET "led[15]" LOC = P82;
+NET "led[6]" LOC = P85;
+NET "led[1]" LOC = P98;
+NET "led[14]" LOC = P102;
+NET "led[9]" LOC = P87;
+NET "led[0]" LOC = P92;
+NET "led[13]" LOC = P99;
+NET "led[8]" LOC = P88;
+NET "led[12]" LOC = P83;
+NET "led[5]" LOC = P91;
+NET "led[7]" LOC = P79;
+NET "led[4]" LOC = P101;
+NET "clk" LOC = P18;
