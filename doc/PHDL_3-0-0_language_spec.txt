@@ -1,0 +1,184 @@
+
+PHDL Language Grammar Specification
+============================
+Version 3.0.0
+
+The following specification includes two main parts:
+	1. The Grammar or Allowable Syntax
+	2. Explanations of each of the specified rules detailing the 
+		significance of each grammar rule and its parts and what each 
+		token/rule represents.
+
+
+//////////////////////////////////////////////////////////////////////
+// Parser Rules
+//////////////////////////////////////////////////////////////////////
+
+PHDLDesign ::= Import* ( Package | Device | Design )*
+  // All imports need to come before the remaining declarations
+
+Import ::= "import" QualifiedNameWithWildCard ";"
+  // This is how you include packages of devices and subdesigns that
+  // were previously defined in other files.
+
+Package ::= "package" ID "{" Import* ( Device | Design )* "}"
+  // Packages can contain imports and device and design declarations
+
+Device ::= "device" PhdlID "{" DeviceElement* "}"
+
+DeviceElement ::= Attr | Pin | Info
+
+Attr ::= "attr" ID "=" STRING ";"
+  // The ID and value associated with an attribute is strictly
+  // user-defined.  However, there are some required attributes
+  // including: REFPREFIX, FOOTPRINT, and LIBRARY.  By convention,
+  // they are upper case but that is not required and they are not
+  // case sensitive.  There has been some discussion about whether
+  // VALUE and Value should be the same or different attributes and
+  // whether the user should be warned.  The current tools give a
+  // warning and then combine them.
+
+Pin ::= PinType [Vector] PhdlID "=" "{" PhdlID [( "," PhdlID )*] "}" ";"
+  // Pins can be single bits wide or can be vectors of multiple bits.
+  // The values in { } are the physical pin names presumably taken
+  // from the footprint in the library..
+
+PinType ::= "pin"
+                | "inpin"
+                | "outpin"
+                | "iopin"
+                | "pwrpin"
+                | "suppin"
+                | "ocpin"
+                | "oepin"
+                | "tripin"
+                | "passpin"
+                | "ncpin"
+  // The purpose of the pin directions is to allow for ERC where it
+  // checks for multiple outpins on a net, for example.  To date, all
+  // designs have just used "pin" but an ERC has been implemented in
+  // the 2.1 tools.
+
+Info ::= "info" "{" STRING "}"
+  // The purpose of info is to allow the designer to attach
+  // information to specific devices, nets, ports, designs/subdesigns,
+  // and instances/subinstances.  This gets propagated to the output
+  // files and can be used to communicate with the layout engineer.
+
+Design ::=      ( "design" ID "{" DesignElement* "}" )
+                |  ( "subdesign" ID "{" SubDesignElement* "}" )
+  // This rule encompasses both design declarations and subdesign declarations
+
+DesignElement ::= NetDeclaration | Instance | ConnectionAssign | Info
+  // Designs can contain nets, instances, info statements, and
+  // net-to-net assignments.
+
+SubDesignElement ::= NetDeclaration | Instance | ConnectionAssign | Info | PortDeclaration
+  // Subdesigns can contain everything designs can plus port declarations.
+
+NetDeclaration ::= "net" [Vector] ConnectionName ( "," ConnectionName )*
+                ( "{" NetElement* "}" ) | ";"
+NetElement ::= Attr | Info
+  // Net declarations can be multiple bits wide.  Muliple names in one
+  // declaration are all of that type.  If desired, attributes or info
+  // can be attached to the nets as in:
+  // net a, b, c { info { "These adsfgkjadsfljkas df" }}
+
+
+PortDeclaration ::= "port" [Vector] ConnectionName ( "," ConnectionName )* ( "{"
+                        Info* "}" ) | ";"
+  // These are similar to net declarations but bring out signals for subdesigns
+
+
+Instance ::= ( "inst" [Array] ID "of" QualifiedName "{"
+                        InstanceElement* "}" )
+                | ( "subinst" [Array] ID "of" QualifiedName STRING "{"
+                        SubInstanceElement* "}" )
+
+InstanceElement ::= Attr | RefAttr | PinAssign | Info
+
+SubInstanceElement ::= Attr | SubAttr | PortAssign | Info
+
+RefAttr ::= [Qualifier] ID "=" STRING ";"
+  // This is when you refer to and modify an existing attribute on a
+  // device.  That is, you can over-ride the attribute value
+  // specifiecd when the device was declared.
+  // In constrast, the Attr rule allows you to create a new attribute
+  // (either in a device decl or when instancing).
+
+PinAssign ::= CombinedAssign | QualifiedAssign
+
+CombinedAssign ::= "combine" "(" QualifiedReference ")"  "=" Concatenation ";"
+
+QualifiedAssign ::=   QualifiedReference "=" Concatenation ";"
+
+QualifiedReference ::= [Qualifier] PhdlID [Slices]
+
+SubAttr ::= [Qualifier] ID [Indices] RefTail "=" STRING ";"
+  // This is how you reach down into the hierarchy (arbitrarily deep)
+  // and change an attribute value on an instance
+
+RefTail ::= "." ID [Indices] [RefTail]
+
+PortAssign ::= CombinedPortAssign | QualifiedPortAssign
+  // Port assignments closely parallel pin assignments
+
+CombinedPortAssign ::= "combine" "(" QualifiedPortReference ")"  "=" Concatenation ";"
+
+QualifiedPortAssign ::=   QualifiedPortReference "=" Concatenation ";"
+
+QualifiedPortReference ::= [Qualifier] ConnectionName [Slices]
+
+ConnectionAssign ::= ConnectionName [Slices] "=" Concatenation ";"
+
+Concatenation ::=       ( "{" ConnectionRef  ( "," ConnectionRef )* "}" ) |
+                        ( ConnectionRef ( "&" ConnectionRef )* ) |
+                        ( "<" ConnectionRef ">" ) |
+                        ( ConnectionRef "*" ) |
+                        ( "open" )
+  // A concatenation can take a number of forms:
+  // {a, b, c} or a & b & c which are similar to Verilog's - the signals are lined up left-to-right to make a bus
+  // <a> or a* which make as many copies of the signal as needed for the LHS of the assignment statement
+  // "open" means that the pin or port is purposely being left unconnected
+
+ConnectionRef ::= ConnectionName [Slices]
+
+ConnectionName ::= PhdlID
+
+Indices ::= "(" (  ( INT ":" INT ) | ( INT ( "," INT )* )  ) ")"
+  // Round braces are used for arrays of things (instances or subdesigns)
+
+Slices ::= "[" (  ( INT ":" INT ) | ( INT ( "," INT )* )  ) "]"
+  // Square braces are used for multi-bit things
+
+Vector ::= "[" INT ":" INT "]"
+
+Array ::= "(" INT ";" INT ")"
+
+Range ::= INT ":" INT
+  // Ranges for arrays, vectors, slices, and indices can be either
+  // ascending or descending.  They imply a left-to-right ordering.
+
+Qualifier ::= "this" [Indices] "."
+
+QualifiedNameWithWildCard ::= QualifiedName ["." "*"]
+  // These are used when importing packages
+
+QualfiedName ::= PhdlID [( "." PhdlID )]
+
+PhdlID ::= INT | ID | PINUM
+
+////////////////////////////////////////////////////////////////////////////
+// Lexing Rules
+////////////////////////////////////////////////////////////////////////////
+
+ID: ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')*
+INT: ('0'..'9') | (('1'..'9') ('0'..'9')+ )
+PINNUM: ('0'..'9'|'a'..'z'|'A'..'Z'|'_'|'+'|'-'|'$'|'/'|'@'|'!')+
+
+STRING: '"' ( '\\' ( 'b'|'t'|'n'|'f'|'r'|'u'|'"'|"'"|'\\' ) | !( '\\'|'"' ) )* '"' |
+        "'" ( '\\' ( 'b'|'t'|'n'|'f'|'r'|'u'|'"'|"'"|'\\' ) | !( '\\'|"'" ) )* "'"
+
+ML_COMMENT: '/*' - '*/'
+SL_COMMENT: '//' !( '\n'|'\r' )* [( ['\r'] '\n' )]
+WS: ( ' '|'\t'|'\r'|'\n' )+
