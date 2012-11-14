@@ -1,5 +1,28 @@
 // This file holds all the device declarations for this board. :-)
 
+// A power jack.
+device PJ-002AH-SMT {
+    attr refPrefix = "J";
+    attr FOOTPRINT = "PJ-002AH-SMT";
+    attr partnumber = "PJ-002AH-SMT";
+    attr mfgr = "CUI";
+    pin CENTER_POST = {1};
+    pin SIDE_CONTACT = {2};
+    pin PLUG_DETECT = {3};
+}
+
+// A clock oscilltor
+device CB3LV-3I {
+    attr refPrefix = "OSC";
+    attr FOOTPRINT = "CB3LV-3I";
+    attr partNumber = "CB3LV-3I-100M0000";
+    attr MFGR = "CTS";
+    pin EOH = {1}; // enable input, high or open turns on output.
+    pin GND = {2};
+    pin OUT = {3};
+    pin VCC = {4};
+}
+
 // An 8 position dip switch.
 device dip8_smd {
     attr refPrefix  = "SW";

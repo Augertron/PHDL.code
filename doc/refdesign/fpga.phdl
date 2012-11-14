@@ -1,15 +1,13 @@
-// This files contains the subdesign holding the fpga
-and its associated stuff.
-
+// This files contains the subdesign holding the fpga and its associated stuff.
 subdesign fpga {
 
-  port +3.3V, +1.2V, gnd, clk;
+  port +3V3, +1V2, gnd, clk;
   net[15:0] led, led_curlim;
 
   inst fpga_chip of xcs30an_top{
     clk = clk;
     led = led;
-  
+
     DONE = DONE;
     GND = <GND>;
     PROG_B = PROG_B;
@@ -18,20 +16,22 @@ subdesign fpga {
     TDI = TDI;
     TDO = TDO;
     TMS = TMS;
-    VCCAUX = <+3.3V>;
-    VCCINT = <+1.2V>;
-    VCCO_0 = <+3.3V>;
-    VCCO_1 = <+3.3V>;
-    VCCO_2 = <+3.3V>;
-    VCCO_3 = <+3.3V>;
+    VCCAUX = <+3V3>;
+    VCCINT = <+1V2>;
+    VCCO_0 = <+3V3>;
+    VCCO_1 = <+3V3>;
+    VCCO_2 = <+3V3>;
+    VCCO_3 = <+3V3>;
 
-    UNUSED = open
+    UNUSED = open;
   }
 
 
   // Some LED's and current limiting resistors.
   inst(15:0) of res_0603 {VALUE=150/5%; combine(a)=led; combine(b)=led_curlim;}
   inst(15:0) of PG1113F_LED {combine(anode)=led_curlim; cathode=gnd;}
-  
+
+  // This is the programming connector.
+  inst jtag_connector of JTAG_CONN {gnd=<gnd>; pgnd=gnd; vref=+3.3V; tms=TMS; tck=TCK; tdo=TDO; tdi=TDI; nc=open;}
 
 }
