@@ -1,9 +1,7 @@
-PHDL Language Specification
-===========================
+= PHDL Language Specification =
 Version 0.0.0, Unreleased
 
-Requirements
-------------
+== Requirements ==
 
 The PHDL language is intended to be a simple hardware description 
 language (HDL) for printed circuit board (PCB) design. The objective is 
@@ -14,8 +12,7 @@ of these are strict requirements that arise from the nature of the task; others
 arise from an attempt to use good practices that are in line with a solid
 architecture and ease of use by a vibrant community.
 
-Basic Information
-~~~~~~~~~~~~~~~~~
+== Basic Information ==
 
 To create a design each component type must be declared, each net must be declared,
 then components are instantiated and their pins connected to nets. Hierarchical 
@@ -23,9 +20,10 @@ design entry must also be supported. Therefore every design must contain the
 following information.
 
 
-* Design Name
+* Design
+** Design Name
 
-** For each component:
+** Components - for each component:
 *** Device Name
 *** Device attributes
 **** Required Attributes
@@ -36,29 +34,153 @@ following information.
 **** Pin Numbers
 **** Pin Attributes ???
 
-* For each Net:
-** Net Declaration
-*** Net Name
-*** Net Range
-*** Net attribute ???
+** Ports - for each port:
+*** Net Declaration
+**** Net Name
+**** Net Range
+**** Net attribute ???
 
-* For each instance:
-** Instance Name
-*** Component Type
-*** Instance Attributes
-*** Pin-Net Assignments
+** Nets - for each Net:
+*** Net Declaration
+**** Net Name
+**** Net Range
+**** Net attribute ???
 
-* For each subdesign:
-** A Complete SubDesign with the same structure as a Design but
+** Instances - for each instance:
+*** Instance Name
+**** Component Type
+**** Instance Attributes
+**** Pin-Net Assignments
+
+** Subdesigns - for each subdesign:
+*** A Complete SubDesign with the same structure as a Design but
 created for instantiation in a larger design.
 
-Specification
--------------
+== Example Design ==
+The best way to communicate how any computer language works is by providing some good example code. This section contains the PHDL code for a tiny board design that contains all the elements of the PHDL language.
 
-The following example code will illustrate the language.
+(I would like to make these code sections collapsible but I don't know if asciidoc supports that.)
 
-Formal Grammar
-~~~~~~~~~~~~~~
+=== Device Definitions ===
+It is good practice to put all the device definitions for your design in a separate file. This file is called devices.phdl.
+
+------------------------------------------------
+// This file holds all the device declarations for this board. :-)
+
+// An 8 position dip switch.
+device dip8_smd {
+    attr refPrefix  = "SW";
+    attr package   = "CTS_219-8LPST";
+    attr partNumber = "219-8LPST";
+    attr mfgr       = "CTS";
+    pin[1:8] b     = { 1, 2, 3, 4, 5, 6, 7, 8};
+    pin[1:8] a     = {16,15,14,13,12,11,10, 9};
+}
+
+// A Normally Open pushbutton.
+device SPST_PB_NO {
+    attr refPrefix  = "SW";
+    attr package   = "PANASONIC_EVQ";
+    attr partNumber = "EVQ-Q2U01W";
+    attr mfgr       = "Panasonic";
+    pin[1:2] b     = {1,4}; // The B pins are tied together inside the switch.
+    pin[1:2] a     = {2,3}; // As are the A pins.
+}
+
+// A nice green LED.
+device PG1113F_LED {
+    attr refPrefix  = "D";
+    attr package   = "LED_1113F";
+    attr partNumber = "PG1113F";
+    attr mfgr       = "Stanley";
+    pin  anode   = {1};
+    pin  cathode = {2};
+}
+
+// JTAG connector for Xilinx FPGA configuration and debugging.
+// This connector works with the Xilinx Platform Cable USB II.
+device JTAG_CONN {
+    attr refPrefix = "P";
+    attr package = "MOLEX-87332-1420";
+    attr partNumber = "87332-1420";
+    attr mfgr = "Molex";
+    attr pinCount = "14";
+    pin[1:5] gnd  = {3,5,7,9,11};
+    pin      pgnd = {13};
+    pin      vref = {2};
+    pin      tms  = {4};
+    pin      tck  = {6};
+    pin      tdo  = {8};
+    pin      tdi  = {10};
+    pin[1:3] nc   = {12,14,1};
+}
+
+// a non-polarized surface mount capacitor device declaration
+device capnp_0603 {
+    attr refPrefix = "C";
+    attr value = "";
+    attr package = "CC0603";
+    attr mfgr = "";
+    attr partNumber = "";
+    attr cost = "0.03";
+
+    pin a = {1};
+    pin b = {2};
+}
+
+// a surface mount resistor declaration
+device res_0603 {
+    attr refPrefix = "R";
+    attr value = "";
+    attr package = "CR0603";
+    attr mfgr = "PANASONIC";
+    attr partNumber = "ERJ-3EKF1500V";
+    attr cost = "0.07";
+
+    pin a = {1};
+    pin b = {2};
+}
+
+// a tantalum capacitor declaration
+device tant_cap_3528 {
+    attr refPrefix = "C";
+    attr value = "";
+    attr package = "TANT3528";
+    attr mfgr = "AVX";
+    attr partNumber = "TCJB107M006R0045";
+    attr cost = "1.55";
+    pin pos = {1};
+    pin neg = {2};
+}
+
+device mount_hole_125 {
+    attr refPrefix = "MTG";
+    attr package = "MOUNT_HOLE_125";
+    attr cost = "0.00";
+    attr mfgr = "";
+    pin pin1 = {1};
+}
+
+device LT3022 {
+    attr refPrefix = "U";
+    attr package = "LT3022_MSOP16";
+    attr pinCount = "17";
+    attr value = "";
+    attr cost = "6.10";
+    attr mfgr = "LTC";
+    pin[1:5] NC = {1,2,8,15,16};
+    pin[1:2] OUT = {3,4};
+    pin ADJ_SENSE = {5};
+    pin[1:2] AGND = {6,7};
+    pin SHDN_N = {9};
+    pin[1:2] PGND = {10,11};
+    pin[1:3] IN = {12,13,14};
+    pin GND_PAD = {17};
+}
+
+------------------------------------------------
+
+== Formal Specification ==
 
 
 

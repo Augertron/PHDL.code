@@ -6,7 +6,7 @@
 //Full Part Number = xc3s50an-4tqg144
 
 // Device declaration extracted from Xilinx top_pad.csv
-device top is
+device xc3s50an_top is
 	attr refPrefix = "U";
 	attr pkg_type = "tqg144";
 	attr mfgr = "XILINX";
