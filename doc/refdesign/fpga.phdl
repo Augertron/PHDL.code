@@ -1,143 +1,240 @@
-// This file contains the subdesign for the FPGA and it's support circuits including 
-// the JTAG connector and the configuration flash memory.
+//PART TYPE = xc3s50an
+//SPEED GRADE = -4
+//PACKAGE = tqg144
+//INPUT FILE = top_pad.csv
+//Root Filename = top
+//Full Part Number = xc3s50an-4tqg144
 
-subDesign fpga {
-    // Power
-    port +1V2; // FPGA core and GTP.
-    port +3V3; // FPGA AUX and I/O voltage.
-    port +1V8; // For configuration flash.
-    port +1V5; // For DDR3
-    port  gnd;
-    // x1 PCIe interface.
-    port pcie_perst_n;
-    port pcie_refclk_p;
-    port pcie_refclk_n;
-    port pcie_tx0_p   ;
-    port pcie_tx0_n   ;
-    port pcie_rx0_p   ;
-    port pcie_rx0_n   ;
-    // // MCB1 DDR3 Interface
-    // port mcb1_c1_sys_clk_n;
-    // port mcb1_c1_sys_clk_p;
-    // port mcb1_c1_sys_rst_i;
-    // port mcb1_dram_a;
-    // port mcb1_dram_ba;
-    // port mcb1_dram_cas_n;
-    // port mcb1_dram_ck;
-    // port mcb1_dram_ck_n;
-    // port mcb1_dram_cke;
-    // port mcb1_dram_dm;
-    // port mcb1_dram_dq;
-    // port mcb1_dram_dqs;
-    // port mcb1_dram_dqs_n;
-    // port mcb1_dram_odt;
-    // port mcb1_dram_ras_n;
-    // port mcb1_dram_reset_n;
-    // port mcb1_dram_udm;
-    // port mcb1_dram_udqs;
-    // port mcb1_dram_udqs_n;
-    // port mcb1_dram_we_n;
-    // port mcb1_rzq;
-    // port mcb1_zio;
-    // // MCB3 DDR3 Interface
-    // port mcb3_c1_sys_clk_n;
-    // port mcb3_c1_sys_clk_p;
-    // port mcb3_c1_sys_rst_i;
-    // port mcb3_dram_a;
-    // port mcb3_dram_ba;
-    // port mcb3_dram_cas_n;
-    // port mcb3_dram_ck;
-    // port mcb3_dram_ck_n;
-    // port mcb3_dram_cke;
-    // port mcb3_dram_dm;
-    // port mcb3_dram_dq;
-    // port mcb3_dram_dqs;
-    // port mcb3_dram_dqs_n;
-    // port mcb3_dram_odt;
-    // port mcb3_dram_ras_n;
-    // port mcb3_dram_reset_n;
-    // port mcb3_dram_udm;
-    // port mcb3_dram_udqs;
-    // port mcb3_dram_udqs_n;
-    // port mcb3_dram_we_n;
-    // port mcb3_rzq;
-    // port mcb3_zio;
+// Device declaration extracted from Xilinx top_pad.csv
+device top is
+	attr refPrefix = "U";
+	attr pkg_type = "tqg144";
+	attr mfgr = "XILINX";
+	attr partNumber = "xc3s50an-4tqg144";
 
+	// User I/O pins.
+	pin  clk = {P18};
+	pin[15:0] led = {P82,P102,P99,P83,P93,P90,P87,P88,P79,P85,P91,P101,P96,P84,P98,P92};
 
-    // Some USER LED's and their current limiting resistors. 
-    // (2.5V-2.0V)/0.005 Amps = 100 Ohms.
-    net[7:0] led, led_cathode;
-    inst LED1 of PG1113F_LED { refDes="D1"; anode=led[0]; cathode=led_cathode[0]; }
-    inst LED2 of PG1113F_LED { refDes="D2"; anode=led[1]; cathode=led_cathode[1]; }
-    inst LED3 of PG1113F_LED { refDes="D3"; anode=led[2]; cathode=led_cathode[2]; }
-    inst LED4 of PG1113F_LED { refDes="D4"; anode=led[3]; cathode=led_cathode[3]; }
-    inst LED5 of PG1113F_LED { refDes="D5"; anode=led[4]; cathode=led_cathode[4]; }
-    inst LED6 of PG1113F_LED { refDes="D6"; anode=led[5]; cathode=led_cathode[5]; }
-    inst LED7 of PG1113F_LED { refDes="D7"; anode=led[6]; cathode=led_cathode[6]; }
-    inst LED8 of PG1113F_LED { refDes="D8"; anode=led[7]; cathode=led_cathode[7]; }
-    inst led_res1 of res_0603 { refDes="R10"; value="100"; a=led_cathode[0]; b=gnd; }
-    inst led_res2 of res_0603 { refDes="R11"; value="100"; a=led_cathode[1]; b=gnd; }
-    inst led_res3 of res_0603 { refDes="R12"; value="100"; a=led_cathode[2]; b=gnd; }
-    inst led_res4 of res_0603 { refDes="R13"; value="100"; a=led_cathode[3]; b=gnd; }
-    inst led_res5 of res_0603 { refDes="R14"; value="100"; a=led_cathode[4]; b=gnd; }
-    inst led_res6 of res_0603 { refDes="R15"; value="100"; a=led_cathode[5]; b=gnd; }
-    inst led_res7 of res_0603 { refDes="R16"; value="100"; a=led_cathode[6]; b=gnd; }
-    inst led_res8 of res_0603 { refDes="R17"; value="100"; a=led_cathode[7]; b=gnd; }
+	// Power and dedicated FPGA pins.
+	pin  DONE = {P73};
+	pin[12:0] GND = {P100,P106,P118,P128,P137,P17,P26,P34,P56,P65,P81,P89,P9};
+	pin  PROG_B = {P144};
+	pin  SUSPEND = {P74};
+	pin  TCK = {P109};
+	pin  TDI = {P2};
+	pin  TDO = {P107};
+	pin  TMS = {P1};
+	pin[3:0] VCCAUX = {P108,P133,P36,P66};
+	pin[3:0] VCCINT = {P122,P22,P52,P94};
+	pin[1:0] VCCO_0 = {P119,P136};
+	pin[1:0] VCCO_1 = {P86,P95};
+	pin[1:0] VCCO_2 = {P40,P61};
+	pin[1:0] VCCO_3 = {P14,P23};
 
-    // A dip switch. The "dip_io" bus goes to the FPGA and is pulled up in there.
-    net[1:8] dip_io;
-    inst dip_switch of dip8_smd { refDes="SW5"; a=dip_io; b=<gnd>; }
+	// UNUSED I/O pins.
+	pin  IO_0 = {P142};
+	pin  IO_2/MOSI/CSI_B = {P62};
+	pin  IO_L01N_0 = {P111};
+	pin  IO_L01N_1/LDC2 = {P78};
+	pin  IO_L01N_2/M0 = {P38};
+	pin  IO_L01N_3 = {P6};
+	pin  IO_L01P_0 = {P110};
+	pin  IO_L01P_1/HDC = {P76};
+	pin  IO_L01P_2/M1 = {P37};
+	pin  IO_L01P_3 = {P4};
+	pin  IO_L02N_0 = {P113};
+	pin  IO_L02N_1/LDC0 = {P77};
+	pin  IO_L02N_2/CSO_B = {P41};
+	pin  IO_L02N_3 = {P5};
+	pin  IO_L02P_0/VREF_0 = {P112};
+	pin  IO_L02P_1/LDC1 = {P75};
+	pin  IO_L02P_2/M2 = {P39};
+	pin  IO_L02P_3 = {P3};
+	pin  IO_L03N_0 = {P117};
+	pin  IO_L03N_2/VS1 = {P44};
+	pin  IO_L03N_3 = {P8};
+	pin  IO_L03P_0 = {P115};
+	pin  IO_L03P_2/RDWR_B = {P42};
+	pin  IO_L03P_3 = {P7};
+	pin  IO_L04N_0 = {P116};
+	pin  IO_L04N_2/VS0 = {P45};
+	pin  IO_L04N_3/VREF_3 = {P11};
+	pin  IO_L04P_0 = {P114};
+	pin  IO_L04P_2/VS2 = {P43};
+	pin  IO_L04P_3 = {P10};
+	pin  IO_L05N_0 = {P121};
+	pin  IO_L05N_2/D7 = {P48};
+	pin  IO_L05N_3/LHCLK1 = {P13};
+	pin  IO_L05P_0 = {P120};
+	pin  IO_L05P_2 = {P46};
+	pin  IO_L05P_3/LHCLK0 = {P12};
+	pin  IO_L06N_0/GCLK5 = {P126};
+	pin  IO_L06N_2/D6 = {P49};
+	pin  IO_L06N_3/IRDY2/LHCLK3 = {P16};
+	pin  IO_L06P_0/GCLK4 = {P124};
+	pin  IO_L06P_2 = {P47};
+	pin  IO_L06P_3/LHCLK2 = {P15};
+	pin  IO_L07N_0/GCLK7 = {P127};
+	pin  IO_L07N_2/D4 = {P51};
+	pin  IO_L07N_3/LHCLK5 = {P20};
+	pin  IO_L07P_0/GCLK6 = {P125};
+	pin  IO_L07P_2/D5 = {P50};
+	pin  IO_L08N_0/GCLK9 = {P131};
+	pin  IO_L08N_2/GCLK15 = {P55};
+	pin  IO_L08N_3/LHCLK7 = {P21};
+	pin  IO_L08P_0/GCLK8 = {P129};
+	pin  IO_L08P_2/GCLK14 = {P54};
+	pin  IO_L08P_3/TRDY2/LHCLK6 = {P19};
+	pin  IO_L09N_0/GCLK11 = {P132};
+	pin  IO_L09N_2/GCLK1 = {P59};
+	pin  IO_L09N_3 = {P25};
+	pin  IO_L09P_0/GCLK10 = {P130};
+	pin  IO_L09P_2/GCLK0 = {P57};
+	pin  IO_L09P_3 = {P24};
+	pin  IO_L10N_0 = {P135};
+	pin  IO_L10N_1 = {P104};
+	pin  IO_L10N_2/GCLK3 = {P60};
+	pin  IO_L10N_3 = {P29};
+	pin  IO_L10P_0 = {P134};
+	pin  IO_L10P_2/GCLK2 = {P58};
+	pin  IO_L10P_3 = {P27};
+	pin  IO_L11N_0 = {P139};
+	pin  IO_L11N_1 = {P105};
+	pin  IO_L11N_2/DOUT = {P64};
+	pin  IO_L11N_3 = {P30};
+	pin  IO_L11P_0 = {P138};
+	pin  IO_L11P_1 = {P103};
+	pin  IO_L11P_2/AWAKE = {P63};
+	pin  IO_L11P_3 = {P28};
+	pin  IO_L12N_0/PUDC_B = {P143};
+	pin  IO_L12N_2/D3 = {P68};
+	pin  IO_L12N_3 = {P32};
+	pin  IO_L12P_0/VREF_0 = {P141};
+	pin  IO_L12P_2/INIT_B = {P67};
+	pin  IO_L12P_3 = {P31};
+	pin  IO_L13N_2/D0/DIN/MISO = {P71};
+	pin  IO_L13P_2/D2 = {P69};
+	pin  IO_L14N_2/CCLK = {P72};
+	pin  IO_L14P_2/D1 = {P70};
+	pin  IP_0 = {P140};
+	pin  IP_0/VREF_0 = {P123};
+	pin  IP_1/VREF_1 = {P97};
+	pin  IP_2/VREF_2 = {P53};
+	pin  IP_L13N_3/VREF_3 = {P35};
+	pin  IP_L13P_3 = {P33};
+end;
 
-    // Some Normally Open pushbuttons.
-    // They are $0.40 each so let's put a few.
-    net[1:4] pushbutton;
-    inst button1 of SPST_PB_NO { refDes="SW1"; a=<pushbutton[1]>; b=<gnd>; }
-    inst button2 of SPST_PB_NO { refDes="SW2"; a=<pushbutton[2]>; b=<gnd>; }
-    inst button3 of SPST_PB_NO { refDes="SW3"; a=<pushbutton[3]>; b=<gnd>; }
-    inst button4 of SPST_PB_NO { refDes="SW4"; a=<pushbutton[4]>; b=<gnd>; }
- 
-    // JTAG connector.
-    net tms, tck, tdo, tdi;
-    inst jtag_connector of JTAG_CONN { refDes = "P2";
-        gnd  = <gnd>;
-        pgnd = open;
-        vref = +3V3;
-        tms  = tms;
-        tck  = tck;
-        tdo  = tdo;
-        tdi  = tdi;
-        nc   = open;
-    }
+// Signal pins from FPGA design.
+clk = clk;
+led = led;
 
-    // Configuration flash.
-    net[25:1] cfg_addr;
-    net[15:0] cfg_data;
-    net cfg_we_n, cfg_oe_n, cfg_adv_n, cfg_wait, cfg_clk, cfg_reset_n, cfg_wp_n, cfg_ce_n;
-    inst config_flash of PC28F128P30 { refDes = "U2";
-        vss  = <gnd>;
-        vcc  = <+1V8>; // core voltage.
-        vpp  = +1V8; // Logic level programming voltage.
-        vccq = <+3V3>; // I/O voltage
-        a    = cfg_addr;
-        dq   = cfg_data;
-        rfu  = open;
-        we_n  = cfg_we_n;
-        oe_n  = cfg_oe_n;
-        adv_n = cfg_adv_n;
-        wait = cfg_wait;
-        clk  = cfg_clk;
-        rst_n = cfg_reset_n;
-        wp_n  = cfg_wp_n;
-        ce_n  = cfg_ce_n;
-    }
-    // Pull resistors on config interface.
-    inst cfg_reset_pullup of res_0603 { refDes="R1"; value="1K"; a=cfg_reset_n; b=+3V3; }
-    inst cfg_clk_pullup   of res_0603 { refDes="R2"; value="1K"; a=cfg_clk;     b=+3V3; }
-    inst cfg_we_pullup    of res_0603 { refDes="R3"; value="1K"; a=cfg_we_n;    b=+3V3; }
-    inst cfg_oe_pullup    of res_0603 { refDes="R4"; value="1K"; a=cfg_oe_n;    b=+3V3; }
-    inst cfg_ce_pullup    of res_0603 { refDes="R5"; value="1K"; a=cfg_ce_n;    b=+3V3; }
-    inst cfg_wp_pullup    of res_0603 { refDes="R6"; value="1K"; a=cfg_wp_n;    b=+3V3; }
-    inst cfg_adv_pulldown of res_0603 { refDes="R7"; value="1K"; a=cfg_adv_n;   b=gnd;  }
+// Power and dedicated FPGA pins.
+DONE = DONE;
+GND = GND;
+PROG_B = PROG_B;
+SUSPEND = SUSPEND;
+TCK = TCK;
+TDI = TDI;
+TDO = TDO;
+TMS = TMS;
+VCCAUX = VCCAUX;
+VCCINT = VCCINT;
+VCCO_0 = VCCO_0;
+VCCO_1 = VCCO_1;
+VCCO_2 = VCCO_2;
+VCCO_3 = VCCO_3;
 
-}
+// UNUSED I/O pins.
+IO_0 = open;
+IO_2/MOSI/CSI_B = open;
+IO_L01N_0 = open;
+IO_L01N_1/LDC2 = open;
+IO_L01N_2/M0 = open;
+IO_L01N_3 = open;
+IO_L01P_0 = open;
+IO_L01P_1/HDC = open;
+IO_L01P_2/M1 = open;
+IO_L01P_3 = open;
+IO_L02N_0 = open;
+IO_L02N_1/LDC0 = open;
+IO_L02N_2/CSO_B = open;
+IO_L02N_3 = open;
+IO_L02P_0/VREF_0 = open;
+IO_L02P_1/LDC1 = open;
+IO_L02P_2/M2 = open;
+IO_L02P_3 = open;
+IO_L03N_0 = open;
+IO_L03N_2/VS1 = open;
+IO_L03N_3 = open;
+IO_L03P_0 = open;
+IO_L03P_2/RDWR_B = open;
+IO_L03P_3 = open;
+IO_L04N_0 = open;
+IO_L04N_2/VS0 = open;
+IO_L04N_3/VREF_3 = open;
+IO_L04P_0 = open;
+IO_L04P_2/VS2 = open;
+IO_L04P_3 = open;
+IO_L05N_0 = open;
+IO_L05N_2/D7 = open;
+IO_L05N_3/LHCLK1 = open;
+IO_L05P_0 = open;
+IO_L05P_2 = open;
+IO_L05P_3/LHCLK0 = open;
+IO_L06N_0/GCLK5 = open;
+IO_L06N_2/D6 = open;
+IO_L06N_3/IRDY2/LHCLK3 = open;
+IO_L06P_0/GCLK4 = open;
+IO_L06P_2 = open;
+IO_L06P_3/LHCLK2 = open;
+IO_L07N_0/GCLK7 = open;
+IO_L07N_2/D4 = open;
+IO_L07N_3/LHCLK5 = open;
+IO_L07P_0/GCLK6 = open;
+IO_L07P_2/D5 = open;
+IO_L08N_0/GCLK9 = open;
+IO_L08N_2/GCLK15 = open;
+IO_L08N_3/LHCLK7 = open;
+IO_L08P_0/GCLK8 = open;
+IO_L08P_2/GCLK14 = open;
+IO_L08P_3/TRDY2/LHCLK6 = open;
+IO_L09N_0/GCLK11 = open;
+IO_L09N_2/GCLK1 = open;
+IO_L09N_3 = open;
+IO_L09P_0/GCLK10 = open;
+IO_L09P_2/GCLK0 = open;
+IO_L09P_3 = open;
+IO_L10N_0 = open;
+IO_L10N_1 = open;
+IO_L10N_2/GCLK3 = open;
+IO_L10N_3 = open;
+IO_L10P_0 = open;
+IO_L10P_2/GCLK2 = open;
+IO_L10P_3 = open;
+IO_L11N_0 = open;
+IO_L11N_1 = open;
+IO_L11N_2/DOUT = open;
+IO_L11N_3 = open;
+IO_L11P_0 = open;
+IO_L11P_1 = open;
+IO_L11P_2/AWAKE = open;
+IO_L11P_3 = open;
+IO_L12N_0/PUDC_B = open;
+IO_L12N_2/D3 = open;
+IO_L12N_3 = open;
+IO_L12P_0/VREF_0 = open;
+IO_L12P_2/INIT_B = open;
+IO_L12P_3 = open;
+IO_L13N_2/D0/DIN/MISO = open;
+IO_L13P_2/D2 = open;
+IO_L14N_2/CCLK = open;
+IO_L14P_2/D1 = open;
+IP_0 = open;
+IP_0/VREF_0 = open;
+IP_1/VREF_1 = open;
+IP_2/VREF_2 = open;
+IP_L13N_3/VREF_3 = open;
+IP_L13P_3 = open;
 
+//Total pins found = 144

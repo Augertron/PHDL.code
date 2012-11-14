@@ -1,0 +1,42 @@
+//PART TYPE = xc3s50an
+//SPEED GRADE = -4
+//PACKAGE = tqg144
+//INPUT FILE = top_pad.csv
+//Root Filename = top
+//Full Part Number = xc3s50an-4tqg144
+
+// Device declaration extracted from Xilinx top_pad.csv
+device top is
+	attr refPrefix = "U";
+	attr pkg_type = "tqg144";
+	attr mfgr = "XILINX";
+	attr partNumber = "xc3s50an-4tqg144";
+
+	// User I/O pins.
+	pin  clk = {18};
+	pin[15:0] led = {82,102,99,83,93,90,87,88,79,85,91,101,96,84,98,92};
+
+	// Power and dedicated FPGA pins.
+	pin  DONE = {73};
+	pin[12:0] GND = {100,106,118,128,137,17,26,34,56,65,81,89,9};
+	pin  PROG_B = {144};
+	pin  SUSPEND = {74};
+	pin  TCK = {109};
+	pin  TDI = {2};
+	pin  TDO = {107};
+	pin  TMS = {1};
+	pin[3:0] VCCAUX = {108,133,36,66};
+	pin[3:0] VCCINT = {122,22,52,94};
+	pin[1:0] VCCO_0 = {119,136};
+	pin[1:0] VCCO_1 = {86,95};
+	pin[1:0] VCCO_2 = {40,61};
+	pin[1:0] VCCO_3 = {14,23};
+
+	// UNUSED I/O pins.
+	pin  UNUSED[1:90] = {142,62,111,78,38,6,110,76,37,4,113,77,41,5,112,
+                      75,39,3,117,44,8,115,42,7,116,45,11,114,43,10,121,
+                      48,13,120,46,12,126,49,16,124,47,15,127,51,20,125,50,
+                      131,55,21,129,54,19,132,59,25,130,57,24,135,104,60,
+                      29,134,58,27,139,105,64,30,138,103,63,28,143,68,32,
+                      141,67,31,71,69,72,70,140,123,97,53,35,33};
+end;
