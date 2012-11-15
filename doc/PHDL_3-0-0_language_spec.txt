@@ -1,6 +1,6 @@
 PHDL Language Grammar Specification
-============================
-Version 3.0.0
+===================================
+Version 3.0.0, Unreleased
 
 The following specification includes two main parts:
 	1. The Grammar or Allowable Syntax
@@ -9,9 +9,8 @@ The following specification includes two main parts:
 		token/rule represents.
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////
-// Parser Rules
-///////////////////////////////////////////////////////////////////////////////////////////////
+Parser Rules
+------------
 
 PHDLDesign ::= Import* ( Package | Device | Design )*
   // All imports need to come before the remaining declarations
@@ -254,17 +253,37 @@ SubInstName ::= ID
 
 PhdlID ::= INT | ID | PINUM
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Lexing Rules
-////////////////////////////////////////////////////////////////////////////////////////////////////////
+Lexical Elements
+----------------
+
+Identifiers
+~~~~~~~~~~~
 
 ID: ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')*
+
+Integers
+~~~~~~~~
+
 INT: ('0'..'9') | (('1'..'9') ('0'..'9')+ )
+
+Pin Numbers
+~~~~~~~~~~~
+
 PINNUM: ('0'..'9'|'a'..'z'|'A'..'Z'|'_'|'+'|'-'|'$'|'/'|'@'|'!')+
+
+Strings
+~~~~~~~
 
 STRING: '"' ( '\\' ( 'b'|'t'|'n'|'f'|'r'|'u'|'"'|"'"|'\\' ) | !( '\\'|'"' ) )* '"' |
         "'" ( '\\' ( 'b'|'t'|'n'|'f'|'r'|'u'|'"'|"'"|'\\' ) | !( '\\'|"'" ) )* "'"
 
+Comments
+~~~~~~~~
+
 ML_COMMENT: '/*' - '*/'
 SL_COMMENT: '//' !( '\n'|'\r' )* [( ['\r'] '\n' )]
+
+Whitespace
+~~~~~~~~~~
+
 WS: ( ' '|'\t'|'\r'|'\n' )+
