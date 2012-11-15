@@ -256,6 +256,10 @@ PhdlID ::= INT | ID | PINUM
 Lexical Elements
 ----------------
 
+PHDL files must always consist of valid UTF-8 encoded Unicode text. This input
+is then normalized and split into lexical elements used in the rest of the
+grammar. Each element is described in detail below.
+
 Identifiers
 ~~~~~~~~~~~
 
@@ -280,10 +284,33 @@ STRING: '"' ( '\\' ( 'b'|'t'|'n'|'f'|'r'|'u'|'"'|"'"|'\\' ) | !( '\\'|'"' ) )* '
 Comments
 ~~~~~~~~
 
-ML_COMMENT: '/*' - '*/'
-SL_COMMENT: '//' !( '\n'|'\r' )* [( ['\r'] '\n' )]
+PHDL allows C\+\+-style single line and multi-line comments. Single-line
+comments start with +//+ and ends at any Unicode line-ending sequence.
+
+Multi-line comments start with +/*+ and end with +*/+.
+
+Neither kind of comments can be nested in any way.
+
+----------------
+Line_Ending =
+ | \x0A       // LINE FEED (LF)
+ | \x0B       // LINE TABULATION
+ | \x0C       // FORM FEED (FF)
+ | \x0D       // CARRIAGE RETURN (CR)
+ | \x85       // NEXT LINE (NEL)
+ | \x2028     // LINE SEPARATOR
+ | \x2029     // PARAGRAPH SEPARATOR
+Single_Line_Comment = "//" (!Line_Ending)* Line_Ending
+Multi_Line_Comment = "/*" !("*/") "*/"
+----------------
 
 Whitespace
 ~~~~~~~~~~
 
-WS: ( ' '|'\t'|'\r'|'\n' )+
+All whitespace characters between (but not part of) individual lexical elements
+are ignored. Whitespace consists of one or more Unicode characters in a row
+with the "White_Space" property.
+
+---------------
+Whitespace = (character with "White_Space" property)+
+---------------
