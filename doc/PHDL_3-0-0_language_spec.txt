@@ -309,8 +309,8 @@ Whitespace
 
 All whitespace characters between (but not part of) individual lexical elements
 are ignored. Whitespace consists of one or more Unicode characters in a row
-with the "White_Space" property.
+with the "Pattern_White_Space" property.
 
 ---------------
-Whitespace = (character with "White_Space" property)+
+Whitespace = (character with "Pattern_White_Space" property)+
 ---------------
