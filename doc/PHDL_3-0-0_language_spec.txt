@@ -287,7 +287,7 @@ Comments
 PHDL allows C\+\+-style single line and multi-line comments. Single-line
 comments start with +//+ and ends at any Unicode line-ending sequence.
 
-Multi-line comments start with +/*+ and end with +*/+.
+Multi-line comments start with +/\*+ and end with +*/+.
 
 Neither kind of comments can be nested in any way.
 
