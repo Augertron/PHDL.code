@@ -263,7 +263,12 @@ grammar. Each element is described in detail below.
 Identifiers
 ~~~~~~~~~~~
 
-ID: ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')*
+All identifiers are like standard Unicode identifiers, but are additionally
+allowed to start with connectors such as underscore.
+
+------------
+Identifier = (\p{ID_Start} | \p{Pc}) \p{ID_Continue}*
+------------
 
 Integers
 ~~~~~~~~
@@ -316,5 +321,5 @@ are ignored. Whitespace consists of one or more Unicode characters in a row
 with the "Pattern_White_Space" property.
 
 ---------------
-Whitespace = (character with "Pattern_White_Space" property)+
+Whitespace = \p{Pattern_White_Space}+
 ---------------
