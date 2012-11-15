@@ -268,7 +268,11 @@ ID: ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')*
 Integers
 ~~~~~~~~
 
-INT: ('0'..'9') | (('1'..'9') ('0'..'9')+ )
+All integers are in decimal. Leading zeros are explicitly allowed.
+
+------------
+Integer = [0-9]+
+------------
 
 Pin Numbers
 ~~~~~~~~~~~
