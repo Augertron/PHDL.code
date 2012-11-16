@@ -3,15 +3,17 @@ subdesign fpga {
 
   port +3V3, +1V2, gnd, clk;
   net[15:0] led, led_curlim;
+  net DONE, PROG_B;
+  net TCK, TDI, TDO, TMS;
 
-  inst fpga_chip of xcs30an_top{
+  inst fpga_chip of xc3s50an_top {
     clk = clk;
     led = led;
 
     DONE = DONE;
-    GND = <GND>;
+    GND = <gnd>;
     PROG_B = PROG_B;
-    SUSPEND = SUSPEND;
+    SUSPEND = gnd;
     TCK = TCK;
     TDI = TDI;
     TDO = TDO;
@@ -27,11 +29,16 @@ subdesign fpga {
   }
 
 
+  inst R1 of res_0603   { REFDES="R1"; VALUE="4.7K/5%"; a=+3V3; b=DONE; }
+  inst R2 of res_0603   { REFDES="R2"; VALUE="4.7K/5%"; a=+3V3; b=PROG_B; }
+
+
+
   // Some LED's and current limiting resistors.
-  inst(15:0) of res_0603 {VALUE=150/5%; combine(a)=led; combine(b)=led_curlim;}
-  inst(15:0) of PG1113F_LED {combine(anode)=led_curlim; cathode=gnd;}
+  inst(15:0) led_limres of res_0603 {VALUE="150/5%"; combine(a)=led; combine(b)=led_curlim;}
+  inst(15:0) leds of PG1113F_LED {combine(anode)=led_curlim; cathode=gnd;}
 
   // This is the programming connector.
-  inst jtag_connector of JTAG_CONN {gnd=<gnd>; pgnd=gnd; vref=+3.3V; tms=TMS; tck=TCK; tdo=TDO; tdi=TDI; nc=open;}
+  inst jtag_connector of JTAG_CONN {gnd=<gnd>; pgnd=gnd; vref=+3V3; tms=TMS; tck=TCK; tdo=TDO; tdi=TDI; nc=open;}
 
 }

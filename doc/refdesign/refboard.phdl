@@ -8,22 +8,23 @@ design refboard {
     net clk100;
 
     // The fpga subdesign is in here.
-    subInst fpga1 of xc3san_top {+3V3=+3V3; +1V2=+1V2; GND=GND; CLK=clk100};
-    inst oscillator of CB3LV-3I {EOH=open; OUT=clk100; VCC=+3V3; GND=GND};
+    subinst fpga1 of fpga { attr refprefix="X"; +3V3=+3V3; +1V2=+1V2; gnd=gnd; clk=clk100;}
+
+    inst oscillator of CB3LV-3I {EOH=open; OUT=clk100; VCC=+3V3; GND=gnd;}
 
     // A power jack
-    inst power_jack of PJ-002AH-SMT {CENTER_POST=?; SIDE_CONTACT=?; PLUG_DETECT=?;}
+    inst power_jack of PJ-002AH-SMT {CENTER_POST=+5V; SIDE_CONTACT=gnd; PLUG_DETECT=gnd;}
 
     // these are the power supply blocks. The output voltages are set using 
     // hierarchical probing to change the resistor values down in each one.
     // Decoupling caps are down in these blocks.
-    subInst 3V3_supply of power_supply {subPrefix="PS1."; vin=+5V; vout=+3V3; gnd=gnd;}
-    subInst 1V2_supply of power_supply {subPrefix="PS1."; vin=+5V; vout=+1V2; gnd=gnd;}
+    subinst supply_3V3 of power_supply { attr refprefix="PS1"; vin=+5V; vout=+3V3; gnd=gnd;}
+    subinst supply_1V2 of power_supply { attr refprefix="PS2"; vin=+5V; vout=+1V2; gnd=gnd;}
 
     // These are four mounting holes.
-    inst mounting_hole1 of mount_hole_125 { refDes="MTG1"; pin1=open; }
-    inst mounting_hole2 of mount_hole_125 { refDes="MTG2"; pin1=open; }
-    inst mounting_hole3 of mount_hole_125 { refDes="MTG3"; pin1=open; }
-    inst mounting_hole4 of mount_hole_125 { refDes="MTG4"; pin1=open; }
+    inst mounting_hole1 of mount_hole_125 { REFDES="MTG1"; pin1=open; }
+    inst mounting_hole2 of mount_hole_125 { REFDES="MTG2"; pin1=open; }
+    inst mounting_hole3 of mount_hole_125 { REFDES="MTG3"; pin1=open; }
+    inst mounting_hole4 of mount_hole_125 { REFDES="MTG4"; pin1=open; }
 }
 

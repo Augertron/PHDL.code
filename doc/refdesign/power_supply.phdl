@@ -8,17 +8,17 @@ subdesign power_supply {
     net v_sense;
 
     // LDO regulator.
-    inst LDO1 of LT3022 { refDes="U1"; NC=open; OUT=<vout>; ADJ_SENSE=v_sense; AGND=<gnd>; SHDN_N=vin; PGND=<gnd>; IN=<+3V3>; GND_PAD=gnd; }
+    inst LDO1 of LT3022 { /* REFDES="U1"; */ NC=open; OUT=<vout>; ADJ_SENSE=v_sense; AGND=<gnd>; SHDN_N=vin; PGND=<gnd>; IN=<vin>; GND_PAD=gnd; }
     // The resistors that set the output voltage.
-    inst R2 of res_0603   { refDes="R2"; value="1500/1%"; a=v_sense; b=vout; }
-    inst R3 of res_0603   { refDes="R3"; value="187/1%";  a=v_sense; b=gnd;  }
+    inst R2 of res_0603   { REFDES="R2"; VALUE="1500/1%"; a=v_sense; b=vout; }
+    inst R3 of res_0603   { REFDES="R3"; VALUE="187/1%";  a=v_sense; b=gnd;  }
     // A decoupling cap on the input.
-    inst bulk_cap_vin of tant_cap_3528 { refDes="C42"; value="100UF/35mOhm/6.3V"; pos=+1V5; neg=gnd; }
+    inst bulk_cap_vin of tant_cap_3528 { REFDES="C42"; VALUE="100UF/35mOhm/6.3V"; pos=vout; neg=gnd; }
     // caps on output voltage.
-    inst bulk_cap_vout of tant_cap_3528 { refDes="C43"; value="100UF/35mOhm/6.3V"; pos=+1V5; neg=gnd; }
-    inst C3  of capnp_0805 { refDes="C3"; value="1UF/X7R/10V";   a=+1V5; b=gnd; }
-    inst C4  of capnp_0805 { refDes="C4"; value="1UF/X7R/10V";   a=+1V5; b=gnd; }
-    inst C5  of capnp_0603 { refDes="C5"; value="0.1UF/X7R/10V"; a=+1V5; b=gnd; }
-    inst C5  of capnp_0603 { refDes="C5"; value="0.1UF/X7R/10V"; a=+1V5; b=gnd; }
+    inst bulk_cap_vout of tant_cap_3528 { REFDES="C43"; VALUE="100UF/35mOhm/6.3V"; pos=vout; neg=gnd; }
+    inst C3  of capnp_0805 { REFDES="C3"; VALUE="1UF/X7R/10V";   a=vout; b=gnd; }
+    inst C4  of capnp_0805 { REFDES="C4"; VALUE="1UF/X7R/10V";   a=vout; b=gnd; }
+    inst C5  of capnp_0603 { REFDES="C5"; VALUE="0.1UF/X7R/10V"; a=vout; b=gnd; }
+    inst C6  of capnp_0603 { REFDES="C6"; VALUE="0.1UF/X7R/10V"; a=vout; b=gnd; }
 }
 

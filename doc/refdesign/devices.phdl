@@ -2,22 +2,26 @@
 
 // A power jack.
 device PJ-002AH-SMT {
-    attr refPrefix = "J";
+    attr LIBRARY = "devices";
+    attr REFPREFIX = "J";
+    attr REFDES = "";
     attr FOOTPRINT = "PJ-002AH-SMT";
-    attr partnumber = "PJ-002AH-SMT";
-    attr mfgr = "CUI";
-    pin CENTER_POST = {1};
+    attr PARTNUMBER = "PJ-002AH-SMT";
+    attr MFGR = "CUI";
+    pin CENTER_POST =  {1};
     pin SIDE_CONTACT = {2};
-    pin PLUG_DETECT = {3};
+    pin PLUG_DETECT =  {3};
 }
 
 // A clock oscilltor
 device CB3LV-3I {
-    attr refPrefix = "OSC";
+    attr LIBRARY = "devices";
+    attr REFPREFIX = "OSC";
+    attr REFDES = "";
     attr FOOTPRINT = "CB3LV-3I";
-    attr partNumber = "CB3LV-3I-100M0000";
+    attr PARTNUMBER = "CB3LV-3I-100M0000";
     attr MFGR = "CTS";
-    pin EOH = {1}; // enable input, high or open turns on output.
+    pin EOH = {1}; // enable, high or open turns on output.
     pin GND = {2};
     pin OUT = {3};
     pin VCC = {4};
@@ -25,30 +29,24 @@ device CB3LV-3I {
 
 // An 8 position dip switch.
 device dip8_smd {
-    attr refPrefix  = "SW";
-    attr package   = "CTS_219-8LPST";
-    attr partNumber = "219-8LPST";
-    attr mfgr       = "CTS";
+    attr LIBRARY = "devices";
+    attr REFPREFIX  = "SW";
+    attr REFDES = "";
+    attr FOOTPRINT   = "CTS_219-8LPST";
+    attr PARTNUMBER = "219-8LPST";
+    attr MFGR       = "CTS";
     pin[1:8] b     = { 1, 2, 3, 4, 5, 6, 7, 8};
     pin[1:8] a     = {16,15,14,13,12,11,10, 9};
 }
 
-// A Normally Open pushbutton.
-device SPST_PB_NO {
-    attr refPrefix  = "SW";
-    attr package   = "PANASONIC_EVQ";
-    attr partNumber = "EVQ-Q2U01W";
-    attr mfgr       = "Panasonic";
-    pin[1:2] b     = {1,4}; // The B pins are tied together inside the switch.
-    pin[1:2] a     = {2,3}; // As are the A pins.
-}
-
 // A nice green LED.
 device PG1113F_LED {
-    attr refPrefix  = "D";
-    attr package   = "LED_1113F";
-    attr partNumber = "PG1113F";
-    attr mfgr       = "Stanley";
+    attr LIBRARY = "devices";
+    attr REFPREFIX  = "D";
+    attr REFDES = "";
+    attr FOOTPRINT   = "LED_1113F";
+    attr PARTNUMBER = "PG1113F";
+    attr MFGR       = "Stanley";
     pin  anode   = {1};
     pin  cathode = {2};
 }
@@ -56,11 +54,13 @@ device PG1113F_LED {
 // JTAG connector for Xilinx FPGA configuration and debugging.
 // This connector works with the Xilinx Platform Cable USB II.
 device JTAG_CONN {
-    attr refPrefix = "P";
-    attr package = "MOLEX-87332-1420";
-    attr partNumber = "87332-1420";
-    attr mfgr = "Molex";
-    attr pinCount = "14";
+    attr LIBRARY = "devices";
+    attr REFPREFIX = "P";
+    attr REFDES = "";
+    attr FOOTPRINT = "MOLEX-87332-1420";
+    attr PARTNUMBER = "87332-1420";
+    attr MFGR = "Molex";
+    attr PINCOUNT = "14";
     pin[1:5] gnd  = {3,5,7,9,11};
     pin      pgnd = {13};
     pin      vref = {2};
@@ -72,58 +72,80 @@ device JTAG_CONN {
 }
 
 // a non-polarized surface mount capacitor device declaration
-device capnp_0603 {
-    attr refPrefix = "C";
-    attr value = "";
-    attr package = "CC0603";
-    attr mfgr = "";
-    attr partNumber = "";
-    attr cost = "0.03";
+device capnp_0805 {
+    attr LIBRARY = "devices";
+    attr REFPREFIX = "C";
+    attr REFDES = "";
+    attr VALUE = "";
+    attr FOOTPRINT = "CC0805";
+    attr MFGR = "";
+    attr PARTNUMBER = "";
+    attr COST = "0.05";
+    pin a = {1};
+    pin b = {2};
+}
 
+// a non-polarized surface mount capacitor device declaration
+device capnp_0603 {
+    attr LIBRARY = "devices";
+    attr REFPREFIX = "C";
+    attr REFDES = "";
+    attr VALUE = "";
+    attr FOOTPRINT = "CC0603";
+    attr MFGR = "";
+    attr PARTNUMBER = "";
+    attr COST = "0.03";
     pin a = {1};
     pin b = {2};
 }
 
 // a surface mount resistor declaration
 device res_0603 {
-    attr refPrefix = "R";
-    attr value = "";
-    attr package = "CR0603";
-    attr mfgr = "PANASONIC";
-    attr partNumber = "ERJ-3EKF1500V";
-    attr cost = "0.07";
-
+    attr LIBRARY = "devices";
+    attr REFPREFIX = "R";
+    attr REFDES = "";
+    attr VALUE = "";
+    attr FOOTPRINT = "CR0603";
+    attr MFGR = "PANASONIC";
+    attr PARTNUMBER = "ERJ-3EKF1500V";
+    attr COST = "0.07";
     pin a = {1};
     pin b = {2};
 }
 
 // a tantalum capacitor declaration
 device tant_cap_3528 {
-    attr refPrefix = "C";
-    attr value = "";
-    attr package = "TANT3528";
-    attr mfgr = "AVX";
-    attr partNumber = "TCJB107M006R0045";
-    attr cost = "1.55";
+    attr LIBRARY = "devices";
+    attr REFPREFIX = "C";
+    attr REFDES = "";
+    attr VALUE = "";
+    attr FOOTPRINT = "TANT3528";
+    attr MFGR = "AVX";
+    attr PARTNUMBER = "TCJB107M006R0045";
+    attr COST = "1.55";
     pin pos = {1};
     pin neg = {2};
 }
 
 device mount_hole_125 {
-    attr refPrefix = "MTG";
-    attr package = "MOUNT_HOLE_125";
-    attr cost = "0.00";
-    attr mfgr = "";
+    attr LIBRARY = "devices";
+    attr REFPREFIX = "MTG";
+    attr REFDES = "";
+    attr FOOTPRINT = "MOUNT_HOLE_125";
+    attr COST = "0.00";
+    attr MFGR = "";
     pin pin1 = {1};
 }
 
 device LT3022 {
-    attr refPrefix = "U";
-    attr package = "LT3022_MSOP16";
-    attr pinCount = "17";
-    attr value = "";
-    attr cost = "6.10";
-    attr mfgr = "LTC";
+    attr LIBRARY = "devices";
+    attr REFPREFIX = "U";
+    attr REFDES = "";
+    attr FOOTPRINT = "LT3022_MSOP16";
+    attr PINCOUNT = "17";
+    attr VALUE = "";
+    attr COST = "6.10";
+    attr MFGR = "LTC";
     pin[1:5] NC = {1,2,8,15,16};
     pin[1:2] OUT = {3,4};
     pin ADJ_SENSE = {5};
