@@ -1,7 +1,6 @@
-
 PHDL Language Grammar Specification
-============================
-Version 3.0.0
+===================================
+Version 3.0.0, Unreleased
 
 The following specification includes two main parts:
 	1. The Grammar or Allowable Syntax
@@ -10,26 +9,29 @@ The following specification includes two main parts:
 		token/rule represents.
 
 
-//////////////////////////////////////////////////////////////////////
-// Parser Rules
-//////////////////////////////////////////////////////////////////////
+Parser Rules
+------------
 
 PHDLDesign ::= Import* ( Package | Device | Design )*
   // All imports need to come before the remaining declarations
 
-Import ::= "import" QualifiedNameWithWildCard ";"
+Import ::= "import" QualifiedNameOptWildCard ";"
   // This is how you include packages of devices and subdesigns that
   // were previously defined in other files.
 
-Package ::= "package" ID "{" Import* ( Device | Design )* "}"
+Package ::= "package" PackageName "{" Import* ( Device | Design )* "}"
   // Packages can contain imports and device and design declarations
 
-Device ::= "device" PhdlID "{" DeviceElement* "}"
+//////////////
+// Devices  //
+//////////////
+
+Device ::= "device" DeviceName "{" DeviceElement* "}"
 
 DeviceElement ::= Attr | Pin | Info
 
-Attr ::= "attr" ID "=" STRING ";"
-  // The ID and value associated with an attribute is strictly
+Attr ::= "attr" AttrName "=" STRING ";"
+  // The AttrName and value associated with an attribute is strictly
   // user-defined.  However, there are some required attributes
   // including: REFPREFIX, FOOTPRINT, and LIBRARY.  By convention,
   // they are upper case but that is not required and they are not
@@ -38,7 +40,7 @@ Attr ::= "attr" ID "=" STRING ";"
   // whether the user should be warned.  The current tools give a
   // warning and then combine them.
 
-Pin ::= PinType [Vector] PhdlID "=" "{" PhdlID [( "," PhdlID )*] "}" ";"
+Pin ::= PinType [Vector] PinName "=" "{" PhysicalPinName [( "," PhysicalPinName )*] "}" ";"
   // Pins can be single bits wide or can be vectors of multiple bits.
   // The values in { } are the physical pin names presumably taken
   // from the footprint in the library..
@@ -65,8 +67,13 @@ Info ::= "info" "{" STRING "}"
   // and instances/subinstances.  This gets propagated to the output
   // files and can be used to communicate with the layout engineer.
 
-Design ::=      ( "design" ID "{" DesignElement* "}" )
-                |  ( "subdesign" ID "{" SubDesignElement* "}" )
+
+//////////////
+// Designs  //
+//////////////
+
+Design ::=      ( "design" DesignName "{" DesignElement* "}" )
+                |  ( "subdesign" SubDesignName "{" SubDesignElement* "}" )
   // This rule encompasses both design declarations and subdesign declarations
 
 DesignElement ::= NetDeclaration | Instance | ConnectionAssign | Info
@@ -76,60 +83,115 @@ DesignElement ::= NetDeclaration | Instance | ConnectionAssign | Info
 SubDesignElement ::= NetDeclaration | Instance | ConnectionAssign | Info | PortDeclaration
   // Subdesigns can contain everything designs can plus port declarations.
 
-NetDeclaration ::= "net" [Vector] ConnectionName ( "," ConnectionName )*
-                ( "{" NetElement* "}" ) | ";"
+
+/////////////////
+// Connections //
+/////////////////
+
+NetDeclaration ::= "net" [Vector] NetName ( "," NetName )* ( "{" NetElement* "}" ) | ";"
+  // Net declarations can be multiple bits wide.  Multiple names in one
+  // declaration are all of that type. 
+                
 NetElement ::= Attr | Info
-  // Net declarations can be multiple bits wide.  Muliple names in one
-  // declaration are all of that type.  If desired, attributes or info
+  // If desired, attributes or info
   // can be attached to the nets as in:
   // net a, b, c { info { "These adsfgkjadsfljkas df" }}
 
-
-PortDeclaration ::= "port" [Vector] ConnectionName ( "," ConnectionName )* ( "{"
-                        Info* "}" ) | ";"
+PortDeclaration ::= "port" [Vector] PortName ( "," PortName )* ( "{" Info* "}" ) | ";"
   // These are similar to net declarations but bring out signals for subdesigns
 
+/////////////////////
+// Instances       //
+/////////////////////
 
-Instance ::= ( "inst" [Array] ID "of" QualifiedName "{"
-                        InstanceElement* "}" )
-                | ( "subinst" [Array] ID "of" QualifiedName STRING "{"
-                        SubInstanceElement* "}" )
+Instance ::= ( ("inst" InstName "of" QualifiedDeviceName "{" InstanceElement* "}" ) 
+					| ("inst" Array InstName "of" QualifiedDeviceName "{" ArrayInstanceElement* "}" ) )
+             | ( ( "subinst" SubInstName "of" QualifiedSubDesignName [STRING] "{" SubInstElement* "}" )
+                    | ( "subinst" Array SubInstName "of" QualifiedSubDesignName [STRING] "{" ArraySubInstElement* "}" ) )
+
+QualifiedDeviceName ::= [PackageName "."] DeviceName              
 
 InstanceElement ::= Attr | RefAttr | PinAssign | Info
 
-SubInstanceElement ::= Attr | SubAttr | PortAssign | Info
+ArrayInstanceElement ::= Attr | QualifiedRefAttr | QualifiedPinAssign | Info
 
-RefAttr ::= [Qualifier] ID "=" STRING ";"
+
+QualifiedSubDesignName ::= [PackageName "."] SubDesignName
+
+SubInstElement ::= Attr | SubAttr | PortAssign | Info
+
+ArraySubInstElement ::= Attr | QualifiedSubAttr | QualifiedPortAssign | Info
+
+
+/////////////////////
+// Ref Attributes  //
+/////////////////////
+
+QualifiedRefAttr ::= [Qualifier] RefAttr
+
+RefAttr ::= AttrName "=" STRING ";"
   // This is when you refer to and modify an existing attribute on a
   // device.  That is, you can over-ride the attribute value
   // specifiecd when the device was declared.
   // In constrast, the Attr rule allows you to create a new attribute
   // (either in a device decl or when instancing).
 
-PinAssign ::= CombinedAssign | QualifiedAssign
 
-CombinedAssign ::= "combine" "(" QualifiedReference ")"  "=" Concatenation ";"
 
-QualifiedAssign ::=   QualifiedReference "=" Concatenation ";"
+///TODO - Check - Qualified should only be allowed for arrays
 
-QualifiedReference ::= [Qualifier] PhdlID [Slices]
+/////////////////////
+// Pin Assignments //
+/////////////////////
 
-SubAttr ::= [Qualifier] ID [Indices] RefTail "=" STRING ";"
+QualfiedPinAssign ::= ( "combine" "(" QualifiedPinReference ")" "=" Concatenation ";" )
+					| ( QualifiedPinReference "=" Concatenation ";" )
+					
+PinAssign ::= ( "combine" "(" PinReference ")" "=" Concatenation ";" )
+			| ( PinReference "=" Concatenation ";" )
+
+QualifiedPinReference ::= [Qualifier] PinName [Slices]
+
+PinReference ::= PinName [Slices]
+
+
+/////////////////////
+// Sub Attributes  //
+/////////////////////
+
+QualifiedSubAttr ::= [Qualifier] SubAttr
+
+SubAttr ::= [RefTail] InstName "." AttrName "=" STRING ";"
   // This is how you reach down into the hierarchy (arbitrarily deep)
   // and change an attribute value on an instance
 
-RefTail ::= "." ID [Indices] [RefTail]
+RefTail ::= SubInstName "." [RefTail]
 
-PortAssign ::= CombinedPortAssign | QualifiedPortAssign
-  // Port assignments closely parallel pin assignments
 
-CombinedPortAssign ::= "combine" "(" QualifiedPortReference ")"  "=" Concatenation ";"
+//////////////////////
+// Port Assignments //
+//////////////////////
 
-QualifiedPortAssign ::=   QualifiedPortReference "=" Concatenation ";"
+QualifiedPortAssign ::= ( "combine" "(" QualifiedPortReference ")" "=" Concatenation ";" )
+					| ( QualifiedPortReference "=" Concatenation ";" )
+					
+PortAssign ::= ( "combine" "(" PortReference ")" "=" Concatenation ";" )
+			| ( PortReference "=" Concatenation ";" )
 
-QualifiedPortReference ::= [Qualifier] ConnectionName [Slices]
+QualifiedPortReference ::= [Qualifier] PortName [Slices]
+
+PortReference ::= PortName [Slices]
+
+
+////////////////////////////
+// Connection Assignments //
+////////////////////////////
+
+//Connections are either Ports or Nets
 
 ConnectionAssign ::= ConnectionName [Slices] "=" Concatenation ";"
+  //The scope of allowable ConnectionNames includes only the connections 
+  //  declared within the current design or subdesign
 
 Concatenation ::=       ( "{" ConnectionRef  ( "," ConnectionRef )* "}" ) |
                         ( ConnectionRef ( "&" ConnectionRef )* ) |
@@ -143,42 +205,121 @@ Concatenation ::=       ( "{" ConnectionRef  ( "," ConnectionRef )* "}" ) |
 
 ConnectionRef ::= ConnectionName [Slices]
 
-ConnectionName ::= PhdlID
+ConnectionName ::= NetName | PortName
 
-Indices ::= "(" (  ( INT ":" INT ) | ( INT ( "," INT )* )  ) ")"
+
+//////////////////////////////////////////
+// Indices, Slices, Vectors, and Arrays //
+//////////////////////////////////////////
+
+Indices ::= "(" (   Range  | ( INT ( "," INT )* )  ) ")"
   // Round braces are used for arrays of things (instances or subdesigns)
 
-Slices ::= "[" (  ( INT ":" INT ) | ( INT ( "," INT )* )  ) "]"
+Slices ::= "[" (   Range  | ( INT ( "," INT )* )  ) "]"
   // Square braces are used for multi-bit things
 
-Vector ::= "[" INT ":" INT "]"
+Vector ::= "[" Range "]"
 
-Array ::= "(" INT ";" INT ")"
+Array ::= "(" Range ")"
 
 Range ::= INT ":" INT
   // Ranges for arrays, vectors, slices, and indices can be either
   // ascending or descending.  They imply a left-to-right ordering.
 
+///////////////////////////////////
+// Qualifier and Qualified Names //
+///////////////////////////////////
+
 Qualifier ::= "this" [Indices] "."
 
-QualifiedNameWithWildCard ::= QualifiedName ["." "*"]
-  // These are used when importing packages
+QualifiedNameOptWildCard ::= PackageName "." ( "*" | ( DeviceName | DesignName | SubDesignName ) )
 
-QualfiedName ::= PhdlID [( "." PhdlID )]
+
+/////////////////////////
+// Element Names/IDs   //
+/////////////////////////
+PackageName:: = ID
+DeviceName ::= PhdlID
+AttrName ::= ID
+PinName ::= PhdlID
+PhysicalPinName ::= PhdlID
+DesignName ::= ID
+SubDesignName ::= ID
+NetName ::= PhdlID
+PortName ::= PhdlID
+InstName ::= ID
+SubInstName ::= ID
+
 
 PhdlID ::= INT | ID | PINUM
 
-////////////////////////////////////////////////////////////////////////////
-// Lexing Rules
-////////////////////////////////////////////////////////////////////////////
+Lexical Elements
+----------------
 
-ID: ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')*
-INT: ('0'..'9') | (('1'..'9') ('0'..'9')+ )
+PHDL files must always consist of valid UTF-8 encoded Unicode text. This input
+is then normalized and split into lexical elements used in the rest of the
+grammar. Each element is described in detail below.
+
+Identifiers
+~~~~~~~~~~~
+
+All identifiers are like standard Unicode identifiers, but are additionally
+allowed to start with connectors such as underscore.
+
+------------
+Identifier = (\p{ID_Start} | \p{Pc}) \p{ID_Continue}*
+------------
+
+Integers
+~~~~~~~~
+
+All integers are in decimal. Leading zeros are explicitly allowed.
+
+------------
+Integer = [0-9]+
+------------
+
+Pin Numbers
+~~~~~~~~~~~
+
 PINNUM: ('0'..'9'|'a'..'z'|'A'..'Z'|'_'|'+'|'-'|'$'|'/'|'@'|'!')+
+
+Strings
+~~~~~~~
 
 STRING: '"' ( '\\' ( 'b'|'t'|'n'|'f'|'r'|'u'|'"'|"'"|'\\' ) | !( '\\'|'"' ) )* '"' |
         "'" ( '\\' ( 'b'|'t'|'n'|'f'|'r'|'u'|'"'|"'"|'\\' ) | !( '\\'|"'" ) )* "'"
 
-ML_COMMENT: '/*' - '*/'
-SL_COMMENT: '//' !( '\n'|'\r' )* [( ['\r'] '\n' )]
-WS: ( ' '|'\t'|'\r'|'\n' )+
+Comments
+~~~~~~~~
+
+PHDL allows C\+\+-style single line and multi-line comments. Single-line
+comments start with +//+ and ends at any Unicode line-ending sequence.
+
+Multi-line comments start with +/\*+ and end with +*/+.
+
+Neither kind of comments can be nested in any way.
+
+----------------
+Line_Ending =
+ | \x0A       // LINE FEED (LF)
+ | \x0B       // LINE TABULATION
+ | \x0C       // FORM FEED (FF)
+ | \x0D       // CARRIAGE RETURN (CR)
+ | \x85       // NEXT LINE (NEL)
+ | \x2028     // LINE SEPARATOR
+ | \x2029     // PARAGRAPH SEPARATOR
+Single_Line_Comment = "//" (!Line_Ending)* Line_Ending
+Multi_Line_Comment = "/*" !("*/") "*/"
+----------------
+
+Whitespace
+~~~~~~~~~~
+
+All whitespace characters between (but not part of) individual lexical elements
+are ignored. Whitespace consists of one or more Unicode characters in a row
+with the "Pattern_White_Space" property.
+
+---------------
+Whitespace = \p{Pattern_White_Space}+
+---------------
