@@ -235,18 +235,18 @@ Qualifier ::= "this" [Indices] "."
 QualifiedNameOptWildCard ::= PackageName "." ( "*" | ( DeviceName | DesignName | SubDesignName ) )
 
 
-/////////////////////////
-// Element Names/IDs   //
-/////////////////////////
-PackageName:: = Identifier
+/////////////////////////////////
+// Element Names/Identifiers   //
+/////////////////////////////////
 DeviceName ::= PhdlID
-AttrName ::= Identifier
 PinName ::= PhdlID
 PhysicalPinName ::= PhdlID
-DesignName ::= Identifier
-SubDesignName ::= Identifier
 NetName ::= PhdlID
 PortName ::= PhdlID
+PackageName:: = Identifier
+AttrName ::= Identifier
+DesignName ::= Identifier
+SubDesignName ::= Identifier
 InstName ::= Identifier
 SubInstName ::= Identifier
 
