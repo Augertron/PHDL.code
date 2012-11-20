@@ -36,7 +36,7 @@ Package ::= "package" PackageName "{" Import* ( Device | Design )* "}"
  -----
  Packages can be used to organized groups of device definitions and sub-design
   declarations into a package for later use.
- PackageName is an identifier used to refer to the package in other rules in the 
+ PackageName is an identifier used to refer to the package from other rules in the 
   grammar, see Identifier section below.
  A package contains the device definitions and design declarations contained within
   the curly braces. Any combination or order of device definitions and design 
@@ -51,26 +51,75 @@ Package ::= "package" PackageName "{" Import* ( Device | Design )* "}"
 
 Device ::= "device" DeviceName "{" DeviceElement* "}"
  -----
+ The Device rule is used to define the interface between a "PHDL device instantiation"
+  and the footprint (or package) definition within your chosen layout tool. 
+ DeviceName is an identifier used to refer to the device definition from other rules 
+  in the grammar, see Identifier section below.
+ Devices can contain any combination of DeviceElements between the curly braces,
+  but there are some required elements that every device definition must include, 
+  see DeviceElement rule.
 
 DeviceElement ::= Attr | Pin | Info
  -----
+ A Device can contain any combination of attribute declarations, pin declarations, or 
+  info statements, but there are 3 required attributes which every device definition 
+  must include:
+   1. REFPREFIX: The value of REFPREFIX is a STRING that will be used as a prefix by the
+    compiler when automatically generating unique reference designators for each device 
+    instantiation. (This is done if the reference designator is not explicitly set using
+    the REFDES attribute).
+   2. FOOTPRINT: The value of FOOTPRINT is the name of the footprint (or package) in 
+    your chosen layout tool that can be used to identify the device being declared. 
+    This value can then be used by the back-end tools when generating your netlist.
+   3. LIBRARY: The value of LIBRARY is the name of the library in your layout tool that
+    contains the footprint mentioned above. This value can then be used by the back-end 
+    tools when generating your netlist.
+   By convention, these attributes are upper-case, but that is not required and they are
+    not case sensitive.
 
 Attr ::= "attr" AttrName "=" STRING ";"
  -----
-  // The AttrName and value associated with an attribute is strictly
-  // user-defined.  However, there are some required attributes
-  // including: REFPREFIX, FOOTPRINT, and LIBRARY.  By convention,
-  // they are upper case but that is not required and they are not
-  // case sensitive.  There has been some discussion about whether
-  // VALUE and Value should be the same or different attributes and
-  // whether the user should be warned.  The current tools give a
-  // warning and then combine them.
+ Attributes can be used to contain any type of data desired with reference to
+  a specific device. 
+ AttrName is an identifier used to refer to the attribute from other rules 
+  in the grammar, see Identifier section below.
+ There has been some discussion about whether VALUE or Value should be the same or 
+  different attributes and whether the user should be warned. The current tools give a 
+  warning and then treat them as a single attribute.
+ There are some optional special attributes:
+  REFDES: If the REFDES attribute is defined as anything other than an empty string, 
+   the compiler will use the value of REFDES as the device instantiation's unique 
+   reference designator, rather than generating one using REFPREFIX.
+  PINCOUNT: The value of the PINCOUNT attribute must be an Integer. If the number of
+   pins declared in the device doesn't match the value of PINCOUNT, the compiler should
+   through an error. 
+ Other common uses for attributes:
+  VALUE: used to define resistance, capacitance, inductance
+  COST: can be used for bill of materials and part procurement
+  MFGR: can be used for bill of materials and part procurement
+  PARTNUMBER: can be used for bill of materials and part procurement
+  etc.
+ Essentially, attributes can be used to store any data necessary for back-end tools to use.
 
 Pin ::= PinType [Vector] PinName "=" "{" PhysicalPinName [( "," PhysicalPinName )*] "}" ";"
  -----
-  // Pins can be single bits wide or can be vectors of multiple bits.
-  // The values in { } are the physical pin names presumably taken
-  // from the footprint in the library..
+ The Pin rule is used to declare pins and to map logical PinNames to be 
+  used when instantiating the device in a Design to the PhysicalPinName from the 
+  footprint (or package) definition in your chosen layout tool.
+ PinType is used to specify a specific pin type which can be used by an electric 
+  rule checker once the entire design has been elaborated. See the PinType rule.
+ PinName is an identifier used to refer to the pin declaration from other rules 
+  in the grammar, see Identifier section below.
+ A Vector of pins, or multi-bit pins with the same name can be declared using the 
+  Vector rule, see section on Vectors and RANGES below.
+ A PhysicalPinName is an identifier that can be used to reference the unique pin 
+  or pad in your layout editor footprint (or package) definition.
+ The curly braces contain a comma separated list of one or more PhysicalPinNames. 
+  If the vector option is used, the vector indices on the left side of the equals 
+  sign (reading from left to right), are mapped to  the PhysicalPinNames on the right 
+  side of the equals sign(also reading from left to right).
+ The number of pins enumerated on the right side of the equals sign should always 
+  equal the number of PhysicalPinNames on the left side.
 
 PinType ::= "pin"
                 | "inpin"
