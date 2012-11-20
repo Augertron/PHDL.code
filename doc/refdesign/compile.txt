@@ -1,2 +1,3 @@
-java -jar ~/Downloads/phdl/phdlcomp.jar xc3s50an.phdl devices.phdl power_supply.phdl fpga.phdl refboard.phdl
+rm *.rdm *.lsi *.bom *.net *.pcb *.asc
+java -jar ~/Downloads/phdl/phdlcomp.jar -p xc3s50an.phdl devices.phdl power_supply.phdl fpga.phdl refboard.phdl
 
