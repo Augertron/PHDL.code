@@ -238,20 +238,20 @@ QualifiedNameOptWildCard ::= PackageName "." ( "*" | ( DeviceName | DesignName |
 /////////////////////////
 // Element Names/IDs   //
 /////////////////////////
-PackageName:: = ID
+PackageName:: = Identifier
 DeviceName ::= PhdlID
-AttrName ::= ID
+AttrName ::= Identifier
 PinName ::= PhdlID
 PhysicalPinName ::= PhdlID
-DesignName ::= ID
-SubDesignName ::= ID
+DesignName ::= Identifier
+SubDesignName ::= Identifier
 NetName ::= PhdlID
 PortName ::= PhdlID
-InstName ::= ID
-SubInstName ::= ID
+InstName ::= Identifier
+SubInstName ::= Identifier
 
 
-PhdlID ::= INT | ID | PINUM
+PhdlID ::= Integer | Identifier | PINUM
 
 Lexical Elements
 ----------------
