@@ -133,17 +133,28 @@ PinType ::= "pin"
                 | "passpin"
                 | "ncpin"
  -----
-  // The purpose of the pin directions is to allow for ERC where it
-  // checks for multiple outpins on a net, for example.  To date, all
-  // designs have just used "pin" but an ERC has been implemented in
-  // the 2.1 tools.
+ The PinType rule is a collection of keywords that can be used to define pins.
+  The keywords stand for the following pin types:
+   pin - Unspecified Pin
+   inpin - Input Pin
+   outpin - Output Pin
+   iopin - IO Pin
+   pwrpin - Power Pin
+   suppin - Supply Pin
+   ocpin - Open Collector Pin
+   oepin - Open Emitter Pin
+   tripin - Tri-State Pin
+   passpin - Passive Pin
+   ncpin - No Connection
+  These pintypes can be used by an electric rule checker to find faulty 
+   connections within a net.
+ 
 
 Info ::= "info" "{" STRING "}"
  -----
-  // The purpose of info is to allow the designer to attach
-  // information to specific devices, nets, ports, designs/subdesigns,
-  // and instances/subinstances.  This gets propagated to the output
-  // files and can be used to communicate with the layout engineer.
+ Info statements can be used to make comments (such as placement needs) 
+  about a specific device or connection which can then be relayed to the 
+  layout designer. 
 
 
 //////////////
