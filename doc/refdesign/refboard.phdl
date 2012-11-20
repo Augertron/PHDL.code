@@ -1,30 +1,28 @@
-// This board design is just created to test the PHDL compiler.
-// Do not copy or build a board based on this design unless you 
-// fix it.
+// This board design was created to test the PHDL compiler.
+// Do not copy or build a board based on this design.
 design refboard {
 
-    // Power and ground nets.
-    net +5V, +3V3, +1V2, gnd;
+    net +5V, +3V3, +1V2, gnd; // Power and ground nets.
     net clk100;
 
     // The fpga subdesign is in here.
     subinst fpga1 of fpga { attr refprefix="X"; +3V3=+3V3; +1V2=+1V2; gnd=gnd; clk=clk100;}
 
-    inst oscillator of CB3LV-3I {EOH=open; OUT=clk100; VCC=+3V3; GND=gnd;}
+    inst oscillator of dev_pack.CB3LV-3I {EOH=open; OUT=clk100; VCC=+3V3; GND=gnd;}
 
     // A power jack
-    inst power_jack of PJ-002AH-SMT {CENTER_POST=+5V; SIDE_CONTACT=gnd; PLUG_DETECT=gnd;}
+    inst power_jack of dev_pack.PJ-002AH-SMT {CENTER_POST=+5V; SIDE_CONTACT=gnd; PLUG_DETECT=gnd;}
 
-    // these are the power supply blocks. The output voltages are set using 
+    // These are the power supply blocks. The output voltages are set using 
     // hierarchical probing to change the resistor values down in each one.
     // Decoupling caps are down in these blocks.
     subinst supply_3V3 of power_supply { attr refprefix="PS1"; vin=+5V; vout=+3V3; gnd=gnd;}
     subinst supply_1V2 of power_supply { attr refprefix="PS2"; vin=+5V; vout=+1V2; gnd=gnd;}
 
     // These are four mounting holes.
-    inst mounting_hole1 of mount_hole_125 { REFDES="MTG1"; pin1=open; }
-    inst mounting_hole2 of mount_hole_125 { REFDES="MTG2"; pin1=open; }
-    inst mounting_hole3 of mount_hole_125 { REFDES="MTG3"; pin1=open; }
-    inst mounting_hole4 of mount_hole_125 { REFDES="MTG4"; pin1=open; }
+    inst mounting_hole1 of dev_pack.mount_hole_125 { REFDES="MTG1"; pin1=open; }
+    inst mounting_hole2 of dev_pack.mount_hole_125 { REFDES="MTG2"; pin1=open; }
+    inst mounting_hole3 of dev_pack.mount_hole_125 { REFDES="MTG3"; pin1=open; }
+    inst mounting_hole4 of dev_pack.mount_hole_125 { REFDES="MTG4"; pin1=open; }
 }
 

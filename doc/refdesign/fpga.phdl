@@ -1,4 +1,6 @@
-// This files contains the subdesign holding the fpga and its associated stuff.
+/* This file contains the subdesign holding the fpga and its associated stuff.
+I like to put the fpga in a separate subdesign for modularity. This little fpga
+does not need much but often an fpga needs elaborate configuration logic. */
 subdesign fpga {
 
   port +3V3, +1V2, gnd, clk;
@@ -6,7 +8,7 @@ subdesign fpga {
   net DONE, PROG_B;
   net TCK, TDI, TDO, TMS;
 
-  inst fpga_chip of xc3s50an_top {
+  inst fpga_chip of fpga_pack.xc3s50an_top {
     clk = clk;
     led = led;
 
@@ -29,16 +31,16 @@ subdesign fpga {
   }
 
 
-  inst R1 of res_0603   { REFDES="R1"; VALUE="4.7K/5%"; a=+3V3; b=DONE; }
-  inst R2 of res_0603   { REFDES="R2"; VALUE="4.7K/5%"; a=+3V3; b=PROG_B; }
+  inst R1 of dev_pack.res_0603   { REFDES="R1"; VALUE="4.7K/5%"; a=+3V3; b=DONE; }
+  inst R2 of dev_pack.res_0603   { REFDES="R2"; VALUE="4.7K/5%"; a=+3V3; b=PROG_B; }
 
 
 
   // Some LED's and current limiting resistors.
-  inst(15:0) led_limres of res_0603 {VALUE="150/5%"; combine(a)=led; combine(b)=led_curlim;}
-  inst(15:0) leds of PG1113F_LED {combine(anode)=led_curlim; cathode=gnd;}
+  inst(15:0) led_limres of dev_pack.res_0603 {VALUE="150/5%"; combine(a)=led; combine(b)=led_curlim;}
+  inst(15:0) leds of dev_pack.PG1113F_LED {combine(anode)=led_curlim; cathode=gnd;}
 
   // This is the programming connector.
-  inst jtag_connector of JTAG_CONN {gnd=<gnd>; pgnd=gnd; vref=+3V3; tms=TMS; tck=TCK; tdo=TDO; tdi=TDI; nc=open;}
+  inst jtag_connector of dev_pack.JTAG_CONN {gnd=<gnd>; pgnd=gnd; vref=+3V3; tms=TMS; tck=TCK; tdo=TDO; tdi=TDI; nc=open;}
 
 }

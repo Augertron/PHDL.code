@@ -1,158 +1,149 @@
 // This file holds all the device declarations for this board. :-)
+// I like to clean out all the cruft of unused parts and just
+// list the parts I actually need here.
+package dev_pack {
+    // A power jack.
+    device PJ-002AH-SMT {
+        attr LIBRARY = "devices";
+        attr REFPREFIX = "J";
+        attr REFDES = "";
+        attr FOOTPRINT = "PJ-002AH-SMT";
+        attr PARTNUMBER = "PJ-002AH-SMT";
+        attr MFGR = "CUI";
+        pin CENTER_POST =  {1};
+        pin SIDE_CONTACT = {2};
+        pin PLUG_DETECT =  {3};
+    }
 
-// A power jack.
-device PJ-002AH-SMT {
-    attr LIBRARY = "devices";
-    attr REFPREFIX = "J";
-    attr REFDES = "";
-    attr FOOTPRINT = "PJ-002AH-SMT";
-    attr PARTNUMBER = "PJ-002AH-SMT";
-    attr MFGR = "CUI";
-    pin CENTER_POST =  {1};
-    pin SIDE_CONTACT = {2};
-    pin PLUG_DETECT =  {3};
+    // A clock oscilltor
+    device CB3LV-3I {
+        attr LIBRARY = "devices";
+        attr REFPREFIX = "OSC";
+        attr REFDES = "";
+        attr FOOTPRINT = "CB3LV-3I";
+        attr PARTNUMBER = "CB3LV-3I-100M0000";
+        attr MFGR = "CTS";
+        pin EOH = {1}; // enable, high or open turns on output.
+        pin GND = {2};
+        pin OUT = {3};
+        pin VCC = {4};
+    }
+
+    // A nice green LED.
+    device PG1113F_LED {
+        attr LIBRARY = "devices";
+        attr REFPREFIX  = "D";
+        attr REFDES = "";
+        attr FOOTPRINT   = "LED_1113F";
+        attr PARTNUMBER = "PG1113F";
+        attr MFGR       = "Stanley";
+        pin anode   = {1};
+        pin cathode = {2};
+    }
+
+    // JTAG connector for Xilinx FPGA configuration and debugging.
+    // This connector works with the Xilinx Platform Cable USB II.
+    device JTAG_CONN {
+        attr LIBRARY = "devices";
+        attr REFPREFIX = "P";
+        attr REFDES = "";
+        attr FOOTPRINT = "MOLEX-87332-1420";
+        attr PARTNUMBER = "87332-1420";
+        attr MFGR = "Molex";
+        attr PINCOUNT = "14";
+        pin[1:5] gnd  = {3,5,7,9,11};
+        pin      pgnd = {13};
+        pin      vref = {2};
+        pin      tms  = {4};
+        pin      tck  = {6};
+        pin      tdo  = {8};
+        pin      tdi  = {10};
+        pin[1:3] nc   = {12,14,1};
+    }
+
+    // a non-polarized surface mount capacitor device declaration
+    device capnp_0805 {
+        attr LIBRARY = "devices";
+        attr REFPREFIX = "C";
+        attr REFDES = "";
+        attr VALUE = "";
+        attr FOOTPRINT = "CC0805";
+        attr MFGR = "";
+        attr PARTNUMBER = "";
+        attr COST = "0.05";
+        pin a = {1};
+        pin b = {2};
+    }
+
+    // a non-polarized surface mount capacitor device declaration
+    device capnp_0603 {
+        attr LIBRARY = "devices";
+        attr REFPREFIX = "C";
+        attr REFDES = "";
+        attr VALUE = "";
+        attr FOOTPRINT = "CC0603";
+        attr MFGR = "";
+        attr PARTNUMBER = "";
+        attr COST = "0.03";
+        pin a = {1};
+        pin b = {2};
+    }
+
+    // a surface mount resistor declaration
+    device res_0603 {
+        attr LIBRARY = "devices";
+        attr REFPREFIX = "R";
+        attr REFDES = "";
+        attr VALUE = "";
+        attr FOOTPRINT = "CR0603";
+        attr MFGR = "PANASONIC";
+        attr PARTNUMBER = "ERJ-3EKF1500V";
+        attr COST = "0.07";
+        pin a = {1};
+        pin b = {2};
+    }
+
+    // a tantalum capacitor declaration
+    device tant_cap_3528 {
+        attr LIBRARY = "devices";
+        attr REFPREFIX = "C";
+        attr REFDES = "";
+        attr VALUE = "";
+        attr FOOTPRINT = "TANT3528";
+        attr MFGR = "AVX";
+        attr PARTNUMBER = "TCJB107M006R0045";
+        attr COST = "1.55";
+        pin pos = {1};
+        pin neg = {2};
+    }
+
+    device mount_hole_125 {
+        attr LIBRARY = "devices";
+        attr REFPREFIX = "MTG";
+        attr REFDES = "";
+        attr FOOTPRINT = "MOUNT_HOLE_125";
+        attr COST = "0.00";
+        attr MFGR = "";
+        pin pin1 = {1};
+    }
+
+    // A low dropout regulator.
+    device LT3022 {  
+        attr LIBRARY = "devices";
+        attr REFPREFIX = "U";
+        attr REFDES = "";
+        attr FOOTPRINT = "LT3022_MSOP16";
+        attr PINCOUNT = "17";
+        attr VALUE = "";
+        attr COST = "6.10";
+        attr MFGR = "LTC";
+        pin[1:5] NC = {1,2,8,15,16};
+        pin[1:2] OUT = {3,4};
+        pin ADJ_SENSE = {5};
+        pin[1:2] AGND = {6,7};
+        pin SHDN_N = {9};
+        pin[1:2] PGND = {10,11};
+        pin[1:3] IN = {12,13,14};
+        pin GND_PAD = {17};
+    }
 }
-
-// A clock oscilltor
-device CB3LV-3I {
-    attr LIBRARY = "devices";
-    attr REFPREFIX = "OSC";
-    attr REFDES = "";
-    attr FOOTPRINT = "CB3LV-3I";
-    attr PARTNUMBER = "CB3LV-3I-100M0000";
-    attr MFGR = "CTS";
-    pin EOH = {1}; // enable, high or open turns on output.
-    pin GND = {2};
-    pin OUT = {3};
-    pin VCC = {4};
-}
-
-// An 8 position dip switch.
-device dip8_smd {
-    attr LIBRARY = "devices";
-    attr REFPREFIX  = "SW";
-    attr REFDES = "";
-    attr FOOTPRINT   = "CTS_219-8LPST";
-    attr PARTNUMBER = "219-8LPST";
-    attr MFGR       = "CTS";
-    pin[1:8] b     = { 1, 2, 3, 4, 5, 6, 7, 8};
-    pin[1:8] a     = {16,15,14,13,12,11,10, 9};
-}
-
-// A nice green LED.
-device PG1113F_LED {
-    attr LIBRARY = "devices";
-    attr REFPREFIX  = "D";
-    attr REFDES = "";
-    attr FOOTPRINT   = "LED_1113F";
-    attr PARTNUMBER = "PG1113F";
-    attr MFGR       = "Stanley";
-    pin  anode   = {1};
-    pin  cathode = {2};
-}
-
-// JTAG connector for Xilinx FPGA configuration and debugging.
-// This connector works with the Xilinx Platform Cable USB II.
-device JTAG_CONN {
-    attr LIBRARY = "devices";
-    attr REFPREFIX = "P";
-    attr REFDES = "";
-    attr FOOTPRINT = "MOLEX-87332-1420";
-    attr PARTNUMBER = "87332-1420";
-    attr MFGR = "Molex";
-    attr PINCOUNT = "14";
-    pin[1:5] gnd  = {3,5,7,9,11};
-    pin      pgnd = {13};
-    pin      vref = {2};
-    pin      tms  = {4};
-    pin      tck  = {6};
-    pin      tdo  = {8};
-    pin      tdi  = {10};
-    pin[1:3] nc   = {12,14,1};
-}
-
-// a non-polarized surface mount capacitor device declaration
-device capnp_0805 {
-    attr LIBRARY = "devices";
-    attr REFPREFIX = "C";
-    attr REFDES = "";
-    attr VALUE = "";
-    attr FOOTPRINT = "CC0805";
-    attr MFGR = "";
-    attr PARTNUMBER = "";
-    attr COST = "0.05";
-    pin a = {1};
-    pin b = {2};
-}
-
-// a non-polarized surface mount capacitor device declaration
-device capnp_0603 {
-    attr LIBRARY = "devices";
-    attr REFPREFIX = "C";
-    attr REFDES = "";
-    attr VALUE = "";
-    attr FOOTPRINT = "CC0603";
-    attr MFGR = "";
-    attr PARTNUMBER = "";
-    attr COST = "0.03";
-    pin a = {1};
-    pin b = {2};
-}
-
-// a surface mount resistor declaration
-device res_0603 {
-    attr LIBRARY = "devices";
-    attr REFPREFIX = "R";
-    attr REFDES = "";
-    attr VALUE = "";
-    attr FOOTPRINT = "CR0603";
-    attr MFGR = "PANASONIC";
-    attr PARTNUMBER = "ERJ-3EKF1500V";
-    attr COST = "0.07";
-    pin a = {1};
-    pin b = {2};
-}
-
-// a tantalum capacitor declaration
-device tant_cap_3528 {
-    attr LIBRARY = "devices";
-    attr REFPREFIX = "C";
-    attr REFDES = "";
-    attr VALUE = "";
-    attr FOOTPRINT = "TANT3528";
-    attr MFGR = "AVX";
-    attr PARTNUMBER = "TCJB107M006R0045";
-    attr COST = "1.55";
-    pin pos = {1};
-    pin neg = {2};
-}
-
-device mount_hole_125 {
-    attr LIBRARY = "devices";
-    attr REFPREFIX = "MTG";
-    attr REFDES = "";
-    attr FOOTPRINT = "MOUNT_HOLE_125";
-    attr COST = "0.00";
-    attr MFGR = "";
-    pin pin1 = {1};
-}
-
-device LT3022 {
-    attr LIBRARY = "devices";
-    attr REFPREFIX = "U";
-    attr REFDES = "";
-    attr FOOTPRINT = "LT3022_MSOP16";
-    attr PINCOUNT = "17";
-    attr VALUE = "";
-    attr COST = "6.10";
-    attr MFGR = "LTC";
-    pin[1:5] NC = {1,2,8,15,16};
-    pin[1:2] OUT = {3,4};
-    pin ADJ_SENSE = {5};
-    pin[1:2] AGND = {6,7};
-    pin SHDN_N = {9};
-    pin[1:2] PGND = {10,11};
-    pin[1:3] IN = {12,13,14};
-    pin GND_PAD = {17};
-}
-

@@ -1,3 +1,5 @@
+// This file was automatically generated from a Xilinx
+// .CSV pin out report file using phdl_utils.Xilinx2PHDL.
 //PART TYPE = xc3s50an
 //SPEED GRADE = -4
 //PACKAGE = tqg144
@@ -6,7 +8,8 @@
 //Full Part Number = xc3s50an-4tqg144
 
 // Device declaration extracted from Xilinx top_pad.csv
-device xc3s50an_top {
+package fpga_pack {
+    device xc3s50an_top {
         attr LIBRARY = "devices";
 	attr REFPREFIX = "U";
 	attr FOOTPRINT = "tqg144";
@@ -42,4 +45,5 @@ device xc3s50an_top {
             64, 67, 68, 69, 70, 71, 72, 75, 76, 77, 78, 80, 97, 103, 104, 105,
             110, 111, 112, 113, 114, 115, 116, 117, 120, 121, 123, 124, 125, 126, 127, 129,
             130, 131, 132, 134, 135, 138, 139, 140, 141, 142, 143};
+    }
 }
