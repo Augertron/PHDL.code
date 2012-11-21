@@ -31,8 +31,8 @@ subdesign fpga {
   }
 
 
-  inst R1 of dev_pack.res_0603   { REFDES="R1"; VALUE="4.7K/5%"; a=+3V3; b=DONE; }
-  inst R2 of dev_pack.res_0603   { REFDES="R2"; VALUE="4.7K/5%"; a=+3V3; b=PROG_B; }
+  inst R21 of dev_pack.res_0603 { REFDES="R21"; VALUE="4.7K/5%"; a=+3V3; b=DONE; }
+  inst R22 of dev_pack.res_0603 { REFDES="R22"; VALUE="4.7K/5%"; a=+3V3; b=PROG_B; }
 
 
 
