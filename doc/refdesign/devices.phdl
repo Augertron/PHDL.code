@@ -4,7 +4,7 @@
 package dev_pack {
     // A power jack.
     device PJ-002AH-SMT {
-        attr LIBRARY = "devices";
+        attr LIBRARY = "PJ-002AH-SMT";
         attr REFPREFIX = "J";
         attr REFDES = "";
         attr FOOTPRINT = "PJ-002AH-SMT";
@@ -17,7 +17,7 @@ package dev_pack {
 
     // A clock oscilltor
     device CB3LV-3I {
-        attr LIBRARY = "devices";
+        attr LIBRARY = "CB3LV-3I";
         attr REFPREFIX = "OSC";
         attr REFDES = "";
         attr FOOTPRINT = "CB3LV-3I";
@@ -31,7 +31,7 @@ package dev_pack {
 
     // A nice green LED.
     device PG1113F_LED {
-        attr LIBRARY = "devices";
+        attr LIBRARY = "PG1113F_LED";
         attr REFPREFIX  = "D";
         attr REFDES = "";
         attr FOOTPRINT   = "LED_1113F";
@@ -44,7 +44,7 @@ package dev_pack {
     // JTAG connector for Xilinx FPGA configuration and debugging.
     // This connector works with the Xilinx Platform Cable USB II.
     device JTAG_CONN {
-        attr LIBRARY = "devices";
+        attr LIBRARY = "JTAG_CONN";
         attr REFPREFIX = "P";
         attr REFDES = "";
         attr FOOTPRINT = "MOLEX-87332-1420";
@@ -63,7 +63,7 @@ package dev_pack {
 
     // a non-polarized surface mount capacitor device declaration
     device capnp_0805 {
-        attr LIBRARY = "devices";
+        attr LIBRARY = "capnp_0805";
         attr REFPREFIX = "C";
         attr REFDES = "";
         attr VALUE = "";
@@ -77,7 +77,7 @@ package dev_pack {
 
     // a non-polarized surface mount capacitor device declaration
     device capnp_0603 {
-        attr LIBRARY = "devices";
+        attr LIBRARY = "capnp_0603";
         attr REFPREFIX = "C";
         attr REFDES = "";
         attr VALUE = "";
@@ -91,7 +91,7 @@ package dev_pack {
 
     // a surface mount resistor declaration
     device res_0603 {
-        attr LIBRARY = "devices";
+        attr LIBRARY = "res_0603";
         attr REFPREFIX = "R";
         attr REFDES = "";
         attr VALUE = "";
@@ -105,7 +105,7 @@ package dev_pack {
 
     // a tantalum capacitor declaration
     device tant_cap_3528 {
-        attr LIBRARY = "devices";
+        attr LIBRARY = "tant_cap_3528";
         attr REFPREFIX = "C";
         attr REFDES = "";
         attr VALUE = "";
@@ -118,7 +118,7 @@ package dev_pack {
     }
 
     device mount_hole_125 {
-        attr LIBRARY = "devices";
+        attr LIBRARY = "mount_hole_125";
         attr REFPREFIX = "MTG";
         attr REFDES = "";
         attr FOOTPRINT = "MOUNT_HOLE_125";
@@ -129,7 +129,7 @@ package dev_pack {
 
     // A low dropout regulator.
     device LT3022 {  
-        attr LIBRARY = "devices";
+        attr LIBRARY = "LT3022";
         attr REFPREFIX = "U";
         attr REFDES = "";
         attr FOOTPRINT = "LT3022_MSOP16";

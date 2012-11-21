@@ -10,7 +10,7 @@
 // Device declaration extracted from Xilinx top_pad.csv
 package fpga_pack {
     device xc3s50an_top {
-        attr LIBRARY = "devices";
+        attr LIBRARY = "xc3s50an_top";
 	attr REFPREFIX = "U";
 	attr FOOTPRINT = "tqg144";
 	attr MFGR = "XILINX";
