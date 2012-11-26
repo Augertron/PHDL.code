@@ -164,16 +164,19 @@ Info ::= "info" "{" STRING "}"
 Design ::=      ( "design" DesignName "{" DesignElement* "}" )
                 |  ( "subdesign" SubDesignName "{" SubDesignElement* "}" )
  -----
-  // This rule encompasses both design declarations and subdesign declarations
+ The Design rule encompasses both design declarations and sub-design declarations.
+ DesignName and SubDesignName are identifiers used to reference Design/SubDesign 
+  declarations from other rules in the grammar, see Identifier section below.
+ Designs are the top level declaration for a PHDLDesign, and can contain any combination
+  of DesignElements or SubDesignElements respectively.
 
 DesignElement ::= NetDeclaration | Instance | ConnectionAssign | Info
  -----
-  // Designs can contain nets, instances, info statements, and
-  // net-to-net assignments.
+ Designs can contain any combination of nets, instances, info statements, and connection assignments.
 
 SubDesignElement ::= NetDeclaration | Instance | ConnectionAssign | Info | PortDeclaration
  -----
-  // Subdesigns can contain everything designs can plus port declarations.
+ Sub-designs can contain everything that a design can, plus PortDeclarations.
 
 
 /////////////////
@@ -182,18 +185,31 @@ SubDesignElement ::= NetDeclaration | Instance | ConnectionAssign | Info | PortD
 
 NetDeclaration ::= "net" [Vector] NetName ( "," NetName )* ( "{" NetElement* "}" ) | ";"
  -----
-  // Net declarations can be multiple bits wide.  Multiple names in one
-  // declaration are all of that type. 
+ The NetDeclaration rule is used to declare any number of nets of the same width.
+ NetName is an Identifier used to reference each individual net within other rules in the
+  grammar, see Identifier section below.
+ A Vector can be used to declare multi-bit nets, see Vector and Range rules below.
+ Each NetDeclaration contains a comma-separated-list of 1 or more NetNames to be declared,
+  and ends with either a semicolon or a combination of NetElements within curly braces.
+ NetElements defined in a NetDeclaration will be applied to all nets declared in the 
+  declaration.
                 
 NetElement ::= Attr | Info
  -----
-  // If desired, attributes or info
-  // can be attached to the nets as in:
-  // net a, b, c { info { "These adsfgkjadsfljkas df" }}
+ NetDeclarations can contain attribute declarations or info statements.
 
 PortDeclaration ::= "port" [Vector] PortName ( "," PortName )* ( "{" Info* "}" ) | ";"
  -----
-  // These are similar to net declarations but bring out signals for subdesigns
+ The PortDeclaration rule is the same as a NetDeclaration, except that attributes are not
+  allowed to be defined for Ports.
+ PortDeclarations are only allowed within sub-designs and are used with hierarchy in-order 
+  to connect internal nets or pins to the outside world. 
+ Ports can also be used as nets/connections to establish connectivity between pins within a
+  sub-design. When a design is elaborated by the compiler, the design must be "flattened"
+  in-order to generate output data. In the case where a port is declared as "open", this
+  connectivity within the sub-design must not be destroyed, even though there is connection 
+  made outside the sub-design itself.
+ 
 
 /////////////////////
 // Instances       //
@@ -204,6 +220,7 @@ Instance ::= ( ("inst" InstName "of" QualifiedDeviceName "{" InstanceElement* "}
              | ( ( "subinst" SubInstName "of" QualifiedSubDesignName [STRING] "{" SubInstElement* "}" )
                     | ( "subinst" Array SubInstName "of" QualifiedSubDesignName [STRING] "{" ArraySubInstElement* "}" ) )
  -----
+ 
  
 QualifiedDeviceName ::= [PackageName "."] DeviceName              
  -----
