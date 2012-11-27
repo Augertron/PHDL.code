@@ -8,6 +8,12 @@ The following specification includes two main parts:
 		significance of each grammar rule and its parts and what each 
 		token/rule represents.
 
+For a more detailed understanding of how the grammar should be interpreted, the tutorials at:
+http://phdl.sourceforge.net/2.1/tutorial/rc_helloworld.php are a good resource. They were written
+however with the 2.1 version of the grammar in mind.
+We highly suggest you read through these tutorials as they go into depth about how the grammar 
+should be implemented.
+
 
 Parser Rules
 ------------
@@ -250,11 +256,11 @@ InstanceElement ::= Attr | RefAttr | PinAssign | Info
   pin assignments, and info statements. However each device instance is required to 
   have a pin assignment for every pin declared within the referenced device definition.
 
-ArrayInstanceElement ::= Attr | QualifiedRefAttr | QualifiedPinAssign | Info
+ArrayInstanceElement ::= Attr | QualifiedRefAttr | ArrayPinAssign | Info
  -----
  If multiple devices are instantiated using the Array rule, attribute references and 
   pin assignments are allowed to use an optional qualifier to specify the device 
-  instantiations being referenced. (See QualifiedRefAttr, QualifierPinAssign, and 
+  instantiations being referenced. (See QualifiedRefAttr, ArrayPinAssign, and 
   Qualifier rules).
 
 QualifiedSubDesignName ::= [PackageName "."] SubDesignName
@@ -282,7 +288,7 @@ ArraySubInstElement ::= Attr | QualifiedSubAttr | QualifiedPortAssign | Info
 
 QualifiedRefAttr ::= [Qualifier] RefAttr
  -----
- The QualifiedRefAttr rule allows a attribute reference to be prefaced by an optional
+ The QualifiedRefAttr rule allows an attribute reference to be prefaced by an optional
   qualifier in the case where multiple devices were instantiated at once. (See the qualifier
   rule below).
   
@@ -297,14 +303,61 @@ RefAttr ::= AttrName "=" STRING ";"
 /////////////////////
 // Pin Assignments //
 /////////////////////
-
-QualfiedPinAssign ::= ( "combine" "(" QualifiedPinReference ")" "=" Concatenation ";" )
+  				
+PinAssign ::=  PinReference "=" Concatenation ";" 
+ -----
+ The PinAssign rule is used to assign pins within a device instantiation to existing 
+  connections (nets or ports) or to assign them as "open".
+ There must be a pin assignment assigning every pin declared in the device 
+  definition referenced by the device definition.
+ PinReferences allow slices, which allow a user to assign multiple bits to a net at once. 
+ The order of assignment in PHDL always takes place from left-to-right in the order the 
+  arrayed object was declared. The following pin assignment is given as an example:
+  
+  //Device Library (required attributes omitted)
+  device hdr2 {
+  	pin[1:0] p = {p1, p2};
+  }
+  
+  design top {
+    net[2:3] bus;
+  	inst myHdr of hdr2 {
+  		p = bus;
+  	}
+  }
+ 
+ In the above case, the pin p[1] is assigned to the net bus[2] and the pin p[0] is assigned
+  to the net bus[3].
+  		
+ArrayPinAssign ::= ( "combine" "(" QualifiedPinReference ")" "=" Concatenation ";" )
 					| ( QualifiedPinReference "=" Concatenation ";" )
  -----
- 					
-PinAssign ::= ( "combine" "(" PinReference ")" "=" Concatenation ";" )
-			| ( PinReference "=" Concatenation ";" )
- -----
+ The ArrayPinAssign rule allows a pin assignment to include an optional qualifier in 
+  the case where multiple devices were instantiated at once. (See the qualifier rule below).
+ This rule is an copy of the PinAssign rule but with optional qualifiers and combine
+  notation added.
+ Within an array pin assign, the optional Combine notation can be used.
+ Combine notation takes an array of pins that are common across an instance array and lines
+  them up into a larger array. The order of assignment in PHDL always takes place from left-to-right
+  in the order the arrayed object was declared. The example below shows this:
+  
+ device memory_1024x8 {
+ 	//Attributes omitted
+ 	pin[7:0] data;       //Our memory has an 8 bit wide data pin array
+ 	//...
+ }
+ 
+ design myDesign {
+ 	net[15:0] data_bus;  //We have a 16 bit data bus
+ 	
+ 	inst(1:0) memory_array of memory_1024x8 {
+ 		combine(data) = data_bus;   //Using combine we can line up the two 8bit pin arrays
+ 									//from both memory devices and connect them to a 16bit bus.
+ 	}
+ }
+ 
+ If the combine notation is not used, the pins are connected in parallel. Thus, the data_bus would need
+  to be only 8 bits wide and both 8 bit data arrays would be connected to it.
  
 QualifiedPinReference ::= [Qualifier] PinName [Slices]
  -----
