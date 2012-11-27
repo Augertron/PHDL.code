@@ -81,6 +81,8 @@ Attr ::= "attr" AttrName "=" STRING ";"
  -----
  Attributes can be used to contain any type of data desired with reference to
   a specific device. 
+ Attributes declarations are allowed within both device definitions and device 
+  instantiations as well as in net declarations. 
  AttrName is an identifier used to refer to the attribute from other rules 
   in the grammar, see Identifier section below.
  There has been some discussion about whether VALUE or Value should be the same or 
@@ -280,18 +282,17 @@ ArraySubInstElement ::= Attr | QualifiedSubAttr | QualifiedPortAssign | Info
 
 QualifiedRefAttr ::= [Qualifier] RefAttr
  -----
- 
+ The QualifiedRefAttr rule allows a attribute reference to be prefaced by an optional
+  qualifier in the case where multiple devices were instantiated at once. (See the qualifier
+  rule below).
+  
 RefAttr ::= AttrName "=" STRING ";"
  -----
-  // This is when you refer to and modify an existing attribute on a
-  // device.  That is, you can over-ride the attribute value
-  // specifiecd when the device was declared.
-  // In constrast, the Attr rule allows you to create a new attribute
-  // (either in a device decl or when instancing).
-
-
-
-///TODO - Check - Qualified should only be allowed for arrays
+ The RefAttr rule is used to modify an existing attribute when instantiating a device.
+  In other words, it allows you to over-ride the attribute value specified when the 
+  device was defined.
+ AttrName is an identifier used to reference the already defined attribute.
+ STRING is the new value for the attribute.
 
 /////////////////////
 // Pin Assignments //
