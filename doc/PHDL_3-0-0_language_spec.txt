@@ -220,26 +220,60 @@ Instance ::= ( ("inst" InstName "of" QualifiedDeviceName "{" InstanceElement* "}
              | ( ( "subinst" SubInstName "of" QualifiedSubDesignName [STRING] "{" SubInstElement* "}" )
                     | ( "subinst" Array SubInstName "of" QualifiedSubDesignName [STRING] "{" ArraySubInstElement* "}" ) )
  -----
- 
+ The Instance rule is used to instantiate devices or sub-designs.
+ InstName and SubInstName are Identifiers used to reference insts or subinsts from other
+  rules within the grammar, see Identifier section below.
+ QualifiedDeviceName and QualifiedSubDesignName are references to Devices or Sub-Designs
+  defined/declared elsewhere in the user's source code.
+ Multiple devices can be instanced at once using the Array rule below. If this is the case,
+  certain InstanceElements may allow a qualifier in-order to specify which instantiated 
+  device(s) is/are being referenced. (See the ArrayInstanceElement rule below).
+ Multiple sub-designs can be instanced at once using the Array rule below. If this is the case,
+  certain SubInstElements may allow a qualifier in-order to specify which instantiated 
+  sub-design(s) is/are being referenced. (See the ArraySubInstElement rule below).
+ The optional STRING field in sub-instance declarations is a REFPREFIX value that will be 
+  prepended to the reference designators of all devices instantiated within the sub-design 
+  instantiation.
+  
  
 QualifiedDeviceName ::= [PackageName "."] DeviceName              
  -----
+ The QualifiedDeviceName rule allows for devices to be referenced by package, if
+  the specified device is contained within a package and has not already been 
+  imported using the Import rule.
  
 InstanceElement ::= Attr | RefAttr | PinAssign | Info
  -----
+ Instances can have any combination of attribute declarations, attribute references,
+  pin assignments, and info statements. However each device instance is required to 
+  have a pin assignment for every pin declared within the referenced device definition.
 
 ArrayInstanceElement ::= Attr | QualifiedRefAttr | QualifiedPinAssign | Info
  -----
+ If multiple devices are instantiated using the Array rule, attribute references and 
+  pin assignments are allowed to use an optional qualifier to specify the device 
+  instantiations being referenced. (See QualifiedRefAttr, QualifierPinAssign, and 
+  Qualifier rules).
 
 QualifiedSubDesignName ::= [PackageName "."] SubDesignName
  -----
- 
+ The QualifiedSubDeviceName rule allows for devices to be referenced by package, if
+  the specified sub-design is contained within a package and has not already been 
+  imported using the Import rule.
+  
 SubInstElement ::= Attr | SubAttr | PortAssign | Info
  -----
+ SubInstances can have any combination of attribute declarations, sub-attribute references,
+  port assignments, and info statements. However each sub-design instance is required to 
+  have a port assignment for every port declared within the referenced sub-design.
  
 ArraySubInstElement ::= Attr | QualifiedSubAttr | QualifiedPortAssign | Info
  -----
-
+ If multiple sub-designs are instantiated using the Array rule, sub-attribute references and 
+  port assignments are allowed to use an optional qualifier to specify the sub-design 
+  instantiations being referenced. (See QualifiedSubAttr, QualifierPortAssign, and 
+  Qualifier rules).
+  
 /////////////////////
 // Ref Attributes  //
 /////////////////////
