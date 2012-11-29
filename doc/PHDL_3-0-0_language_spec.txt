@@ -454,9 +454,15 @@ Concatenation ::=       ( "{" ConnectionRef  ( "," ConnectionRef )* "}" ) |
 
 ConnectionRef ::= ConnectionName [Slices]
  -----
+ A ConnectionRef is a reference to a ConnectionName with the option of using the 
+  Slices rule to reference specific bits of a multi-bit or Vector connection.
+ As always indices should be read from left-to-right.  
+  
  
 ConnectionName ::= NetName | PortName
  -----
+ ConnectionName is a substitute for either a NetName or a PortName.
+ PortNames should only be allowed however, if inside a sub-design.
  
 
 //////////////////////////////////////////
@@ -469,6 +475,8 @@ Indices ::= "(" (   Range  | ( INT ( "," INT )* )  ) ")"
 
 Slices ::= "[" (   Range  | ( INT ( "," INT )* )  ) "]"
  -----
+ Slices should only be allowed to be used when referencing a Vector or 
+  multi-bit connection (port/net) or pin.
   // Square braces are used for multi-bit things
 
 Vector ::= "[" Range "]"
@@ -488,6 +496,9 @@ Range ::= INT ":" INT
 
 Qualifier ::= "this" [Indices] "."
  -----
+ The Qualifier rule should only be allowed when wanting to reference a specific set of 
+  either device or sub-design of instances within its own instance declaration.
+ 
 QualifiedNameOptWildCard ::= PackageName "." ( "*" | ( DeviceName | DesignName | SubDesignName ) )
  -----
  
