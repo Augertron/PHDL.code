@@ -65,7 +65,7 @@ Device ::= "device" DeviceName "{" DeviceElement* "}"
   but there are some required elements that every device definition must include, 
   see DeviceElement rule.
 
-DeviceElement ::= Attr | Pin | Info
+DeviceElement ::= AttrDeclaration | PinDeclaration | InfoStatement
  -----
  A Device can contain any combination of attribute declarations, pin declarations, or 
   info statements, but there are 3 required attributes which every device definition 
@@ -83,7 +83,7 @@ DeviceElement ::= Attr | Pin | Info
    By convention, these attributes are upper-case, but that is not required and they are
     not case sensitive.
 
-Attr ::= "attr" AttrName "=" STRING ";"
+AttrDeclaration ::= "attr" AttrName "=" STRING ";"
  -----
  Attributes can be used to contain any type of data desired with reference to
   a specific device. 
@@ -109,9 +109,9 @@ Attr ::= "attr" AttrName "=" STRING ";"
   etc.
  Essentially, attributes can be used to store any data necessary for back-end tools to use.
 
-Pin ::= PinType [Vector] PinName "=" "{" PhysicalPinName [( "," PhysicalPinName )*] "}" ";"
+PinDeclaration ::= PinType [Vector] PinName "=" "{" PhysicalPinName [( "," PhysicalPinName )*] "}" ";"
  -----
- The Pin rule is used to declare pins and to map logical PinNames to be 
+ The PinDeclaration rule is used to declare pins and to map logical PinNames to be 
   used when instantiating the device in a Design to the PhysicalPinName from the 
   footprint (or package) definition in your chosen layout tool.
  PinType is used to specify a specific pin type which can be used by an electric 
@@ -158,9 +158,9 @@ PinType ::= "pin"
    connections within a net.
  
 
-Info ::= "info" "{" STRING "}"
+InfoStatement ::= "info" "{" STRING "}"
  -----
- Info statements can be used to make comments (such as placement needs) 
+ The InfoStatement rule can be used to make comments (such as placement needs) 
   about a specific device or connection which can then be relayed to the 
   layout designer. 
 
@@ -178,11 +178,11 @@ Design ::=      ( "design" DesignName "{" DesignElement* "}" )
  Designs are the top level declaration for a PHDLDesign, and can contain any combination
   of DesignElements or SubDesignElements respectively.
 
-DesignElement ::= NetDeclaration | Instance | ConnectionAssign | Info
+DesignElement ::= NetDeclaration | Instance | ConnectionAssign | InfoStatement
  -----
  Designs can contain any combination of nets, instances, info statements, and connection assignments.
 
-SubDesignElement ::= NetDeclaration | Instance | ConnectionAssign | Info | PortDeclaration
+SubDesignElement ::= NetDeclaration | Instance | ConnectionAssign | InfoStatement | PortDeclaration
  -----
  Sub-designs can contain everything that a design can, plus PortDeclarations.
 
@@ -202,11 +202,11 @@ NetDeclaration ::= "net" [Vector] NetName ( "," NetName )* ( "{" NetElement* "}"
  NetElements defined in a NetDeclaration will be applied to all nets declared in the 
   declaration.
                 
-NetElement ::= Attr | Info
+NetElement ::= AttrDeclaration | InfoStatement
  -----
  NetDeclarations can contain attribute declarations or info statements.
 
-PortDeclaration ::= "port" [Vector] PortName ( "," PortName )* ( "{" Info* "}" ) | ";"
+PortDeclaration ::= "port" [Vector] PortName ( "," PortName )* ( "{" InfoStatement* "}" ) | ";"
  -----
  The PortDeclaration rule is the same as a NetDeclaration, except that attributes are not
   allowed to be defined for Ports.
@@ -223,22 +223,15 @@ PortDeclaration ::= "port" [Vector] PortName ( "," PortName )* ( "{" Info* "}" )
 // Instances       //
 /////////////////////
 
-Instance ::= ( ("inst" InstName "of" QualifiedDeviceName "{" InstanceElement* "}" ) 
-					| ("inst" Array InstName "of" QualifiedDeviceName "{" ArrayInstanceElement* "}" ) )
-             | ( ( "subinst" SubInstName "of" QualifiedSubDesignName [STRING] "{" SubInstElement* "}" )
-                    | ( "subinst" Array SubInstName "of" QualifiedSubDesignName [STRING] "{" ArraySubInstElement* "}" ) )
+Instance ::= ( "inst" [Array] InstName "of" QualifiedDeviceName "{" InstanceElement* "}" ) 
+             | ( "subinst" [Array] SubInstName "of" QualifiedSubDesignName [STRING] "{" SubInstElement* "}" )
  -----
  The Instance rule is used to instantiate devices or sub-designs.
  InstName and SubInstName are Identifiers used to reference insts or subinsts from other
   rules within the grammar, see Identifier section below.
  QualifiedDeviceName and QualifiedSubDesignName are references to Devices or Sub-Designs
   defined/declared elsewhere in the user's source code.
- Multiple devices can be instanced at once using the Array rule below. If this is the case,
-  certain InstanceElements may allow a qualifier in-order to specify which instantiated 
-  device(s) is/are being referenced. (See the ArrayInstanceElement rule below).
- Multiple sub-designs can be instanced at once using the Array rule below. If this is the case,
-  certain SubInstElements may allow a qualifier in-order to specify which instantiated 
-  sub-design(s) is/are being referenced. (See the ArraySubInstElement rule below).
+ Multiple devices can be instanced at once using the Array rule below. 
  The optional STRING field in sub-instance declarations is a REFPREFIX value that will be 
   prepended to the reference designators of all devices instantiated within the sub-design 
   instantiation.
@@ -250,18 +243,11 @@ QualifiedDeviceName ::= [PackageName "."] DeviceName
   the specified device is contained within a package and has not already been 
   imported using the Import rule.
  
-InstanceElement ::= Attr | RefAttr | PinAssign | Info
+InstanceElement ::= AttrDeclaration | RefAttr | PinAssign | InfoStatement
  -----
  Instances can have any combination of attribute declarations, attribute references,
   pin assignments, and info statements. However each device instance is required to 
   have a pin assignment for every pin declared within the referenced device definition.
-
-ArrayInstanceElement ::= Attr | QualifiedRefAttr | ArrayPinAssign | Info
- -----
- If multiple devices are instantiated using the Array rule, attribute references and 
-  pin assignments are allowed to use an optional qualifier to specify the device 
-  instantiations being referenced. (See QualifiedRefAttr, ArrayPinAssign, and 
-  Qualifier rules).
 
 QualifiedSubDesignName ::= [PackageName "."] SubDesignName
  -----
@@ -269,42 +255,32 @@ QualifiedSubDesignName ::= [PackageName "."] SubDesignName
   the specified sub-design is contained within a package and has not already been 
   imported using the Import rule.
   
-SubInstElement ::= Attr | SubAttr | PortAssign | Info
+SubInstElement ::= AttrDeclaration | SubAttr | PortAssign | InfoStatement
  -----
  SubInstances can have any combination of attribute declarations, sub-attribute references,
   port assignments, and info statements. However each sub-design instance is required to 
   have a port assignment for every port declared within the referenced sub-design.
- 
-ArraySubInstElement ::= Attr | QualifiedSubAttr | QualifiedPortAssign | Info
- -----
- If multiple sub-designs are instantiated using the Array rule, sub-attribute references and 
-  port assignments are allowed to use an optional qualifier to specify the sub-design 
-  instantiations being referenced. (See QualifiedSubAttr, QualifierPortAssign, and 
-  Qualifier rules).
   
 /////////////////////
 // Ref Attributes  //
 /////////////////////
-
-QualifiedRefAttr ::= [Qualifier] RefAttr
- -----
- The QualifiedRefAttr rule allows an attribute reference to be prefaced by an optional
-  qualifier in the case where multiple devices were instantiated at once. (See the qualifier
-  rule below).
   
-RefAttr ::= AttrName "=" STRING ";"
+RefAttr ::= [Qualifier] AttrName "=" STRING ";"
  -----
  The RefAttr rule is used to modify an existing attribute when instantiating a device.
   In other words, it allows you to over-ride the attribute value specified when the 
   device was defined.
  AttrName is an identifier used to reference the already defined attribute.
  STRING is the new value for the attribute.
+ The optional Qualifier rule should only be allowed in the case where an array of devices are
+  being instanced at once.
 
 /////////////////////
 // Pin Assignments //
 /////////////////////
-  				
-PinAssign ::=  PinReference "=" Concatenation ";" 
+    		
+PinAssign ::= ( "combine" "(" PinReference ")" "=" Concatenation ";" )
+					| ( PinReference "=" Concatenation ";" )
  -----
  The PinAssign rule is used to assign pins within a device instantiation to existing 
   connections (nets or ports) or to assign them as "open".
@@ -320,23 +296,38 @@ PinAssign ::=  PinReference "=" Concatenation ";"
   }
   
   design top {
-    net[2:3] bus;
+    net[3:2] bus;
   	inst myHdr of hdr2 {
   		p = bus;
   	}
   }
  
- In the above case, the pin p[1] is assigned to the net bus[2] and the pin p[0] is assigned
-  to the net bus[3].
-  		
-ArrayPinAssign ::= ( "combine" "(" QualifiedPinReference ")" "=" Concatenation ";" )
-					| ( QualifiedPinReference "=" Concatenation ";" )
- -----
- The ArrayPinAssign rule allows a pin assignment to include an optional qualifier in 
-  the case where multiple devices were instantiated at once. (See the qualifier rule below).
- This rule is an copy of the PinAssign rule but with optional qualifiers and combine
-  notation added.
- Within an array pin assign, the optional Combine notation can be used.
+ In the above case, the pin p[1] is assigned to the net bus[3] and the pin p[0] is assigned
+  to the net bus[2].
+ 
+ The compiler should throw an error if the pin width on the left of the assignment does not
+  match the pin width on the right side.
+ Within an arrayed device instance, the optional combine notation can be used. The combine notation
+  should be illegal in the case where a single device is being instanced.
+  (See section on combine notation below.)
+  
+PinReference ::= [Qualifier] PinName [Slices]
+ ----- 
+ The PinReference rule is a reference to set of pins that are to be assigned connection.
+ The optional Qualifier rule should only be allowed when an array of devices are being instanced
+  at once. 
+ PinName is the identifier used to reference the PinDeclaration of the pins to be assigned 
+  connections. The PinDeclaration should have been previously declared in the device definition 
+  currently being instanced.
+ The optional Slices rule allows for referencing of specific bits within a multi-bit vector of
+  pins. This can either be done with a Range or by comma separated list of indices.
+ Assignments using Slices should always be done reading from left-to-right. (See Slices rule).
+ If the Slices rule is not used on a multi-bit vector of pins, the QualifiedPinReference refers
+  to the entire vector of pins and they should be assigned from left-to-right in the order they
+  were declared in the device definition.  
+  
+ Combine Notation
+ ~~~~~~~~~~~~~~~~
  Combine notation takes an array of pins that are common across an instance array and lines
   them up into a larger array. The order of assignment in PHDL always takes place from left-to-right
   in the order the arrayed object was declared. The example below shows this:
@@ -352,31 +343,37 @@ ArrayPinAssign ::= ( "combine" "(" QualifiedPinReference ")" "=" Concatenation "
  	
  	inst(1:0) memory_array of memory_1024x8 {
  		combine(data) = data_bus;   //Using combine we can line up the two 8bit pin arrays
- 									//from both memory devices and connect them to a 16bit bus.
+ 									//from both memory devices into a 16bit pin array and 
+ 									//then connect them to a 16bit bus.
  									//this(1).data[7:0] is now assigned to data_bus[15:8] and
  									//this(0).data[7:0] is now assigned to data_bus[7:0]
  	}
  }
  
- If the combine notation is not used, the pins are connected in parallel. Thus, the data_bus would need
-  to be only 8 bits wide and both 8 bit data arrays would be connected to it.
+ If the combine notation is not used the pins are connected in parallel. For example the 
+  combine statement above could have been replaced with the following: 
  
-QualifiedPinReference ::= [Qualifier] PinName [Slices]
- -----
+ data = data_bus;  
  
-PinReference ::= PinName [Slices]
- -----
+  and the data_bus net declaration replaced with:
+  
+ net[7:0] data_bus;
  
+ Thus, the data_bus would necessarily be only 8 bits wide and both 8 bit data arrays would be 
+  connected to it. (this(1).data[7:0] would be assigned to data_bus[7:0] and this(0).data[7:0] 
+  would also be assigned to data_bus[7:0])
+ 
+ The compiler should throw an error if the pin width on the left of the assignment does not
+  match the pin width on the right side.
 
 /////////////////////
 // Sub Attributes  //
 /////////////////////
 
-QualifiedSubAttr ::= [Qualifier] SubAttr
+SubAttr ::= [Qualifier] [RefTail] InstName "." AttrName "=" STRING ";"
  -----
- 
-SubAttr ::= [RefTail] InstName "." AttrName "=" STRING ";"
- -----
+ The optional Qualifier rule should only be allowed within an array of sub-designs are 
+  being instanced at once.
   // This is how you reach down into the hierarchy (arbitrarily deep)
   // and change an attribute value on an instance
 
@@ -386,20 +383,15 @@ RefTail ::= SubInstName "." [RefTail]
 //////////////////////
 // Port Assignments //
 //////////////////////
-
-QualifiedPortAssign ::= ( "combine" "(" QualifiedPortReference ")" "=" Concatenation ";" )
-					| ( QualifiedPortReference "=" Concatenation ";" )
- -----
- 					
+			
 PortAssign ::= ( "combine" "(" PortReference ")" "=" Concatenation ";" )
 			| ( PortReference "=" Concatenation ";" )
  -----
  
-QualifiedPortReference ::= [Qualifier] PortName [Slices]
+PortReference ::= [Qualifier] PortName [Slices]
  -----
- 
-PortReference ::= PortName [Slices]
- -----
+ The optional Qualifier rule should only be allowed within an array of sub-designs are 
+  being instanced at once.
 
 ////////////////////////////
 // Connection Assignments //
