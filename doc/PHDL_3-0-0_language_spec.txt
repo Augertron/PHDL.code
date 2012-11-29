@@ -306,8 +306,9 @@ PinAssign ::= ( "combine" "(" PinReference ")" "=" Concatenation ";" )
  In the above case, the pin p[1] is assigned to the net bus[3] and the pin p[0] is assigned
   to the net bus[2].
  
- The compiler should throw an error if the pin width on the left of the assignment does not
-  match the pin width on the right side.
+ The compiler should throw an error if the number of pins referenced left of the assignment 
+  does not match the number of connections referenced by the concatenation the right side.
+  (Count each individual pin indice as a pin).
  Within an arrayed device instance, the optional combine notation can be used. The combine notation
   should be illegal in the case where a single device is being instanced.
   (See section on combine notation below.)
@@ -435,9 +436,9 @@ ConnectionAssign ::= ConnectionName [Slices] "=" Concatenation ";"
  When slices are not used for a vector connection, it is assumed that the entire vector is 
   being referenced (again reading the indices from left-to-right how the connection was 
   declared).
- If the number of referenced connections on the left side of the equals sign (counting each
-  individual indice as a connection) does not equal the number of connections referenced by
-  the concatenation. The compiler should throw an error.
+ If the number of referenced connections on the left side of the equals sign  does not 
+  equal the number of connections referenced by the concatenation, The compiler should 
+  throw an error. (Count each individual indice as a connection).
  
 
 Concatenation ::=       ( "{" ConnectionRef  ( "," ConnectionRef )* "}" ) |
