@@ -481,7 +481,7 @@ ConnectionName ::= NetName | PortName
  
 
 //////////////////////////////////////////
-// Indices, Slices, Vectors, and Arrays //
+// Arrays, Indices, Vectors, and Slices //
 //////////////////////////////////////////
 
 Array ::= "(" Range ")"
@@ -534,11 +534,15 @@ Range ::= Integer ":" Integer
  Ranges can be used to specify an ordered range of indices. The ':' character
   can be likened to the "downto" or "to" keywords in VHDL.
  Both the Integers are included in the range.
- For example the range: 7:0 specifies 8 individual indices numbered 7 down to 
-  0.
+ For example the range: 7:0 specifies 8 individual indices from left-to-right 7 down to 0.
+ Ordering the other direction is also legal: 0:7 specifies 8 individual indices from 
+ left-to-right 0 up to 7.
+ 
+ Another way to think of it is that the Range 1:3 means the following: reference 1,2,3 
+ in that order and the Range 3:0 means the following: reference 3,2,1,0 in that order.
   
-Interpreting Indices, Slices, Vectors, Arrays, Ranges, Concatenations, and Assignments
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Interpreting Arrays, Indices, Vectors, Slices, Ranges, Concatenations, PinDeclarations, and Assignments
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  It is important that each of these rules are interpreted and understood correctly 
  in all implementations of the language and whenever the language is used if correct
  output is to be generated. 
@@ -559,6 +563,16 @@ Interpreting Indices, Slices, Vectors, Arrays, Ranges, Concatenations, and Assig
       referenced by index.
       As arrayed device, a unique identifier for this connection/pin can be created by
       concatenating the name to its unique index.
+  3.  Arrays, Indices, Vectors, Slices, Ranges, and Concatenations must be interpreted as a
+      string of individual connections/pins/references lined up from left-to-right.
+  4.  Lastly when interpreting assignments and pin declarations the left-most index referenced
+      on the left hand side of the equal sign is to be assigned to the left-most index on the 
+      right hand side of the equal sign (or the left-most PhysicalPinName on the right hand side 
+      in the case of pin declarations). The second-left-most index referenced on the left hand 
+      side of the assignment should be assigned to the second-left-most index on the right hand 
+      side of the equals, etc...
+      The number of references on both sides of the assignment should always be equal or the 
+      compiler should throw and error.
       
 ///////////////////////////////////
 // Qualifier and Qualified Names //
