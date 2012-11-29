@@ -353,6 +353,8 @@ ArrayPinAssign ::= ( "combine" "(" QualifiedPinReference ")" "=" Concatenation "
  	inst(1:0) memory_array of memory_1024x8 {
  		combine(data) = data_bus;   //Using combine we can line up the two 8bit pin arrays
  									//from both memory devices and connect them to a 16bit bus.
+ 									//this(1).data[7:0] is now assigned to data_bus[15:8] and
+ 									//this(0).data[7:0] is now assigned to data_bus[7:0]
  	}
  }
  
