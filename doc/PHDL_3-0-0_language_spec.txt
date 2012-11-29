@@ -398,17 +398,27 @@ RefTail ::= SubInstName [Indices] "." [RefTail]
 PortAssign ::= ( "combine" "(" PortReference ")" "=" Concatenation ";" )
 			| ( PortReference "=" Concatenation ";" )
  -----
- 
+ The PortAssign rule should be interpreted exactly as the PinAssign rule except that it 
+  is used to assign ports in sub-design instances to connections in the current design rather than
+  to assign pins. All the same specifications that apply to pin assignements should apply to 
+  port assignments.
+ Within an arrayed sub-design instance, the optional combine notation can be used. The combine 
+  notation should be illegal in the case where a single sub-design is being instanced.
+  (See section on combine notation above.)
+
 PortReference ::= [Qualifier] PortName [Slices]
  -----
- The optional Qualifier rule should only be allowed within an array of sub-designs are 
-  being instanced at once.
+ A PortReference should be interpreted to be exactly like a PinReference except that it
+  references PortDeclarations in the sub-design declaration being instanced, rather than
+  PinDeclartations in the associated device definition.
+ The optional Qualifier rule should only be allowed within an array of sub-design instances.
+  See the Qualifier rule below for more detail on what it allows. 
 
-////////////////////////////
-// Connection Assignments //
-////////////////////////////
+//////////////////////////////////////////////
+// Connection Assignments and Concatenation //
+//////////////////////////////////////////////
 
-//Connections are either Ports or Nets
+Both Nets and Ports are Connections.
 
 ConnectionAssign ::= ConnectionName [Slices] "=" Concatenation ";"
  -----
