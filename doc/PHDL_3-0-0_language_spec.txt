@@ -572,7 +572,7 @@ Interpreting Arrays, Indices, Vectors, Slices, Ranges, Concatenations, PinDeclar
       side of the assignment should be assigned to the second-left-most index on the right hand 
       side of the equals, etc...
       The number of references on both sides of the assignment should always be equal or the 
-      compiler should throw and error.
+      compiler should throw an error.
       
 ///////////////////////////////////
 // Qualifier and Qualified Names //
