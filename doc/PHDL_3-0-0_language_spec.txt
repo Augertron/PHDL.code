@@ -190,6 +190,7 @@ SubDesignElement ::= NetDeclaration | Instance | ConnectionAssign | InfoStatemen
 /////////////////
 // Connections //
 /////////////////
+Both nets and ports are Connections.
 
 NetDeclaration ::= "net" [Vector] NetName ( "," NetName )* ( "{" NetElement* "}" ) | ";"
  -----
@@ -418,12 +419,26 @@ PortReference ::= [Qualifier] PortName [Slices]
 // Connection Assignments and Concatenation //
 //////////////////////////////////////////////
 
-Both Nets and Ports are Connections.
-
 ConnectionAssign ::= ConnectionName [Slices] "=" Concatenation ";"
  -----
-  //The scope of allowable ConnectionNames includes only the connections 
-  //  declared within the current design or subdesign
+ The ConnectionAssign rule allows for conductivity to established between two connections.
+  Such as between two nets or between a net and a port.   
+ ConnectionName is an identifier used to reference the port or net being assigned.
+ The scope of allowable ConnectionNames for a given ConnectionAssign should only include 
+  the connections declared within the current design or sub-design.
+ The optional Slices rule allows for referencing of specific bits within a multi-bit vector
+  connection. This can either be done with a Range or by comma separated list of indices.
+  See the Slices rule for more details.
+ When slices are used, assignment should always be done reading the indices on the left side
+  of the equals sign (from left-to-right) and connecting them one by one to the connections 
+  on the right side of the equals sign (also reading from left-to-right).
+ When slices are not used for a vector connection, it is assumed that the entire vector is 
+  being referenced (again reading the indices from left-to-right how the connection was 
+  declared).
+ If the number of referenced connections on the left side of the equals sign (counting each
+  individual indice as a connection) does not equal the number of connections referenced by
+  the concatenation. The compiler should throw an error.
+ 
 
 Concatenation ::=       ( "{" ConnectionRef  ( "," ConnectionRef )* "}" ) |
                         ( ConnectionRef ( "&" ConnectionRef )* ) |
