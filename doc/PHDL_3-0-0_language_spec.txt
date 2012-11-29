@@ -255,7 +255,7 @@ QualifiedSubDesignName ::= [PackageName "."] SubDesignName
   the specified sub-design is contained within a package and has not already been 
   imported using the Import rule.
   
-SubInstElement ::= AttrDeclaration | SubAttr | PortAssign | InfoStatement
+SubInstElement ::= AttrDeclaration | SubAttrRef | PortAssign | InfoStatement
  -----
  SubInstances can have any combination of attribute declarations, sub-attribute references,
   port assignments, and info statements. However each sub-design instance is required to 
@@ -322,12 +322,12 @@ PinReference ::= [Qualifier] PinName [Slices]
  The optional Slices rule allows for referencing of specific bits within a multi-bit vector of
   pins. This can either be done with a Range or by comma separated list of indices.
  Assignments using Slices should always be done reading from left-to-right. (See Slices rule).
- If the Slices rule is not used on a multi-bit vector of pins, the QualifiedPinReference refers
+ If the Slices rule is not used on a multi-bit vector of pins, the PinReference refers
   to the entire vector of pins and they should be assigned from left-to-right in the order they
   were declared in the device definition.  
   
- Combine Notation
- ~~~~~~~~~~~~~~~~
+Combine Notation
+~~~~~~~~~~~~~~~~
  Combine notation takes an array of pins that are common across an instance array and lines
   them up into a larger array. The order of assignment in PHDL always takes place from left-to-right
   in the order the arrayed object was declared. The example below shows this:
@@ -366,19 +366,30 @@ PinReference ::= [Qualifier] PinName [Slices]
  The compiler should throw an error if the pin width on the left of the assignment does not
   match the pin width on the right side.
 
-/////////////////////
-// Sub Attributes  //
-/////////////////////
+///////////////////////////////
+// Sub Attribute References  //
+///////////////////////////////
 
-SubAttr ::= [Qualifier] [RefTail] InstName "." AttrName "=" STRING ";"
+SubAttrRef ::= [Qualifier] [RefTail] InstName "." AttrName "=" STRING ";"
  -----
- The optional Qualifier rule should only be allowed within an array of sub-designs are 
-  being instanced at once.
-  // This is how you reach down into the hierarchy (arbitrarily deep)
-  // and change an attribute value on an instance
-
-RefTail ::= SubInstName "." [RefTail]
+ The SubAttrRef rule can be used within a sub-instance to reach down into the hierarchy
+  and change an attribute value on an instance. 
+ The optional RefTail rule can be used to reach down arbitrarily deep from sub-instance to 
+  sub-instance to reach the instance who's attribute the user desires to change.
+ InstName is an identifier used to reference the instance who's attribute the user desires
+  to change.
+ AttrName is an identifier used to reference the attribute who's value is to be changed.
+ STRING is the new value the attribute's prior value should be over written with.
+ The optional Qualifier rule should only be allowed within an array of sub-design instances.
+  See the Qualifier rule below for more detail on what it allows.
+ 
+RefTail ::= SubInstName [Indices] "." [RefTail]
  -----
+ The RefTail rule allows the user to reach arbitrarily deep into the hierarchy from
+  sub-instance to sub-instance. 
+ The optional Indices rule allows the user to reference a set of arrayed sub-instances 
+  somewhere down the hierarchy using either a range or a comma separated list of indices.
+  (See the Indices rule).
 
 //////////////////////
 // Port Assignments //
