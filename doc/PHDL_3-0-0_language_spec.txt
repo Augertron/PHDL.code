@@ -447,10 +447,26 @@ Concatenation ::=       ( "{" ConnectionRef  ( "," ConnectionRef )* "}" ) |
                         ( ConnectionRef "*" ) |
                         ( "open" )
  -----
-  // A concatenation can take a number of forms:
-  // {a, b, c} or a & b & c which are similar to Verilog's - the signals are lined up left-to-right to make a bus
-  // <a> or a* which make as many copies of the signal as needed for the LHS of the assignment statement
-  // "open" means that the pin or port is purposely being left unconnected
+ A Concatenation can be used to concatenate or line up several connections into a large vector
+  and then assign them to another vector of connections or pins.
+ A concatenation can take a number of forms:
+  - A comma-separated list of ConnectionRefs contained within curly brackets, should be read from 
+    left-to-right as individual one-bit connections and lined up into a large multi-bit vector of 
+    connections.
+  - A list separated by the '&' character should be treated exactly like the comma-separated list 
+    above.
+  - A single one-bit (non-vector) connection enclosed in angle brackets '<' '>' should be replicated 
+    or branched into however many connections are needed to match the left hand side of the assignment. 
+    In other-words, every pin or connection on the left hand side of the assignment should be connected 
+    to this singular net in parallel.
+  - A single one-bit (non-vector) connection followed by the '*' symbol should be treated the same as
+    the connection enclosed in angle brackets above.
+  - A connection can also be defined as "open". This would have no affect if performing a
+    connection assign, but if performing a pin assignment or port assignment it signifies that nothing 
+    should be connected to the pin or port. 
+    If this occurs within a PortAssign, it is important to make sure that if the port was used as a 
+    connection between nets or pins down-within the sub-design that this connection is preserved when 
+    the design is elaborated.
 
 ConnectionRef ::= ConnectionName [Slices]
  -----
@@ -458,7 +474,6 @@ ConnectionRef ::= ConnectionName [Slices]
   Slices rule to reference specific bits of a multi-bit or Vector connection.
  As always indices should be read from left-to-right.  
   
- 
 ConnectionName ::= NetName | PortName
  -----
  ConnectionName is a substitute for either a NetName or a PortName.
