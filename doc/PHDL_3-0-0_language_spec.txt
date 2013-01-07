@@ -51,9 +51,8 @@ Package ::= "package" PackageName "{" Import* ( Device | Design )* "}"
   to be included within the current package, but imports must come before any other 
   definitions/declarations.
 
-//////////////
-// Devices  //
-//////////////
+Devices
+~~~~~~~
 
 Device ::= "device" DeviceName "{" DeviceElement* "}"
  -----
@@ -164,10 +163,8 @@ InfoStatement ::= "info" "{" STRING "}"
   about a specific device or connection which can then be relayed to the 
   layout designer. 
 
-
-//////////////
-// Designs  //
-//////////////
+Designs
+~~~~~~~
 
 Design ::=      ( "design" DesignName "{" DesignElement* "}" )
                 |  ( "subdesign" SubDesignName "{" SubDesignElement* "}" )
@@ -187,9 +184,8 @@ SubDesignElement ::= NetDeclaration | Instance | ConnectionAssign | InfoStatemen
  Sub-designs can contain everything that a design can, plus PortDeclarations.
 
 
-/////////////////
-// Connections //
-/////////////////
+Connections
+~~~~~~~~~~~
 Both nets and ports are Connections.
 
 NetDeclaration ::= "net" [Vector] NetName ( "," NetName )* ( "{" NetElement* "}" ) | ";"
@@ -220,9 +216,9 @@ PortDeclaration ::= "port" [Vector] PortName ( "," PortName )* ( "{" InfoStateme
   made outside the sub-design itself.
  
 
-/////////////////////
-// Instances       //
-/////////////////////
+
+Instances
+~~~~~~~~~
 
 Instance ::= ( "inst" [Array] InstName "of" QualifiedDeviceName "{" InstanceElement* "}" ) 
              | ( "subinst" [Array] SubInstName "of" QualifiedSubDesignName [STRING] "{" SubInstElement* "}" )
@@ -262,9 +258,9 @@ SubInstElement ::= AttrDeclaration | SubAttrRef | PortAssign | InfoStatement
   port assignments, and info statements. However each sub-design instance is required to 
   have a port assignment for every port declared within the referenced sub-design.
   
-/////////////////////
-// Ref Attributes  //
-/////////////////////
+
+Ref Attributes
+~~~~~~~~~~~~~~
   
 RefAttr ::= [Qualifier] AttrName "=" STRING ";"
  -----
@@ -276,9 +272,9 @@ RefAttr ::= [Qualifier] AttrName "=" STRING ";"
  The optional Qualifier rule should only be allowed in the case where an array of devices are
   being instanced at once.
 
-/////////////////////
-// Pin Assignments //
-/////////////////////
+
+Pin Assignments
+~~~~~~~~~~~~~~~
     		
 PinAssign ::= ( "combine" "(" PinReference ")" "=" Concatenation ";" )
 					| ( PinReference "=" Concatenation ";" )
@@ -368,9 +364,9 @@ Combine Notation
  The compiler should throw an error if the pin width on the left of the assignment does not
   match the pin width on the right side.
 
-///////////////////////////////
-// Sub Attribute References  //
-///////////////////////////////
+
+Sub Attribute References
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 SubAttrRef ::= [Qualifier] [RefTail] InstName "." AttrName "=" STRING ";"
  -----
@@ -393,9 +389,9 @@ RefTail ::= SubInstName [Indices] "." [RefTail]
   somewhere down the hierarchy using either a range or a comma separated list of indices.
   (See the Indices rule).
 
-//////////////////////
-// Port Assignments //
-//////////////////////
+
+Port Assignments
+~~~~~~~~~~~~~~~~
 			
 PortAssign ::= ( "combine" "(" PortReference ")" "=" Concatenation ";" )
 			| ( PortReference "=" Concatenation ";" )
@@ -416,9 +412,9 @@ PortReference ::= [Qualifier] PortName [Slices]
  The optional Qualifier rule should only be allowed within an array of sub-design instances.
   See the Qualifier rule below for more detail on what it allows. 
 
-//////////////////////////////////////////////
-// Connection Assignments and Concatenation //
-//////////////////////////////////////////////
+
+Connection Assignments and Concatenation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ConnectionAssign ::= ConnectionName [Slices] "=" Concatenation ";"
  -----
@@ -480,9 +476,9 @@ ConnectionName ::= NetName | PortName
  PortNames should only be allowed however, if inside a sub-design.
  
 
-//////////////////////////////////////////
-// Arrays, Indices, Vectors, and Slices //
-//////////////////////////////////////////
+
+Arrays, Indices, Vectors, and Slices
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Array ::= "(" Range ")"
  -----
@@ -574,21 +570,29 @@ Interpreting Arrays, Indices, Vectors, Slices, Ranges, Concatenations, PinDeclar
       The number of references on both sides of the assignment should always be equal or the 
       compiler should throw an error.
       
-///////////////////////////////////
-// Qualifier and Qualified Names //
-///////////////////////////////////
+
+Qualifier and Qualified Names
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Qualifier ::= "this" [Indices] "."
  -----
+ The Qualifier rule is used to specify a specific subset of an arrayed set of either 
+ device or sub-design instances. 
+ The optional Indices rule is what allows specific instances within the array to be 
+ referenced.
  The Qualifier rule should only be allowed when wanting to reference a specific set of 
-  either device or sub-design of instances within its own instance declaration.
+ either device or sub-design of instances within its own instance declaration.
  
 QualifiedNameOptWildCard ::= PackageName "." ( "*" | ( DeviceName | DesignName | SubDesignName ) )
  -----
+ The QualifiedNameOptWildCard rule allows for imports by package.
+ If the '*' character is used, all devices, designs, and sub-designs contained in the package 
+ should be imported. If this is not the case only the specified device, design, or sub-design
+ should be imported.
  
-/////////////////////////////////
-// Element Names/Identifiers   //
-/////////////////////////////////
+
+Element Names/Identifiers
+~~~~~~~~~~~~~~~~~~~~~~~~~
 DeviceName ::= PhdlID
 PinName ::= PhdlID
 PhysicalPinName ::= PhdlID
@@ -603,6 +607,9 @@ SubInstName ::= Identifier
 
 
 PhdlID ::= Integer | Identifier | PINUM
+ -----
+ The PhdlID rule is currently used as a combination of the Integer, Identifier, and 
+ PINNUM rules thus allowing the identifier to be any of these.
 
 Lexical Elements
 ----------------
