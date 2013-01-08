@@ -266,6 +266,7 @@ QualifiedDeviceName ::= [PackageName "."] DeviceName
  	The QualifiedDeviceName rule allows for devices to be referenced by package, if
  the specified device is contained within a package and has not already been 
  imported using the Import rule.
+ 	PackageName is thus the name of the package containing the specified device.
  
 InstanceElement ::= AttrDeclaration | RefAttr | PinAssign | InfoStatement
  -----
@@ -278,6 +279,7 @@ QualifiedSubDesignName ::= [PackageName "."] SubDesignName
  	The QualifiedSubDeviceName rule allows for devices to be referenced by package, if
  the specified sub-design is contained within a package and has not already been 
  imported using the Import rule.
+ 	PackageName is thus the name of the package containing the specified sub-design.
   
 SubInstElement ::= AttrDeclaration | SubAttrRef | PortAssign | InfoStatement
  -----
