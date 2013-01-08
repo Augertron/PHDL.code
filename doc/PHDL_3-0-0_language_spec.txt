@@ -8,12 +8,9 @@ The following specification includes two main parts:
 		significance of each grammar rule and its parts and what each 
 		token/rule represents.
 
-For a more detailed understanding of how the grammar should be interpreted, the tutorials at:
+For an example of how the grammar should be interpreted, the tutorials at:
 http://phdl.sourceforge.net/2.1/tutorial/rc_helloworld.php are a good resource. They were written
 however with the 2.1 version of the grammar in mind.
-We highly suggest you read through these tutorials as they go into depth about how the grammar 
-should be implemented.
-
 
 Parser Rules
 ------------
@@ -67,9 +64,9 @@ Device ::= "device" DeviceName "{" DeviceElement* "}"
 DeviceElement ::= AttrDeclaration | PinDeclaration | InfoStatement
  -----
  	A Device can contain any combination of attribute declarations, pin declarations, or 
- info statements, but there are 3 required attributes which every device definition 
+ info statements, but there are 3 required attribute declarations which every device definition 
  must include:
-   1. REFPREFIX: The value of REFPREFIX is a STRING that will be used as a prefix by the
+   1. REFPREFIX: The value of REFPREFIX is a STRING that is a prefix used by the
     compiler when automatically generating unique reference designators for each device 
     instantiation. (This is done if the reference designator is not explicitly set using
     the REFDES attribute).
@@ -100,7 +97,7 @@ AttrDeclaration ::= "attr" AttrName "=" STRING ";"
 	   reference designator, rather than generating one using REFPREFIX.
 	  PINCOUNT: The value of the PINCOUNT attribute must be an Integer. If the number of
 	   pins declared in the device doesn't match the value of PINCOUNT, the compiler should
-	   through an error. 
+	   throw an error. 
 	 Other common uses for attributes:
 	  VALUE: used to define resistance, capacitance, inductance
 	  COST: can be used for bill of materials and part procurement
@@ -111,7 +108,7 @@ AttrDeclaration ::= "attr" AttrName "=" STRING ";"
 
 PinDeclaration ::= PinType [Vector] PinName "=" "{" PhysicalPinName [( "," PhysicalPinName )*] "}" ";"
  -----
- 	The PinDeclaration rule is used to declare pins and to map logical PinNames to be 
+ 	The PinDeclaration rule is used to declare pins and to map logical PHDL PinNames to be 
  used when instantiating the device in a Design to the PhysicalPinName from the 
  footprint (or package) definition in your chosen layout tool.
  	PinType is used to specify a specific pin type which can be used by an electric 
@@ -128,6 +125,9 @@ PinDeclaration ::= PinType [Vector] PinName "=" "{" PhysicalPinName [( "," Physi
  side of the equals sign(also reading from left to right).
  	The number of pins enumerated on the right side of the equals sign should always 
  equal the number of PhysicalPinNames on the left side.
+ 	For more information on how PinDeclarations should be interpreted, see the section
+ entitled: "Interpreting Arrays, Indices, Vectors, Slices, Ranges, Concatenations, 
+ PinDeclarations, and Assignments".
 
 PinType ::= "pin"
                 | "inpin"
@@ -171,6 +171,10 @@ Design ::=      ( "design" DesignName "{" DesignElement* "}" )
                 |  ( "subdesign" SubDesignName "{" SubDesignElement* "}" )
  -----
  	The Design rule encompasses both design declarations and sub-design declarations.
+ 	A Design contains all the connectivity of a single PCB and thus does not allow port
+ declarations. A Sub-Design however allows for port instantiations.  Thus Sub-Designs can be 
+ used for hierarchy and can be instantiated either within other Sub-Designs or the
+ top level Design.
  	DesignName and SubDesignName are identifiers used to reference Design/SubDesign 
  declarations from other rules in the grammar, see Identifier section below.
  	Designs are the top level declaration for a PHDLDesign, and can contain any combination
@@ -199,6 +203,11 @@ NetDeclaration ::= "net" [Vector] NetName ( "," NetName )* ( "{" NetElement* "}"
  and ends with either a semicolon or a combination of NetElements within curly braces.
  	NetElements defined in a NetDeclaration will be applied to all nets declared in the 
  declaration.
+ 	Each NetName enumerated in a NetDeclaration represents an individual net that must be treated
+ individually and separately from all other nets declared with in the NetDeclaration. In other 
+ words, once a net has been declared it has no relation or connection to any other net declared 
+ within the same NetDeclaration, besides that it was declared with the same width and at the same 
+ time.
                 
 NetElement ::= AttrDeclaration | InfoStatement
  -----
@@ -610,7 +619,7 @@ SubInstName ::= Identifier
 PhdlID ::= Integer | Identifier | PINUM
  -----
  	The PhdlID rule is currently used as a combination of the Integer, Identifier, and 
- PINNUM rules thus allowing the identifier to be any of these.
+ PINNUM rules thus allowing the identifier to be any of these. 
 
 Lexical Elements
 ----------------
