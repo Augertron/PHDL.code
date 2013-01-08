@@ -416,7 +416,9 @@ RefTail ::= SubInstName [Indices] "." [RefTail]
  sub-instance to sub-instance. 
  	The optional Indices rule allows the user to reference a set of arrayed sub-instances 
  somewhere down the hierarchy using either a range or a comma separated list of indices.
- (See the Indices rule).
+ 	For more information on how Indices should be interpreted, see the section entitled: 
+ "Interpreting Arrays, Indices, Vectors, Slices, Ranges, Concatenations, PinDeclarations, 
+ and Assignments" as well as the Indices and Range rules.
 
 
 Port Assignments
@@ -523,7 +525,8 @@ Indices ::= "(" (   Range  | ( Integer ( "," Integer )* )  ) ")"
  	The Indices rule can be used to reference a set of instanced devices or 
  sub-designs from an array, by index. 
  	This can either be done using a Range or with a comma-separated list of 
- indices. 
+ indices. In both cases, the indices referenced must have been originally declared
+ in the corresponding array.
  	The Indices rule is enclosed in round braces in-order to match
  Arrayed device or sub-design instantiations and to differentiate it from
  Slices.
@@ -610,11 +613,22 @@ Qualifier ::= "this" [Indices] "."
 	 The optional Indices rule is what allows specific instances within the array to be 
  referenced.
  	The Qualifier rule should only be allowed when wanting to reference a specific set of 
- either device or sub-design of instances within its own instance declaration.
+ either device or sub-design instances within an arrayed instance declaration. It specifies 
+ a specific or a set of specific instances within the array to be referenced, allowing the 
+ user to make a pin/port assignment or attribute reference specific to only certain instances 
+ with in the array, referenced by index. This allows for many devices/sub-designs of the same 
+ type to be instanced at once while connecting them differently as needed. The combine notation,
+ allows for them to be connected together as a group with a single line of code, if so 
+ desired as well.
+ 	For more information on how Indices should be interpreted, see the section entitled: 
+ "Interpreting Arrays, Indices, Vectors, Slices, Ranges, Concatenations, PinDeclarations, 
+ and Assignments" as well as the Indices and Range rules.
  
 QualifiedNameOptWildCard ::= PackageName "." ( "*" | ( DeviceName | DesignName | SubDesignName ) )
  -----
  	The QualifiedNameOptWildCard rule allows for imports by package.
+ 	PackageName is a reference to a predefined package with devices, designs, or sub-designs that 
+ the user desires to use within the current design. 
  	If the '*' character is used, all devices, designs, and sub-designs contained in the package 
  should be imported. If this is not the case only the specified device, design, or sub-design
  should be imported.
