@@ -243,10 +243,22 @@ Instance ::= ( "inst" [Array] InstName "of" QualifiedDeviceName "{" InstanceElem
  rules within the grammar, see Identifier section below.
  	QualifiedDeviceName and QualifiedSubDesignName are references to Devices or Sub-Designs
  defined/declared elsewhere in the user's source code.
- 	Multiple devices can be instanced at once using the Array rule below. 
+ 	Multiple devices can be instanced at once using the Array rule below. When this occurs,
+ each individual instance in the array is interpreted as its own individual instance. It does
+ not inherently have any connection to any of the other devices in the array unless the designer 
+ so specifies by connecting their pins to the same nets. The same applies to sub-design instances
+ and their respective port-assignments. For more information on how Arrays should be interpreted, 
+ see the section entitled: "Interpreting Arrays, Indices, Vectors, Slices, Ranges, Concatenations, 
+ PinDeclarations, and Assignments".
  	The optional STRING field in sub-instance declarations is a REFPREFIX value that will be 
  prepended to the reference designators of all devices instantiated within the sub-design 
  instantiation.
+ 	Instancing a device in PHDL is equivalent to dragging a device from a library in a 
+ conventional PCB design tool onto the schematic page. Instancing a device defines two 
+ relationships: (1) which device the instance inherits all pins from, and (2) defines 
+ how all of the pins are to be connected to the rest of the design. A similar concept applies 
+ when instantiating a sub-design except that it is equivalent to adding a pre-defined 
+ hierarchical block to a design and connecting its ports to nets in the current design.
   
  
 QualifiedDeviceName ::= [PackageName "."] DeviceName              
