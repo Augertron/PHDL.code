@@ -219,6 +219,11 @@ PortDeclaration ::= "port" [Vector] PortName ( "," PortName )* ( "{" InfoStateme
  allowed to be defined for Ports.
  	PortDeclarations are only allowed within sub-designs and are used with hierarchy in-order 
  to connect internal nets or pins to the outside world. 
+ 	Each PortName enumerated in a NetDeclaration represents an individual net that must be treated
+ individually and separately from all other nets declared with in the PortDeclaration. In other 
+ words, once a net has been declared it has no relation or connection to any other net declared 
+ within the same PortDeclaration, besides that it was declared with the same width and at the same 
+ time.
  	Ports can also be used as nets/connections to establish connectivity between pins within a
  sub-design. When a design is elaborated by the compiler, the design must be "flattened"
  in-order to generate output data. In the case where a port is declared as "open", this
