@@ -507,15 +507,24 @@ Concatenation ::=       ( "{" ConnectionRef  ( "," ConnectionRef )* "}" ) |
 	 - A single one-bit (non-vector) connection enclosed in angle brackets '<' '>' should be replicated 
 	   or branched into however many connections are needed to match the left hand side of the assignment. 
 	   In other-words, every pin or connection on the left hand side of the assignment should be connected 
-	   to this singular net in parallel.
+	   to this singular net in parallel. We call this replication.
 	 - A single one-bit (non-vector) connection followed by the '*' symbol should be treated the same as
-	   the connection enclosed in angle brackets above.
+	   the connection enclosed in angle brackets above. We call this replication.
 	 - A connection can also be defined as "open". This would have no affect if performing a
 	   connection assign, but if performing a pin assignment or port assignment it signifies that nothing 
 	   should be connected to the pin or port. 
 	   If this occurs within a PortAssign, it is important to make sure that if the port was used as a 
 	   connection between nets or pins down-within the sub-design that this connection is preserved when 
 	   the design is elaborated.
+	Replication should only be allowed for single-bit connections. However a index of a vectored or 
+multi-bit connection can be specified using the slices rule as shown here:
+	
+	net[7:0] low_byte;
+	net[15:0] data;
+	
+	//sign-extend the low_byte into the upper data bits.
+	data[15:8] = <low_byte[7]>;
+	data[7:0] = low_byte;
 
 ConnectionRef ::= ConnectionName [Slices]
  -----
