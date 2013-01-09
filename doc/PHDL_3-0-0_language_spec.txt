@@ -12,6 +12,9 @@ For an example of how the grammar should be interpreted, the tutorials at:
 http://phdl.sourceforge.net/2.1/tutorial/rc_helloworld.php are a good resource. They were written
 however with the 2.1 version of the grammar in mind.
 
+
+
+
 Parser Rules
 ------------
 
@@ -46,7 +49,7 @@ Package ::= "package" PackageName "{" Import* ( Device | Design )* "}"
  	Currently, packages can only be one level deep (in other words, they cannot be 
  nested -- i.e. you cannot have a package within a package). The only objects that may 
  be declared inside of a package are devices and designs (this includes hierarchical 
- subdesigns). 
+ sub-designs). 
  	PackageName is an identifier used to refer to the package from other rules in the 
  grammar, see Identifier section below.
  	A package contains the device definitions and design declarations contained within
@@ -56,7 +59,8 @@ Package ::= "package" PackageName "{" Import* ( Device | Design )* "}"
  to be included within the current package, but imports must come before any other 
  definitions/declarations.
  	Packages provide a framework for qualified namespaces. See section entitled:
- "Qualified Namespaces".
+ "Qualified Namespaces" for information on how this should be implemented.
+
 
 Devices
 ~~~~~~~
@@ -64,7 +68,9 @@ Devices
 Device ::= "device" DeviceName "{" DeviceElement* "}"
  -----
  	The Device rule is used to define the interface between a "PHDL device instantiation"
- and the footprint (or package) definition within your chosen layout tool. 
+ and the footprint (or package) definition within your chosen layout tool. Every type of device used in
+ the design must have a device definition which links it to the footprint that will be used when designing
+ the layout.
  	DeviceName is an identifier used to refer to the device definition from other rules 
  in the grammar, see Identifier section below.
  	Devices can contain any combination of DeviceElements between the curly braces,
@@ -94,7 +100,7 @@ AttrDeclaration ::= "attr" AttrName "=" STRING ";"
  -----
  	Attributes can be used to contain any type of data desired with reference to
  a specific device. 
- 	Attributes declarations are allowed within both device definitions and device 
+ 	Attribute declarations are allowed within both device definitions and device 
  instantiations as well as in net declarations. 
  	AttrName is an identifier used to refer to the attribute from other rules 
  in the grammar, see Identifier section below.
@@ -106,8 +112,8 @@ AttrDeclaration ::= "attr" AttrName "=" STRING ";"
 	   the compiler will use the value of REFDES as the device instantiation's unique 
 	   reference designator, rather than generating one using REFPREFIX.
 	  PINCOUNT: The value of the PINCOUNT attribute must be an Integer. If the number of
-	   pins declared in the device doesn't match the value of PINCOUNT, the compiler should
-	   throw an error. 
+	   pins declared in the device definition doesn't match the value of PINCOUNT, the 
+	   compiler should throw an error. 
 	 Other common uses for attributes:
 	  VALUE: used to define resistance, capacitance, inductance
 	  COST: can be used for bill of materials and part procurement
@@ -126,7 +132,9 @@ PinDeclaration ::= PinType [Vector] PinName "=" "{" PhysicalPinName [( "," Physi
  	PinName is an identifier used to refer to the pin declaration from other rules 
  in the grammar, see Identifier section below.
  	A Vector of pins, or multi-bit pins with the same name can be declared using the 
- Vector rule, see section on Vectors and RANGES below.
+ Vector rule. However these pins should be interpreted and treated as individual pins aside 
+ from the fact that they share a name and can be referenced together, either all at once or 
+ by index. See section on Vectors and RANGES below.
  	A PhysicalPinName is an identifier that can be used to reference the unique pin 
  or pad in your layout editor footprint (or package) definition.
  	The curly braces contain a comma separated list of one or more PhysicalPinNames. 
@@ -183,7 +191,7 @@ Design ::=      ( "design" DesignName "{" DesignElement* "}" )
  	The Design rule encompasses both design declarations and sub-design declarations.
  	
  	A Design encompasses all the connectivity of a single PCB. No connectivity extends outside the scope 
- of the Design block. In other words they are the top level of a phdl design.
+ of the Design block. In other words the Design is the top level of a PHDL design.
 	When the front-end of the compiler elaborates, or flattens the hierarchy of the design and 
  walks the design graph in order to determine connectivity through out the entire  design, it 
  should use the Design rule as the root node. 
@@ -236,15 +244,15 @@ PortDeclaration ::= "port" [Vector] PortName ( "," PortName )* ( "{" InfoStateme
  allowed to be defined for Ports.
  	PortDeclarations are only allowed within sub-designs and are used with hierarchy in-order 
  to connect internal nets or pins to the outside world. 
- 	Each PortName enumerated in a NetDeclaration represents an individual net that must be treated
- individually and separately from all other nets declared with in the PortDeclaration. In other 
- words, once a net has been declared it has no relation or connection to any other net declared 
+ 	Each PortName enumerated in a PortDeclaration represents an individual port that must be treated
+ individually and separately from all other ports declared within the PortDeclaration. In other 
+ words, once a port has been declared it has no relation or connection to any other port declared 
  within the same PortDeclaration, besides that it was declared with the same width and at the same 
  time.
  	Ports can also be used as nets/connections to establish connectivity between pins within a
  sub-design. When a design is elaborated by the compiler, the design must be "flattened"
  in-order to generate output data. In the case where a port is declared as "open", this
- connectivity within the sub-design must not be destroyed, even though there is connection 
+ connectivity within the sub-design must be preserved, even though there is no connection 
  made outside the sub-design itself.
  
 
@@ -271,27 +279,27 @@ Instance ::= ( "inst" [Array] InstName "of" QualifiedDeviceName "{" InstanceElem
  prepended to the reference designators of all devices instantiated within the sub-design 
  instantiation. Another option is to declare an attribute in the sub-instance called REFPREFIX. The 
  value of this attribute will then be prepended to all reference designators of all instances, 
- sub-instances and connections within the sub-instance. In either case the "/" character will be used
+ sub-instances, and connections within the sub-instance. In either case the "/" character will be used
  as a delimiter between the REFPREFIX and the original reference designator.
  	Instancing a device in PHDL is equivalent to dragging a device from a library in a 
  conventional PCB design tool onto the schematic page. Instancing a device defines two 
  relationships: (1) which device the instance inherits all pins from, and (2) defines 
  how all of the pins are to be connected to the rest of the design. 
  	A similar concept applies when instantiating a sub-design except that it is equivalent 
- to adding a pre-defined hierarchical block to a design and connecting its ports to nets in the 
+ to adding a predefined hierarchical block to a design and connecting its ports to nets in the 
  current design.
  	It is important to remember when elaborating a hierarchical design that the design must be 
  flattened before connectivity may be determined. Each port of the sub-instance must be checked for 
  its connectivity with pins/nets/connections within the sub-design first and then second for possible 
  connectivity with nets/connections assigned to it through port assignments in the upper design.
   
- 
 QualifiedDeviceName ::= [PackageName "."] DeviceName              
  -----
  	The QualifiedDeviceName rule allows for devices to be referenced by package, if
  the specified device is contained within a package and has not already been 
  imported using the Import rule.
  	PackageName is thus the name of the package containing the specified device.
+ 	See section entitled: "Qualified Namespaces" for information. 
  
 InstanceElement ::= AttrDeclaration | RefAttr | PinAssign | InfoStatement
  -----
@@ -305,6 +313,7 @@ QualifiedSubDesignName ::= [PackageName "."] SubDesignName
  the specified sub-design is contained within a package and has not already been 
  imported using the Import rule.
  	PackageName is thus the name of the package containing the specified sub-design.
+ 	See section entitled: "Qualified Namespaces" for information. 
   
 SubInstElement ::= AttrDeclaration | SubAttrRef | PortAssign | InfoStatement
  -----
@@ -312,8 +321,8 @@ SubInstElement ::= AttrDeclaration | SubAttrRef | PortAssign | InfoStatement
  port assignments, and info statements. However each sub-design instance is required to 
  have a port assignment for every port declared within the referenced sub-design.
  	There is an optional special attribute which can be declared in the sub-instance called REFPREFIX. 
- The value of this attribute will then be prepended to all reference designators of all instances, 
- sub-instances, and connections within the sub-instance. In this case the "/" character will be used
+ If this attribute is declared then value of this attribute will be prepended to all reference designators
+ of all instances, sub-instances, and connections within the sub-instance. The "/" character will be used
  as a delimiter between the REFPREFIX and the original reference designator.
   
 
@@ -323,10 +332,10 @@ Ref Attributes
 RefAttr ::= [Qualifier] AttrName "=" STRING ";"
  -----
  	The RefAttr rule is used to modify an existing attribute when instantiating a device.
- 	In other words, it allows you to over-ride the attribute value specified when the 
- device was defined.
  	AttrName is an identifier used to reference the already defined attribute.
  	STRING is the new value for the attribute.
+ 	The old value of the attribute declared within the device definition should be overwritten with 
+ the new STRING value.
  	The optional Qualifier rule should only be allowed in the case where an array of devices are
  being instanced at once.
 
@@ -340,7 +349,7 @@ PinAssign ::= ( "combine" "(" PinReference ")" "=" Concatenation ";" )
  	The PinAssign rule is used to assign pins within a device instantiation to existing 
  connections (nets or ports) or to assign them as "open".
  	There must be a pin assignment assigning every pin declared in the device 
- definition referenced by the device definition.
+ definition referenced by the device instantiation.
  	PinReferences allow slices, which allow a user to assign multiple bits to a net at once. 
  	The order of assignment in PHDL always takes place from left-to-right in the order the 
  arrayed object was declared. The following pin assignment is given as an example:
@@ -360,8 +369,8 @@ PinAssign ::= ( "combine" "(" PinReference ")" "=" Concatenation ";" )
  	In the above case, the pin p[1] is assigned to the net bus[3] and the pin p[0] is assigned
  to the net bus[2].
  
-	The compiler should throw an error if the number of pins referenced left of the assignment 
- does not match the number of connections referenced by the concatenation the right side.
+	The compiler should throw an error if the number of pins referenced on the left of the assignment 
+ does not match the number of connections referenced by the concatenation on the right side.
  (Count each individual pin indice as a pin).
  	Within an arrayed device instance, the optional combine notation can be used. The combine notation
  should be illegal in the case where a single device is being instanced.
@@ -369,7 +378,7 @@ PinAssign ::= ( "combine" "(" PinReference ")" "=" Concatenation ";" )
   
 PinReference ::= [Qualifier] PinName [Slices]
  ----- 
- 	The PinReference rule is a reference to set of pins that are to be assigned connection.
+ 	The PinReference rule is a reference to a set of pins that are to be assigned connection.
  	The optional Qualifier rule should only be allowed when an array of devices are being instanced
  at once. 
  	PinName is the identifier used to reference the PinDeclaration of the pins to be assigned 
@@ -463,7 +472,7 @@ PortAssign ::= ( "combine" "(" PortReference ")" "=" Concatenation ";" )
  -----
  	The PortAssign rule should be interpreted exactly as the PinAssign rule except that it 
  is used to assign ports in sub-design instances to connections in the current design rather than
- to assign pins. All the same specifications that apply to pin assignements should apply to 
+ to assign pins. All the same specifications that apply to pin assignments should apply to 
  port assignments.
  	Within an arrayed sub-design instance, the optional combine notation can be used. The combine 
  notation should be illegal in the case where a single sub-design is being instanced.
@@ -483,14 +492,14 @@ Connection Assignments and Concatenation
 
 ConnectionAssign ::= ConnectionName [Slices] "=" Concatenation ";"
  -----
- 	The ConnectionAssign rule allows for conductivity to established between two connections.
+ 	The ConnectionAssign rule allows for conductivity to be established between two connections.
  Such as between two nets or between a net and a port.   
  	ConnectionName is an identifier used to reference the port or net being assigned.
  	The scope of allowable ConnectionNames for a given ConnectionAssign should only include 
  the connections declared within the current design or sub-design.
  	The optional Slices rule allows for referencing of specific bits within a multi-bit vector
- connection. This can either be done with a Range or by comma separated list of indices.
- 	See the Slices rule for more details.
+ connection. This can either be done with a Range or by comma separated list of indices. See 
+ the Slices rule for more details.
  	When slices are used, assignment should always be done reading the indices on the left side
  of the equals sign (from left-to-right) and connecting them one by one to the connections 
  on the right side of the equals sign (also reading from left-to-right).
@@ -500,7 +509,9 @@ ConnectionAssign ::= ConnectionName [Slices] "=" Concatenation ";"
  	If the number of referenced connections on the left side of the equals sign  does not 
  equal the number of connections referenced by the concatenation, The compiler should 
  throw an error. (Count each individual indice as a connection).
- 
+ 	For more information on how assignments should be interpreted, see the section entitled: 
+ "Interpreting Arrays, Indices, Vectors, Slices, Ranges, Concatenations, PinDeclarations, 
+ and Assignments" as well as the Indices and Range rules.
 
 Concatenation ::=       ( "{" ConnectionRef  ( "," ConnectionRef )* "}" ) |
                         ( ConnectionRef ( "&" ConnectionRef )* ) |
@@ -583,10 +594,10 @@ Vector ::= "[" Range "]"
  -----
  	Vectors can be used to declare multi-bit pins, nets, or ports. This allows
  the user to declare and assign an arbitrary number of connections or pins 
- with the same name and all at once. Rather than individually. For example 
+ with the same name and all at once, rather than individually. (For example 
  the user could define a 16bit data pin for a memory chip, and then connect 
  it to a 16bit bus with only one line of code to define the pin and one line 
- to connect it when the device is instantiated.
+ of code to connect it when the device is instantiated).
  	The Range for a vector is enclosed in square brackets to differentiate it from
  the Array rule.
   
@@ -597,7 +608,7 @@ Slices ::= "[" (   Range  | ( Integer ( "," Integer )* )  ) "]"
  	This can either be done using a Range or with a comma-separated list of 
  indices. In both cases, the indices referenced must have been originally declared
  in the corresponding vectored pin/connection declaration.
- 	The Slices rule is enclosed in square brackets braces in-order to match
+ 	The Slices rule is enclosed in square brackets in-order to match
  Vector pin/connection declarations and to differentiate it from the Indices rule.
  	Slices should only be allowed to be used when referencing a Vector or 
  multi-bit pin or connection (port/net). 
@@ -608,12 +619,12 @@ Range ::= Integer ":" Integer
  	Ranges can be used to specify an ordered range of indices. The ':' character
  can be likened to the "downto" or "to" keywords in VHDL.
  	Both the Integers are included in the range.
- 	For example the range: 7:0 specifies 8 individual indices from left-to-right 7 down to 0.
- 	Ordering the other direction is also legal: 0:7 specifies 8 individual indices from 
+ 	For example the range: "7:0" specifies 8 individual indices from left-to-right 7 down to 0.
+ 	Ordering the other direction is also legal: "0:7" specifies 8 individual indices from 
  left-to-right 0 up to 7.
- 
  	Another way to think of it is that the Range 1:3 means the following: reference 1,2,3 
  in that order and the Range 3:0 means the following: reference 3,2,1,0 in that order.
+  
   
 Interpreting Arrays, Indices, Vectors, Slices, Ranges, Concatenations, PinDeclarations, and Assignments
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -625,17 +636,17 @@ Interpreting Arrays, Indices, Vectors, Slices, Ranges, Concatenations, PinDeclar
  to ensure this:
   1.  When interpreting arrayed device or sub-design instance declarations each instance 
       in the array must be interpreted and treated as its own unique individual instance. 
-      The only difference between how this instance and a non-arrayed instance should be 
+      The only difference between this instance and a non-arrayed instance should be 
       handled is that it shares a name with the other instances in the array and can be 
-      referenced by index.
+      referenced individually or together with the other instances in the array.
       A unique identifier for this instance can be generated by concatenating the name 
       to its unique index.
   2.  When interpreting multi-bit or vectored connections/pins each connection/pin in the 
       vector must be interpreted and treated as its own unique individual connection/pin.
-      The only difference between how this connection/pin and a non vectored connection/pin 
+      The only difference between this connection/pin and a non vectored connection/pin 
       is that it can shares a name with the other connections/pins in the vector and can be
-      referenced by index.
-      As arrayed device, a unique identifier for this connection/pin can be created by
+      referenced individually or together with the other connections/pins in the vector.
+      As with an arrayed device, a unique identifier for this connection/pin can be created by
       concatenating the name to its unique index.
   3.  Arrays, Indices, Vectors, Slices, Ranges, and Concatenations must be interpreted as a
       string of individual connections/pins/references lined up from left-to-right.
@@ -671,6 +682,37 @@ Qualifier ::= "this" [Indices] "."
  type to be instanced at once while connecting them differently as needed. The combine notation,
  allows for them to be connected together as a group with a single line of code, if so 
  desired as well.
+ 	For example:
+ 	
+	device resistor {
+	    attr REFPREFIX = "R";
+	    attr FOOTPRINT = "R0603";
+	    attr LIBRARY = "rcl-smd";
+	    attr VALUE = "1k";
+	    pin a = {1};
+	    pin b = {2};
+	}
+	 
+	design top {
+	 
+	    net vcc, gnd, ref;
+		
+	    // a simple voltage divider with two resistors between the three above nets
+	    inst(1:0) my_res of resistor {
+	        this(1).VALUE = "2k";
+	        this(1).a = vcc;
+	        b = ref;
+	        this(0).a = gnd;
+	    }
+		
+	    // ... more of the design down here
+	}
+	
+ 	In the above example, the a pin on the resister my_res(1) is assigned to vcc, while the a
+ pin on my_res(0) is assigned to gnd. Both b pins are assigned to the ref net and the VALUE 
+ attribute of my_res(1) is set to "2k", while the VALUE attribute of my_res(0) remains the previously 
+ defined value of "1k". 
+ 	
  	For more information on how Indices should be interpreted, see the section entitled: 
  "Interpreting Arrays, Indices, Vectors, Slices, Ranges, Concatenations, PinDeclarations, 
  and Assignments" as well as the Indices and Range rules.
@@ -692,8 +734,8 @@ Qualified Namespaces
  If a package called "foo" contains a device called "fum", then the device can be referred to 
  in a design as "foo.fum". 
  	This should be allowed any time a sub-design or device definition is instantiated within a design,
- even if the package containing the definition has not been previously included.
- 
+ even if the package containing the definition has not been previously included. See the 
+ QualifiedDeviceName and the QualifiedSubDesignName rules above. 
 
 Element Names/Identifiers
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -714,6 +756,10 @@ PhdlID ::= Integer | Identifier | PINUM
  -----
  	The PhdlID rule is currently used as a combination of the Integer, Identifier, and 
  PINNUM rules thus allowing the identifier to be any of these. 
+
+
+
+
 
 Lexical Elements
 ----------------
