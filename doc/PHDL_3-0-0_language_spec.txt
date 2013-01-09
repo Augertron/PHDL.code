@@ -38,15 +38,25 @@ Import ::= "import" QualifiedNameOptWildCard ";"
 Package ::= "package" PackageName "{" Import* ( Device | Design )* "}"
  -----
  	Packages can be used to organized groups of device definitions and sub-design
- declarations into a package for later use.
+ declarations into a package for later use. Packages allow cross-references across 
+ file boundaries and allow source code to be split up into separate files (devices in 
+ library files, and design units in other files). This is quite different than using 
+ "include" directives which simply copy the source text from another file to the 
+ location of the include directive. 
+ 	Currently, packages can only be one level deep (in other words, they cannot be 
+ nested -- i.e. you cannot have a package within a package). The only objects that may 
+ be declared inside of a package are devices and designs (this includes hierarchical 
+ subdesigns). 
  	PackageName is an identifier used to refer to the package from other rules in the 
  grammar, see Identifier section below.
  	A package contains the device definitions and design declarations contained within
  the curly braces. Any combination or order of device definitions and design 
  declarations are allowed.
- 	Imports can also be used to import definitions or declarations from external files 
+ 	Imports can be used to import definitions or declarations from external files 
  to be included within the current package, but imports must come before any other 
  definitions/declarations.
+ 	Packages provide a framework for qualified namespaces. See section entitled:
+ "Qualified Namespaces".
 
 Devices
 ~~~~~~~
@@ -413,8 +423,6 @@ Combine Notation
  match the pin width on the right side.
  	As with everything else in PHDL if no indices are specified then the assignment always takes 
  place in the order the arrayed or vectored object was originally declared from left-to-right.
- 
- 
 
 
 Sub Attribute References
@@ -675,6 +683,16 @@ QualifiedNameOptWildCard ::= PackageName "." ( "*" | ( DeviceName | DesignName |
  	If the '*' character is used, all devices, designs, and sub-designs contained in the package 
  should be imported. If this is not the case only the specified device, design, or sub-design
  should be imported.
+
+ 
+Qualified Namespaces
+~~~~~~~~~~~~~~~~~~~~
+ 	Packages provide a framework for qualified namespaces. This means that each named object within 
+ the package is prefixed with the package name using standard dot-notation to separate the two names. 
+ If a package called "foo" contains a device called "fum", then the device can be referred to 
+ in a design as "foo.fum". 
+ 	This should be allowed any time a sub-design or device definition is instantiated within a design,
+ even if the package containing the definition has not been previously included.
  
 
 Element Names/Identifiers
