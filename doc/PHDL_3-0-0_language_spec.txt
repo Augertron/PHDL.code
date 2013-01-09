@@ -498,7 +498,10 @@ Concatenation ::=       ( "{" ConnectionRef  ( "," ConnectionRef )* "}" ) |
 ConnectionRef ::= ConnectionName [Slices]
  -----
  	A ConnectionRef is a reference to a ConnectionName with the option of using the 
- Slices rule to reference specific bits of a multi-bit vector connection.
+ Slices rule to reference specific bits of a multi-bit vector connection. 
+ 	For more information on how Slices should be interpreted, see the section entitled: 
+ "Interpreting Arrays, Indices, Vectors, Slices, Ranges, Concatenations, PinDeclarations, 
+ and Assignments" as well as the Slices and Range rules.
  	As always indices should be read from left-to-right.  
   
 ConnectionName ::= NetName | PortName
@@ -526,7 +529,7 @@ Indices ::= "(" (   Range  | ( Integer ( "," Integer )* )  ) ")"
  sub-designs from an array, by index. 
  	This can either be done using a Range or with a comma-separated list of 
  indices. In both cases, the indices referenced must have been originally declared
- in the corresponding array.
+ in the corresponding arrayed instance declaration.
  	The Indices rule is enclosed in round braces in-order to match
  Arrayed device or sub-design instantiations and to differentiate it from
  Slices.
@@ -549,10 +552,10 @@ Slices ::= "[" (   Range  | ( Integer ( "," Integer )* )  ) "]"
  	The Slices rule can be used to reference a set of pins or connections declared
  as part of a vector, by index.
  	This can either be done using a Range or with a comma-separated list of 
- indices. 
+ indices. In both cases, the indices referenced must have been originally declared
+ in the corresponding vectored pin/connection declaration.
  	The Slices rule is enclosed in square brackets braces in-order to match
- 	Vector pin/connection declarations and to differentiate it from
- Indices.
+ Vector pin/connection declarations and to differentiate it from the Indices rule.
  	Slices should only be allowed to be used when referencing a Vector or 
  multi-bit pin or connection (port/net). 
 
