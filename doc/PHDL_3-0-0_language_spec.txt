@@ -380,12 +380,12 @@ Combine Notation
   
  device memory_1024x8 {
  	//Attributes omitted
- 	pin[7:0] data;       //Our memory has an 8 bit wide data pin array
+ 	pin[7:0] data;       			//Our memory has an 8 bit wide data pin array
  	//...
  }
  
  design myDesign {
- 	net[15:0] data_bus;  //We have a 16 bit data bus
+ 	net[15:0] data_bus;  			//We have a 16 bit data bus
  	
  	inst(1:0) memory_array of memory_1024x8 {
  		combine(data) = data_bus;   //Using combine we can line up the two 8bit pin arrays
@@ -408,9 +408,13 @@ Combine Notation
  	Thus, the data_bus would necessarily be only 8 bits wide and both 8 bit data arrays would be 
  connected to it. (this(1).data[7:0] would be assigned to data_bus[7:0] and this(0).data[7:0] 
  would also be assigned to data_bus[7:0])
- 
+ 	
  	The compiler should throw an error if the pin width on the left of the assignment does not
  match the pin width on the right side.
+ 	As with everything else in PHDL if no indices are specified then the assignment always takes 
+ place in the order the arrayed or vectored object was originally declared from left-to-right.
+ 
+ 
 
 
 Sub Attribute References
@@ -633,7 +637,12 @@ Interpreting Arrays, Indices, Vectors, Slices, Ranges, Concatenations, PinDeclar
       in the case of pin declarations). The second-left-most index referenced on the left hand 
       side of the assignment should be assigned to the second-left-most index on the right hand 
       side of the equals, etc...
-      The number of references on both sides of the assignment should always be equal or the 
+      If indices are not explicitly stated in an assignment referencing arrayed or vectored objects
+      it is assumed that the entire array or vector is being referenced. In the case of arrayed 
+      instances each instance will be treated individually and the assignment will be applied to 
+      each instance. In the case of vectored pins, ports, or connections the assignment will occur
+      in the order they were originally declared from left to right.
+      The number of individual references on both sides of the assignment should always be equal or the 
       compiler should throw an error.
       
 
