@@ -17,7 +17,11 @@ design refboard {
     // hierarchical probing to change the resistor values down in each one.
     // Decoupling caps are down in these blocks.
     subinst supply_3V3 of power_supply { attr refprefix="PS1"; vin=+5V; vout=+3V3; gnd=gnd;}
+    supply_3V3.R2.VALUE="1500/1%";
+    supply_3V3.R3.VALUE="187/1%";
     subinst supply_1V2 of power_supply { attr refprefix="PS2"; vin=+5V; vout=+1V2; gnd=gnd;}
+    supply_1V2.R2.VALUE="1500/1%";
+    supply_1V2.R3.VALUE="1000/1%";
 
     // These are four mounting holes.
     inst mounting_hole1 of dev_pack.mount_hole_125 { REFDES="MTG1"; pin1=open; }
