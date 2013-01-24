@@ -21,4 +21,7 @@ int main(int argc, char **argv) {
 		print_string("Normalized",converted8);
 	}
 
+	//validate(u32_to_u8(std::u32string({0xd826})));
+	//normalize(std::u32string({0xd826}));
+
 }

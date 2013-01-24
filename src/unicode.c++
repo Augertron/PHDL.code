@@ -26,7 +26,7 @@ namespace phdl { namespace unicode {
 
 		if (!converted) {
 			// FIXME implement me correctly
-			perror("u8_check");
+			perror("u8_to_u32");
 			assert(false && "u8_to_u32");
 		}
 		std::u32string result(
@@ -48,7 +48,7 @@ namespace phdl { namespace unicode {
 
 		if (!converted) {
 			// FIXME implement me correctly
-			perror("u8_check");
+			perror("u32_to_u8");
 			assert(false && "u32_to_u8");
 		}
 		std::string result(
@@ -71,7 +71,7 @@ namespace phdl { namespace unicode {
 
 		if (!normalized) {
 			// FIXME implement me correctly
-			perror("u8_check");
+			perror("u32_normalize");
 			assert(false && "u32_normalize");
 		}
 		std::u32string result(
