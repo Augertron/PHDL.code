@@ -57,3 +57,7 @@ TEST(surrogates_replaced) {
 	EXPECT(normalize("wx\xed\xae\x80yz") == u8"wx\ufffdyz"); // D+DB80
 }
 
+TEST(replacing_replacement_character) {
+	EXPECT(normalize(u8"wx\ufffdyz") == u8"wx\ufffdyz"); // D+FFFD
+}
+
