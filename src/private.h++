@@ -27,9 +27,13 @@ namespace phdl {
 	// Interface for manipulating Unicode strings.
 	namespace unicode {
 
-		// Normalize the given UTF-8 string to NFC. Invalid sequences are
-		// replaced with the standard Unicode replacement character (U+FFFD).
+		// Normalize the given string to NFC. (Invalid sequences are replaced
+		// with the standard Unicode replacement character, U+FFFD).
 		std::string normalize(const std::string &);
+
+		// Split the given string into individual characters. (By characters,
+		// we mean standard Unicode extended grapheme clusters.)
+		std::vector<std::string> split_characters(const std::string &);
 
 	}
 }
