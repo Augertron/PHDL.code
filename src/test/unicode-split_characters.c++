@@ -15,6 +15,14 @@ TEST(newline_characters) {
 	EXPECT(split_characters(u8"\n\n\r\r\n\r") == SV({ "\n", "\n", "\r", "\r\n", "\r" }));
 }
 
+TEST(examples_from_uax29) {
+	EXPECT(split_characters(u8"\u0067\u0308"      ) == SV({ u8"\u0067\u0308"       }));
+	EXPECT(split_characters(u8"\u1100\u1161\u11a8") == SV({ u8"\u1100\u1161\u11a8" }));
+	EXPECT(split_characters(u8"\u0ba8\u0bbf"      ) == SV({ u8"\u0ba8\u0bbf"       }));
+	EXPECT(split_characters(u8"\u0e01\u0e33"      ) == SV({ u8"\u0e01\u0e33"       }));
+	EXPECT(split_characters(u8"\u0937\u093f"      ) == SV({ u8"\u0937\u093f"       }));
+}
+
 TEST(examples_from_tr15) {
 	EXPECT(split_characters(u8"\u212b"            ) == SV({ u8"\u212b"             }));
 	EXPECT(split_characters(u8"\u0041\u030a"      ) == SV({ u8"\u0041\u030a"       }));
