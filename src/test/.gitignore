@@ -1,0 +1,3 @@
+# Test binaries and log files
+*.log
+suite-*

@@ -35,13 +35,15 @@ namespace phdl {
 	namespace unicode {
 
 		// Validate the given (supposedly) UTF-8 string, throwing an
-		// exception if an error is found.
+		// exception if an invalid sequence is found.
 		struct Validation_Error {
 			size_t position;
 		};
-		void validate (const std::string &);
+		void validate(const std::string &);
 
-		//std::string UTF8_normalize_NFD (const std::string &);
-		//char32_t    UTF8_to_codepoint  (const std::string &);
+		// Normalize the given UTF-8 string to NFC. Invalid sequences are
+		// replaced with U+FFFD ("REPLACEMENT CHARACTER").
+		std::string normalize(const std::string &);
+
 	}
 }
