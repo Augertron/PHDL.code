@@ -1,86 +1,23 @@
 #include "private.h++"
 
+// ICU headers
+#include <unicode/utf8.h>
+
 namespace phdl { namespace unicode {
 
-	void validate(const std::string &input) {
-
-		const uint8_t * error_location = u8_check(
-			reinterpret_cast<const uint8_t *>(input.data()), input.size()
-		);
-
-		if (error_location) {
-			// FIXME implement me correctly
-			perror("u8_check");
-			assert(false && "UTF-8 error");
+	void validate (const std::string &hopefully_utf8) {
+		// Iterate through the UTF-8 string using ICU's low-level UTF-8
+		// interface, looking for any invalid encoding sequences.
+		const char *string = hopefully_utf8.data();
+		const int32_t length = hopefully_utf8.size();
+		assert(size_t(length) == hopefully_utf8.size());
+		int32_t position = 0;
+		int32_t codepoint;
+		while (position < length) {
+			int32_t error_position = position;
+			U8_NEXT(string, position, length, codepoint);
+			if (codepoint < 0) throw Validation_Error { size_t(error_position) };
 		}
-
 	}
 
-	std::u32string to_UTF32(const std::string &input) {
-
-		size_t converted_size = 0;
-		uint32_t *converted = u8_to_u32 (
-			reinterpret_cast<const uint8_t *>(input.data()), input.size(),
-			nullptr, &converted_size
-		);
-
-		if (!converted) {
-			// FIXME implement me correctly
-			perror("u8_to_u32");
-			assert(false && "u8_to_u32");
-		}
-		std::u32string result(
-			reinterpret_cast<const char32_t *>(converted), converted_size
-		);
-
-		free(converted);
-		return result;
-
-	}
-
-	std::string to_UTF8 (const std::u32string &input) {
-
-		size_t converted_size = 0;
-		uint8_t *converted = u32_to_u8 (
-			reinterpret_cast<const uint32_t *>(input.data()), input.size(),
-			nullptr, &converted_size
-		);
-
-		if (!converted) {
-			// FIXME implement me correctly
-			perror("u32_to_u8");
-			assert(false && "u32_to_u8");
-		}
-		std::string result(
-			reinterpret_cast<const char *>(converted), converted_size
-		);
-
-		free(converted);
-		return result;
-
-	}
-
-	std::u32string normalize(const std::u32string &input) {
-
-		size_t normalized_size = 0;
-		uint32_t *normalized = u32_normalize (
-			UNINORM_NFC,
-			reinterpret_cast<const uint32_t *>(input.data()), input.size(),
-			nullptr, &normalized_size
-		);
-
-		if (!normalized) {
-			// FIXME implement me correctly
-			perror("u32_normalize");
-			assert(false && "u32_normalize");
-		}
-		std::u32string result(
-			reinterpret_cast<const char32_t *>(normalized), normalized_size
-		);
-
-		free(normalized);
-		return result;
-
-	}
-
-}} // namespace phdl::unicode
+}}
