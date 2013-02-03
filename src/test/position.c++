@@ -1,10 +1,10 @@
 #include "test.h++"
 
-using namespace phdl::parser::position;
-using namespace phdl::unicode;
+using namespace phdl;
+using namespace phdl::position;
 
 Characters text(const std::string &text) {
-	return split_characters(text);
+	return unicode::split_characters(text);
 }
 
 TEST(basic_line_numbers) {
