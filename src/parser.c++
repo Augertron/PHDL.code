@@ -53,13 +53,6 @@ namespace phdl { namespace parser {
 		return std::count_if(start, end, nl) + 1;
 	}
 
-
-	//
-	// 01234 5678 position
-	// 01234 1234 column
-	// abcd\nwxyz
-	//        ^
-
 	size_t position::column_number(const Characters &text, size_t position) {
 		// We can determine our column number very easily by counting the
 		// characters that occur before our position up to the previous
