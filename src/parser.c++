@@ -8,6 +8,8 @@ namespace phdl { namespace parser {
 		size_t position;
 	};
 
+	Context::~Context() {}
+
 	Context::Context(const std::string &filename) :
 		detail(new Detail)
 	{
@@ -37,6 +39,23 @@ namespace phdl { namespace parser {
 	Context::Context(const Context &other) 
 		: detail(new Detail(*other.detail))
 	{}
+
+	Context &Context::operator=(const Context &other) {
+		*detail = *other.detail;
+		return *this;
+	}
+
+	bool Context::operator==(const Context &other) {
+		const Detail &detail1 = *detail;
+		const Detail &detail2 = *other.detail;
+		return
+			(detail1.filename == detail2.filename) &&
+			(detail1.position == detail2.position);
+	}
+
+	bool Context::operator!=(const Context &other) {
+		return !(*this == other);
+	}
 
 	// Get the filename.
 	std::string Context::filename() const {

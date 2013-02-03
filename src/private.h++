@@ -50,6 +50,7 @@ namespace phdl {
 		// of the filename, text, and current position. This context also
 		// provides a convenient view of the file as a stream of characters.
 		struct Context {
+			~Context();
 
 			// Read the content of the given file an create a context ready
 			// for parsing.
@@ -57,6 +58,11 @@ namespace phdl {
 
 			// Copy a context (to allow indepedent positions).
 			Context(const Context &);
+			Context &operator=(const Context &);
+
+			// Compare two contexts (same file and position)
+			bool operator==(const Context &);
+			bool operator!=(const Context &);
 
 			// Get the filename.
 			std::string filename() const;
