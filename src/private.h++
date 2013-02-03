@@ -13,23 +13,26 @@ namespace phdl {
 	namespace unicode {
 
 		// A character is a UTF-8 encoded Unicode extended grapheme cluster.
-		using character  = std::string;
-		using characters = std::vector<std::string>;
+		using Character  = std::string;
+		using Characters = std::vector<Character>;
 
 		// Normalize the given string to NFC. Invalid sequences are replaced
 		// with the standard Unicode replacement character, U+FFFD.
 		std::string normalize(const std::string &);
 
 		// Split the given string into individual characters.
-		std::vector<std::string> split_characters(const std::string &);
+		Characters split_characters(const std::string &);
+
+		// Combine split characters back into a string.
+		std::string combine_characters(const Characters &);
 	}
 
 	namespace parser {
 		namespace position {
-			size_t      line_number  (const unicode::characters &text, size_t position);
-			size_t      column_number(const unicode::characters &text, size_t position);
-			std::string line_content (const unicode::characters &text, size_t position);
-			std::string line_pointer (const unicode::characters &text, size_t position);
+			size_t              line_number  (const unicode::Characters &text, size_t position);
+			size_t              column_number(const unicode::Characters &text, size_t position);
+			unicode::Characters line_content (const unicode::Characters &text, size_t position);
+			unicode::Characters line_pointer (const unicode::Characters &text, size_t position);
 		}
 	}
 

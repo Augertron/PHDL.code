@@ -32,7 +32,7 @@ namespace phdl { namespace unicode {
 		return normalized_utf8;
 	}
 
-	std::vector<std::string> split_characters(const std::string &string) {
+	Characters split_characters(const std::string &string) {
 		// FIXME: ICU makes us use int32_t for positions, instead of size_t.
 		// We can get around this by doing something more complex, but for
 		// now, we're just going to make sure this works and hope that we
@@ -67,7 +67,7 @@ namespace phdl { namespace unicode {
 		// Iterate through all of the boundaries and grab all of the
 		// characters between them.
 		int32_t start = break_iterator->first();
-		std::vector<std::string> characters;
+		Characters characters;
 		while (start < length) {
 			int32_t end = break_iterator->next();
 			if (end == icu::BreakIterator::DONE) end = string.size();
@@ -86,5 +86,13 @@ namespace phdl { namespace unicode {
 
 		// Return the results
 		return characters;
+	}
+
+	std::string combine_characters(const Characters &characters) {
+		// Much different from the complexity needed for splitting, combining
+		// is just a matter of pasting the characters back together.
+		std::string string;
+		for (auto c : characters) string.append(c);
+		return string;
 	}
 }}
