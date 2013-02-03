@@ -7,10 +7,6 @@ Characters text(const std::string &text) {
 	return split_characters(text);
 }
 
-std::string str(const Characters &characters) {
-	return combine_characters(characters);
-}
-
 TEST(basic_line_numbers) {
 	EXPECT(line_number(text("abcd\nwxyz\n1234\n"),  0) == 1);
 	EXPECT(line_number(text("abcd\nwxyz\n1234\n"),  1) == 1);
@@ -84,53 +80,53 @@ TEST(column_numbers_with_no_newline_at_end) {
 }
 
 TEST(line_content) {
-	EXPECT(str(line_content(text("abcd\nwxyz\n1234\n"),  0)) == "abcd");
-	EXPECT(str(line_content(text("abcd\nwxyz\n1234\n"),  1)) == "abcd");
-	EXPECT(str(line_content(text("abcd\nwxyz\n1234\n"),  2)) == "abcd");
-	EXPECT(str(line_content(text("abcd\nwxyz\n1234\n"),  3)) == "abcd");
-	EXPECT(str(line_content(text("abcd\nwxyz\n1234\n"),  4)) == "abcd");
-	EXPECT(str(line_content(text("abcd\nwxyz\n1234\n"),  5)) == "wxyz");
-	EXPECT(str(line_content(text("abcd\nwxyz\n1234\n"),  6)) == "wxyz");
-	EXPECT(str(line_content(text("abcd\nwxyz\n1234\n"),  7)) == "wxyz");
-	EXPECT(str(line_content(text("abcd\nwxyz\n1234\n"),  8)) == "wxyz");
-	EXPECT(str(line_content(text("abcd\nwxyz\n1234\n"),  9)) == "wxyz");
-	EXPECT(str(line_content(text("abcd\nwxyz\n1234\n"), 10)) == "1234");
-	EXPECT(str(line_content(text("abcd\nwxyz\n1234\n"), 11)) == "1234");
-	EXPECT(str(line_content(text("abcd\nwxyz\n1234\n"), 12)) == "1234");
-	EXPECT(str(line_content(text("abcd\nwxyz\n1234\n"), 13)) == "1234");
-	EXPECT(str(line_content(text("abcd\nwxyz\n1234\n"), 14)) == "1234");
-	EXPECT(str(line_content(text("abcd\nwxyz\n1234\n"), 15)) == "");
-	EXPECT(str(line_content(text("abcd\nwxyz\n1234\n"), 16)) == "");
+	EXPECT(line_content(text("abcd\nwxyz\n1234\n"),  0) == "abcd");
+	EXPECT(line_content(text("abcd\nwxyz\n1234\n"),  1) == "abcd");
+	EXPECT(line_content(text("abcd\nwxyz\n1234\n"),  2) == "abcd");
+	EXPECT(line_content(text("abcd\nwxyz\n1234\n"),  3) == "abcd");
+	EXPECT(line_content(text("abcd\nwxyz\n1234\n"),  4) == "abcd");
+	EXPECT(line_content(text("abcd\nwxyz\n1234\n"),  5) == "wxyz");
+	EXPECT(line_content(text("abcd\nwxyz\n1234\n"),  6) == "wxyz");
+	EXPECT(line_content(text("abcd\nwxyz\n1234\n"),  7) == "wxyz");
+	EXPECT(line_content(text("abcd\nwxyz\n1234\n"),  8) == "wxyz");
+	EXPECT(line_content(text("abcd\nwxyz\n1234\n"),  9) == "wxyz");
+	EXPECT(line_content(text("abcd\nwxyz\n1234\n"), 10) == "1234");
+	EXPECT(line_content(text("abcd\nwxyz\n1234\n"), 11) == "1234");
+	EXPECT(line_content(text("abcd\nwxyz\n1234\n"), 12) == "1234");
+	EXPECT(line_content(text("abcd\nwxyz\n1234\n"), 13) == "1234");
+	EXPECT(line_content(text("abcd\nwxyz\n1234\n"), 14) == "1234");
+	EXPECT(line_content(text("abcd\nwxyz\n1234\n"), 15) == "");
+	EXPECT(line_content(text("abcd\nwxyz\n1234\n"), 16) == "");
 }
 
 TEST(line_content_no_newline_at_end) {
-	EXPECT(str(line_content(text("abcd\nwxyz\r\n1234"), 14)) == "1234");
-	EXPECT(str(line_content(text("abcd\nwxyz\r\n1234"), 15)) == "1234");
-	EXPECT(str(line_content(text("abcd\nwxyz\r\n1234"), 16)) == "1234");
+	EXPECT(line_content(text("abcd\nwxyz\r\n1234"), 14) == "1234");
+	EXPECT(line_content(text("abcd\nwxyz\r\n1234"), 15) == "1234");
+	EXPECT(line_content(text("abcd\nwxyz\r\n1234"), 16) == "1234");
 }
 
 TEST(line_pointer) {
-	EXPECT(str(line_pointer(text("abcd\nwxyz\n1234\n"),  0)) == "^");
-	EXPECT(str(line_pointer(text("abcd\nwxyz\n1234\n"),  1)) == " ^");
-	EXPECT(str(line_pointer(text("abcd\nwxyz\n1234\n"),  2)) == "  ^");
-	EXPECT(str(line_pointer(text("abcd\nwxyz\n1234\n"),  3)) == "   ^");
-	EXPECT(str(line_pointer(text("abcd\nwxyz\n1234\n"),  4)) == "    ^");
-	EXPECT(str(line_pointer(text("abcd\nwxyz\n1234\n"),  5)) == "^");
-	EXPECT(str(line_pointer(text("abcd\nwxyz\n1234\n"),  6)) == " ^");
-	EXPECT(str(line_pointer(text("abcd\nwxyz\n1234\n"),  7)) == "  ^");
-	EXPECT(str(line_pointer(text("abcd\nwxyz\n1234\n"),  8)) == "   ^");
-	EXPECT(str(line_pointer(text("abcd\nwxyz\n1234\n"),  9)) == "    ^");
-	EXPECT(str(line_pointer(text("abcd\nwxyz\n1234\n"), 10)) == "^");
-	EXPECT(str(line_pointer(text("abcd\nwxyz\n1234\n"), 11)) == " ^");
-	EXPECT(str(line_pointer(text("abcd\nwxyz\n1234\n"), 12)) == "  ^");
-	EXPECT(str(line_pointer(text("abcd\nwxyz\n1234\n"), 13)) == "   ^");
-	EXPECT(str(line_pointer(text("abcd\nwxyz\n1234\n"), 14)) == "    ^");
-	EXPECT(str(line_pointer(text("abcd\nwxyz\n1234\n"), 15)) == "^");
-	EXPECT(str(line_pointer(text("abcd\nwxyz\n1234\n"), 16)) == "^");
+	EXPECT(line_pointer(text("abcd\nwxyz\n1234\n"),  0) == "^");
+	EXPECT(line_pointer(text("abcd\nwxyz\n1234\n"),  1) == " ^");
+	EXPECT(line_pointer(text("abcd\nwxyz\n1234\n"),  2) == "  ^");
+	EXPECT(line_pointer(text("abcd\nwxyz\n1234\n"),  3) == "   ^");
+	EXPECT(line_pointer(text("abcd\nwxyz\n1234\n"),  4) == "    ^");
+	EXPECT(line_pointer(text("abcd\nwxyz\n1234\n"),  5) == "^");
+	EXPECT(line_pointer(text("abcd\nwxyz\n1234\n"),  6) == " ^");
+	EXPECT(line_pointer(text("abcd\nwxyz\n1234\n"),  7) == "  ^");
+	EXPECT(line_pointer(text("abcd\nwxyz\n1234\n"),  8) == "   ^");
+	EXPECT(line_pointer(text("abcd\nwxyz\n1234\n"),  9) == "    ^");
+	EXPECT(line_pointer(text("abcd\nwxyz\n1234\n"), 10) == "^");
+	EXPECT(line_pointer(text("abcd\nwxyz\n1234\n"), 11) == " ^");
+	EXPECT(line_pointer(text("abcd\nwxyz\n1234\n"), 12) == "  ^");
+	EXPECT(line_pointer(text("abcd\nwxyz\n1234\n"), 13) == "   ^");
+	EXPECT(line_pointer(text("abcd\nwxyz\n1234\n"), 14) == "    ^");
+	EXPECT(line_pointer(text("abcd\nwxyz\n1234\n"), 15) == "^");
+	EXPECT(line_pointer(text("abcd\nwxyz\n1234\n"), 16) == "^");
 }
 
 TEST(line_pointer_no_newline_at_end) {
-	EXPECT(str(line_pointer(text("abcd\nwxyz\r\n1234"), 14)) == "    ^");
-	EXPECT(str(line_pointer(text("abcd\nwxyz\r\n1234"), 15)) == "    ^");
-	EXPECT(str(line_pointer(text("abcd\nwxyz\r\n1234"), 16)) == "    ^");
+	EXPECT(line_pointer(text("abcd\nwxyz\r\n1234"), 14) == "    ^");
+	EXPECT(line_pointer(text("abcd\nwxyz\r\n1234"), 15) == "    ^");
+	EXPECT(line_pointer(text("abcd\nwxyz\r\n1234"), 16) == "    ^");
 }

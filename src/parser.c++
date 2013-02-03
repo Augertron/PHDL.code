@@ -68,7 +68,7 @@ namespace phdl { namespace parser {
 		return std::count_if(rstart, rend, notnl) + 1;
 	}
 
-	Characters position::line_content(const Characters &text, size_t position) {
+	std::string position::line_content(const Characters &text, size_t position) {
 		// We can get the content of the current line by finding the previous
 		// newline and the next newline and grabbing everything between them.
 		auto nl    = [](const Character &c) { return  is_newline(c); };
@@ -78,17 +78,17 @@ namespace phdl { namespace parser {
 		auto end   = std::find_if(start, text.end(), nl);
 		Characters line;
 		std::copy(rend.base(), end, std::back_inserter(line));
-		return line;
+		return unicode::combine_characters(line);
 	}
 
-	Characters position::line_pointer(const Characters &text, size_t position) {
+	std::string position::line_pointer(const Characters &text, size_t position) {
 		// All we need to generate our line pointer is to get the column
 		// number, which we already have a function to do conveniently. Then,
 		// we just line up our pointer with the right number of spaces.
 		size_t column = column_number(text, position);
-		Characters line;
-		std::fill_n(std::back_inserter(line), column-1, " ");
-		line.push_back("^");
+		std::string line;
+		std::fill_n(std::back_inserter(line), column-1, ' ');
+		line.push_back('^');
 		return line;
 	}
 

@@ -29,10 +29,10 @@ namespace phdl {
 
 	namespace parser {
 		namespace position {
-			size_t              line_number  (const unicode::Characters &text, size_t position);
-			size_t              column_number(const unicode::Characters &text, size_t position);
-			unicode::Characters line_content (const unicode::Characters &text, size_t position);
-			unicode::Characters line_pointer (const unicode::Characters &text, size_t position);
+			size_t      line_number  (const unicode::Characters &text, size_t position);
+			size_t      column_number(const unicode::Characters &text, size_t position);
+			std::string line_content (const unicode::Characters &text, size_t position);
+			std::string line_pointer (const unicode::Characters &text, size_t position);
 		}
 	}
 
