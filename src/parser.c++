@@ -2,20 +2,96 @@
 
 namespace phdl { namespace parser {
 
-	// parse vs. match for literal
-	//static std::string parse_literal(const Characters &characters, const std::string &literal) {
-	//	return "";
-	//}
+	struct Context::Detail {
+		std::string filename;
+		std::shared_ptr<Characters> text;
+		size_t position;
+	};
 
-	//static std::string parse_whitespace(const Characters &characters) {
-	//	return "";
-	//}
+	Context::Context(const std::string &filename) :
+		detail(new Detail)
+	{
+		// Keep track of the filename
+		detail->filename = filename;
 
-	//static std::string parse_single_line_comment(const Characters &characters) {
-	//}
+		// Read the content of the given file.
+		std::ifstream ifs(
+			filename.c_str(),
+			std::ios_base::in | std::ios_base::binary
+		);
+		// FIXME: throw exception here to generate the right error
+		if (!ifs) throw std::runtime_error("file opening failed");
+		std::ostringstream ss;
+		ss << ifs.rdbuf();
 
-	//static std::string parse_multi_line_comment(const Characters &characters) {
-	//	return "";
+		// Convert to characters and store as a shared pointer so that
+		// multiple context objects can efficiently share the same content.
+		detail->text.reset(new Characters(
+			unicode::split_characters(unicode::normalize(ss.str()))
+		));
+
+		// Start at position 0
+		detail->position = 0;
+	}
+
+	Context::Context(const Context &other) 
+		: detail(new Detail(*other.detail))
+	{}
+
+	// Get the filename.
+	std::string Context::filename() const {
+		return detail->filename;
+	}
+
+	size_t Context::position() const {
+		return detail->position;
+	}
+
+	void Context::set_position(size_t new_position) {
+		detail->position = new_position;
+	}
+
+	const Character &Context::operator[](int offset) const {
+		// Access the character from the text. If we're out of bounds, return
+		// an placeholder empty character instead.
+		try {
+			return detail->text->at(position() + offset);
+		} catch (const std::out_of_range &) {
+			static const std::string empty_character;
+			return empty_character;
+		}
+	}
+
+	const Character &Context::operator*() const {
+		return (*this)[0];
+	}
+
+	const Character *Context::operator->() const {
+		return &(*this)[0];
+	}
+
+	Context &Context::operator++() { ++detail->position; return *this; };
+	Context &Context::operator--() { --detail->position; return *this; };
+
+	Context  Context::operator++(int) { Context t(*this); ++(*this); return t; }
+	Context  Context::operator--(int) { Context t(*this); --(*this); return t; }
+
+	Context &Context::operator+=(int offset) { detail->position += offset; return *this; }
+	Context &Context::operator-=(int offset) { detail->position -= offset; return *this; }
+
+	bool parse_whitespace(Context &context) {
+		bool success = false;
+		while (unicode::is_whitespace(*context)) {
+			success = true;
+			++context;
+		}
+		return success;
+	}
+
+	//static std::string parse_multi_line_comment(Context &context) {
+	//	parse_whitespace(context);
+
+	//return "";
 	//}
 
 	//static std::string parse_comment(const Characters &characters) {

@@ -1,5 +1,6 @@
 // standard headers
 #include <cassert>
+#include <fstream>
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -7,6 +8,7 @@
 // boost headers
 #include <boost/exception/all.hpp>
 #include <boost/format.hpp>
+#include <boost/optional.hpp>
 
 namespace phdl {
 
@@ -26,6 +28,9 @@ namespace phdl {
 		// Combine split characters back into a string.
 		std::string combine_characters(const Characters &);
 
+		// Return whether the given character is whitespace or not.
+		bool is_whitespace(const Character &c);
+
 		// Return whether the given character is a newline or not.
 		bool is_newline(const Character &c);
 	}
@@ -39,6 +44,49 @@ namespace phdl {
 		std::string line_pointer (const Characters &text, size_t position);
 	}
 
+	namespace parser {
+
+		// Our individual parsers work on a parser context, which keeps track
+		// of the filename, text, and current position. This context also
+		// provides a convenient view of the file as a stream of characters.
+		struct Context {
+
+			// Read the content of the given file an create a context ready
+			// for parsing.
+			Context(const std::string &filename);
+
+			// Copy a context (to allow indepedent positions).
+			Context(const Context &);
+
+			// Get the filename.
+			std::string filename() const;
+
+			// Get or set the current absolute position.
+			size_t position() const;
+			void set_position(size_t);
+
+			// Returns the character relative to the given position. An
+			// empty character is returned on out-of-bounds access.
+			const Character &operator[](int offset) const;
+			const Character &operator*() const;
+			const Character *operator->() const;
+
+			// Move the position forward or backward.
+			Context &operator++();
+			Context  operator++(int);
+			Context &operator+=(int);
+			Context &operator--();
+			Context  operator--(int);
+			Context &operator-=(int);
+
+			private:
+			struct Detail;
+			std::unique_ptr<Detail> detail;
+			//const std::string filename;
+			//const std::shared_ptr<const Characters> text;
+			//size_t position;
+		};
+	}
 
 	//std::string file_error_prefix(const File_Information &);
 	//

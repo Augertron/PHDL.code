@@ -96,6 +96,17 @@ namespace phdl { namespace unicode {
 		return string;
 	}
 
+	bool is_whitespace(const Character &c) {
+		// Check if the given character is whitespace as defined by the
+		// Unicode White_Space property.
+		const char    *data  = c.data();
+		const int32_t length = c.size();
+		int32_t position = 0;
+		char32_t codepoint;
+		U8_NEXT(data, position, length, codepoint);
+		return u_isUWhiteSpace(codepoint);
+	}
+
 	bool is_newline(const Character &c) {
 		// The newline sequences we use are conformant to the Unicode
 		// Technical Standard #18, "Unicode Regulator Expressions", revision

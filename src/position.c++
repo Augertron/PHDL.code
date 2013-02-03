@@ -2,8 +2,8 @@
 
 namespace phdl { namespace position {
 
-	bool  is_newline(const Character &c) { return  unicode::is_newline(c); };
-	bool not_newline(const Character &c) { return !unicode::is_newline(c); };
+	static bool  is_newline(const Character &c) { return  unicode::is_newline(c); };
+	static bool not_newline(const Character &c) { return !unicode::is_newline(c); };
 
 	size_t line_number(const Characters &text, size_t position) {
 		// We can easily determine the line number of our current position by
