@@ -972,11 +972,12 @@ used in the rest of the grammar. Each element is described in detail
 below.
 
 ------------------------------------------------------------------------------
-Identifier = (\p{ID_Start} | \p{Pc}) \p{ID_Continue}*
+Identifier = (\p{ID_Continue} - (\p{Mn} - \p{Mc})) \p{ID_Continue}*
 ------------------------------------------------------------------------------
 
-All identifiers are like standard Unicode identifiers, but are
-additionally allowed to start with connectors such as underscore.
+All identifiers are like standard Unicode identifiers, but can start with any
+of the full set of identifier codepoints, except for the combining marks which
+are still only allowed after the first codepoint.
 
 ------------------------------------------------------------------------------
 Integer = [0-9]+

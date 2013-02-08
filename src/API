@@ -1,0 +1,62 @@
+phdl::
+
+	// errors
+	Error           -- the base exception for all errors
+	Logger          -- global singleton for reporting errors, warnings, etc
+
+	// integers
+	Integer         -- an arbitrary-precision integer
+	Range           -- a contiguous (possibly singular) range of Integers
+	Slice           -- an ordered list of Ranges
+
+	// strings
+	Character       -- a single extended grapheme cluster
+	String          -- a full Unicode string
+	String_List     -- an ordered list of strings
+	Attributes      -- a set of key/value pairs of Strings
+
+	// parsing
+	File            -- an iterable input file of Characters
+	Position        -- a iterator for a Character position in a particular file
+	Context         -- a parsing context is a transactional stack of Positions
+
+	// design
+	Pin             -- a pin definition for a specific device
+		String name
+		Range range
+		String_List physical_pins
+		Attributes attributes -- e.g. pin[2:0] a { @direction = in; @voltage = 1.8; } = A2,D3,D4;
+
+	Device          -- a device definition
+		String name
+		Attributes attributes -- e.g. device name { @prefix = "R"; pin a = 1; pin b = 2; }
+		std::list<Pin> pins
+
+	Net            -- a net (or port) definition inside a design
+		String name
+		Range range
+		Attributes attributes -- e.g. net[7:0] name { @voltage = 3.3 } = whatever;
+
+	Connection     -- a connection between a set of nets
+		std::list<Net> nets; // FIXME: not correct, doesn't account for slices & aggregates
+
+	Instance       -- an instance of a part (device or design)
+		String instance_name
+		String part_name
+		Attributes attributes -- e.g. instance name of regulator { @prefix = "VR"; ... };
+		// FIXME connection information
+
+	Design
+		String name
+		Attributes attributes -- e.g. design name { @value = 10k; net[2:0] a; net b = a[1]; }
+		std::list<Net> ports
+		std::list<Net> nets
+		std::list<Instances> instances
+		// FIXME connection information
+
+	Package         -- a package section
+		String name,
+		std::list<String_List> imports
+		std::list<Device> devices
+		std::list<Design> designs
+

@@ -1,0 +1,141 @@
+// Packages
+// asdf
+
+package top_package {
+
+	import other_package;
+	import top_package.nested_package;
+	import literal\.name;
+	import "literal.name";
+
+	device resistor {
+		@value = "1 kΩ";
+		pin +, -;
+	};
+
+	device flipflop {
+		pin clock, in, out;
+		clock = CLK;
+		in = D;
+		out = Q;
+	};
+
+	device my_device {
+		@prefix    = ZA;
+		@footprint = TG831-08;
+
+		pin[1:0] gnd { @voltage = "0.0" } = 5,8;
+		pin      vcc { @voltage = "1.8" } = 1;
+		pin      vio { @voltage = "3.3" } = 7;
+
+		// these are the same
+		pin      vcc, vio { @voltage = "1.8" } = 1,2;
+		pin      vcc, vio = 1,2 { @voltage = "1.8" };
+
+		pin[2:0] data = 6,4,3;
+		data.@voltage =
+			"3.3",
+			"1.8",
+			"3.3";
+	};
+
+	my_device.data[0,2].@direction = in;
+	my_device.data[1]  .@direction = out;
+
+	my_device {
+		@pincount = 8;
+		pin clock = 2 {
+			@direction = in;
+			@voltage = "1.8";
+		};
+	};
+
+	design my_design {
+		port power_gnd;
+		net vcc;
+		port power_vcc = vcc;
+
+		parameter R1_type = normal_resistor;
+		parameter R2_type = normal_resistor;
+		parameter R1_value;
+		parameter R2_value;
+
+		@R1_value_attribute = $R1_value;
+
+		net[2:0] xyz;
+
+		instance[1:2] res = resistor;
+		res[1].+ = vcc;
+		res[1].- = res[2].+;
+		res[2].- = gnd;
+		// set values by
+		res[1].@value = "231 kΩ";
+		res[2].@value = "47 kΩ";
+		// or these equivalents:
+		res   .@value = "231 kΩ", "47 kΩ";
+		res[:].@value = "231 kΩ", "47 kΩ";
+
+		instance dev = my_device {
+			gnd = <gnd>;
+			vcc = vcc;
+			vio = res[1].-;
+			data[0,2] = xyz[0,2];
+		};
+
+		net clock = dev.clock;
+		dev.data[1] = xyz[1];
+
+		instance[6:0] dev = my_device {
+			@some_attr = value;
+			clock = clock;
+			vio   = vcc;
+		}
+		dev[5:0].data = data5,data4,data3,data2,data1,data0;
+		dev[6].data   = data6;
+		dev[3:2,0] { vcc = vcc; };
+		dev[6:4,1] { vcc = gnd; };
+
+		// essentially equivalent
+		dev.gnd = <gnd>;
+		dev[:].gnd = <gnd>;
+		dev { gnd = gnd };
+
+		instance something = some_package.xyz {
+			@prefix = "IK";
+		};
+		
+		instance something {
+			@prefix = "IK";
+		} = some_package.xyz;
+
+		instance something;
+		something { @prefix = "IK"; };
+		something = some_package.xyz;
+
+		net plain_net;
+		net net_with_assignment = plain_net;
+		net net_with_block { @key = value };
+		net net_with_block_and_assignment { @key = value } = plain_net;
+		net net_with_block_and_assignment = plain_net { @key = value };
+
+		instance a_device { some_pin  = a_net; nc = open;};
+		instance a_design { some_port = a_net; };
+
+		instance parameterized_R1 = $R1_type { @value = $R1_value };
+		instance parameterized_R2 = $R2_type { @value = $R2_value };
+
+		// replication rules
+		net[31:0] big;
+		net[34:0] bigger;
+		net[7:0]  small;
+		big = <small>; // ok
+		big = <small>,<small>; // fails
+		bigger = <small>; // fails
+		bigger = <small>,2,1,0; // ok
+		bigger = 34,33,32,<small>; // ok
+		bigger = 34,33,<small>,0; // ok
+		bigger[31:0] = <small>; // ok
+
+	};
+
+};
