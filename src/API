@@ -10,8 +10,8 @@ phdl::
 	Slice           -- an ordered list of Ranges
 
 	// strings
-	Character       -- a single extended grapheme cluster
-	String          -- a full Unicode string
+	Character       -- a single Unicode "character" (extended grapheme cluster)
+	String          -- a complete auto-normalized Unicode string
 	String_List     -- an ordered list of strings
 	Attributes      -- a set of key/value pairs of Strings
 
@@ -19,6 +19,8 @@ phdl::
 	File            -- an iterable input file of Characters
 	Position        -- a iterator for a Character position in a particular file
 	Context         -- a parsing context is a transactional stack of Positions
+
+	// parse tree
 
 	// design
 	Pin             -- a pin definition for a specific device

@@ -136,6 +136,25 @@ package top_package {
 		bigger = 34,33,<small>,0; // ok
 		bigger[31:0] = <small>; // ok
 
+		// net, port, and pin assignments add up; they *don't* get replaced
+		instance example = some.dev {
+			a = x;
+			b = y;
+		};
+		net c = z;
+
+		// these are the same
+		example.a = c; // a, c, x and z all connected
+		z = example.a; // a, c, x and z all connected
+
+		// parameters and attributes *do* get replaced by the last thing that applies
+		instance example = some.dev {
+			@footer = true;
+			$value  = "2 nF";
+		};
+		example.@footer = false; // footer is now false
+		example.$value  = "4 nF"; // value is "4 nF"
+
 	};
 
 };
