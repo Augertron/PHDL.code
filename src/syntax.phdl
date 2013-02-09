@@ -10,7 +10,7 @@ package top_package {
 
 	device resistor {
 		@value = "1 kΩ";
-		pin +, -;
+		pin "+", "-";
 	};
 
 	device flipflop {
@@ -65,9 +65,9 @@ package top_package {
 		net[2:0] xyz;
 
 		instance[1:2] res = resistor;
-		res[1].+ = vcc;
-		res[1].- = res[2].+;
-		res[2].- = gnd;
+		res[1]."+" = vcc;
+		res[1]."-" = res[2]."+";
+		res[2]."-" = gnd;
 		// set values by
 		res[1].@value = "231 kΩ";
 		res[2].@value = "47 kΩ";
@@ -78,7 +78,7 @@ package top_package {
 		instance dev = my_device {
 			gnd = <gnd>;
 			vcc = vcc;
-			vio = res[1].-;
+			vio = res[1]."-";
 			data[0,2] = xyz[0,2];
 		};
 
@@ -155,6 +155,57 @@ package top_package {
 		example.@footer = false; // footer is now false
 		example.$value  = "4 nF"; // value is "4 nF"
 
+		// flexible naming
+		net comme_ci_comme_ça;
+		net été;
+		net 3ィウ;
+		net "+1.8V";
+		net 6;
+
+		// all okay; keywords are not reserved
+		net net;
+		device device;
+		instance instance;
+		port port;
+		pin pin;
+
+		// escaping
+		port \@not_an_attribute; // ok
+		port "@not_an_attribute"; //ok 
+		port @an_attribute; // fails
+		port \$not_a_parameter; //ok 
+		port "$not_a_parameter"; //ok 
+		port $a_parameter; // fails
+		port "quote \" in name"; //ok
+
+		// quoting doesn't affect name
+		net "x", y, \z;
+		x = y = z;
+
+		// quoting DOES affect keywords in keyword position
+		net x; // ok;
+		net net; // ok
+		"net" = x; // ok
+		x = net; // ok
+		"net" x; // fails
+		net = x; // fails
+
+		// attributes combine when elaborated; DRC can check for conflicts using this
+		// (empty attribute is the same as no attribute)
+		net x { @voltage = "1.8"; @direction = out; };
+		net y { @direction = in; @something = true; };
+		net z { @voltage = "3.3"; @something = ""; };
+
+		// final net attributes seen by back-end:
+		// @voltage   = "1.8","3.3"
+		// @direction = out,in
+		// @something = true
+		x = y = z;
+
+		// flexible declaration order
+		net x = y; // okay, unless y is never defined
+		net y; // makes the above okay
+		net y; // error, duplicate net name
 	};
 
 };

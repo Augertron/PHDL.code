@@ -20,9 +20,10 @@ phdl::
 	Position        -- a iterator for a Character position in a particular file
 	Context         -- a parsing context is a transactional stack of Positions
 
-	// parse tree
+	// parse tree (built by the parser)
 
-	// design
+	// design (built by the elaborator)
+
 	Pin             -- a pin definition for a specific device
 		String name
 		Range range
