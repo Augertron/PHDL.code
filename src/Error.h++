@@ -5,6 +5,7 @@
 #include <cassert>
 #include <iostream>
 #include <string>
+#include <type_traits>
 
 // Rather than completely abstract the few features that Boost Exception gives
 // us, we are instead explicitly declaring Boost Exception a public part of our
@@ -12,9 +13,23 @@
 // BOOST_THROW_EXCEPTION, and boost::diagnostic_information is allowed.
 #include <boost/throw_exception.hpp>
 
-// Helper for assert to give better error messages. Intended usage:
-//   assert(test && PHDL_BUG "message")
-#define PHDL_BUG "internal error: "
+// Wrapper for assert to give a nicer, more consistent interface.
+//
+// This gives the same interface as static_assert, and also forces the message
+// to be given as a string literal, to ensure that the message is actually
+// available and human readable when the assert triggers.
+#define phdl_assert(test, message) \
+	static_assert(\
+		(\
+			 std::is_convertible      <decltype(message), const char *>::value &&\
+			!std::is_rvalue_reference <decltype(message)>::value &&\
+			!std::is_pointer          <decltype(message)>::value &&\
+			!std::is_array            <decltype(message)>::value &&\
+			!std::is_class            <decltype(message)>::value\
+		),\
+		"string literal required"\
+	);\
+	assert(((void) message , (test)))
 
 namespace phdl {
 
@@ -29,6 +44,8 @@ namespace phdl {
 	// handled at least somewhat intelligently.
 	struct Error : virtual boost::exception, virtual std::exception {
 		virtual const char *what() const noexcept override final;
+		protected:
+		Error() = default;
 	};
 
 	// Error severity. These are used primarily by User_Visible_Error, but are
@@ -39,7 +56,6 @@ namespace phdl {
 	// the error in the user's source files in order to be able to generate
 	// consistent and helpful error messages.
 	struct User_Visible_Error : virtual Error {
-
 		User_Visible_Error (
 			Severity severity,
 			const std::string &file_name,

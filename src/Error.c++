@@ -5,6 +5,10 @@
 
 namespace phdl {
 
+	// In normal circumstances, this function will never be called. Thus, we
+	// don't need anything special here, just enough to identify the exception
+	// in a debugging scenerio. This means we can just use the output from
+	// std::type_info::name with no worries about its human-readability.
 	const char *Error::what() const noexcept {
 		return typeid(*this).name();
 	}
@@ -23,18 +27,22 @@ namespace phdl {
 		_message(message)
 	{}
 
-	static std::string severity_to_string(Severity severity) {
-		switch (severity) {
-			case Severity::Error:   return "error";
-			case Severity::Warning: return "warning";
-			case Severity::Debug:   return "debug";
-
-			default:
-				assert(false && PHDL_BUG "severity level");
-		}
-	}
-
+	// Output user error messages into a GCC-like format, which is kind of the
+	// de-facto standard for compiler error messages:
+	//
+	//   example.phdl:5:19: error: an error occurred, please fix it
+	//
 	std::ostream &operator<<(std::ostream &os, const User_Visible_Error &error) {
+
+		auto severity_to_string = [](Severity severity) {
+			switch (severity) {
+				case Severity::Error:   return "error";
+				case Severity::Warning: return "warning";
+				case Severity::Debug:   return "debug";
+				default: phdl_assert(false, "invalid severity level");
+			}
+		};
+
 		std::stringstream ss;
 		ss
 			<< error._file_name     << ":"
@@ -45,8 +53,7 @@ namespace phdl {
 		;
 		os << ss.str();
 		return os;
+
 	}
-
-
 
 }

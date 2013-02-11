@@ -1,9 +1,5 @@
 phdl::
 
-	// errors
-	Error           -- the base exception for all errors
-	Logger          -- global singleton for reporting errors, warnings, etc
-
 	// integers
 	Integer         -- an arbitrary-precision integer
 	Range           -- a contiguous (possibly singular) range of Integers
