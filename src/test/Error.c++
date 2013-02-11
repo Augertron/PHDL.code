@@ -4,6 +4,8 @@
 #include <iostream>
 
 using phdl::Error;
+using phdl::User_Visible_Error;
+using phdl::Severity;
 
 TEST(add_error_info) {
 	using error_message = boost::error_info<struct tag_error_message, std::string>;
@@ -41,4 +43,11 @@ TEST(inline_defined_error_infos) {
 		std::cout << boost::diagnostic_information(e);
 		REQUIRE(true);
 	}
+}
+
+TEST(user_visible_error_message) {
+	User_Visible_Error error(Severity::Warning, "the_file_name", 39, 13, "the error message");
+	std::ostringstream ss;
+	ss << error;
+	EXPECT(ss.str() == "the_file_name:39:13: warning: the error message\n");
 }

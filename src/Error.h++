@@ -1,11 +1,20 @@
 #ifndef phdl__Error__header
 #define phdl__Error__header
 
+// Standard headers
+#include <cassert>
+#include <iostream>
+#include <string>
+
 // Rather than completely abstract the few features that Boost Exception gives
 // us, we are instead explicitly declaring Boost Exception a public part of our
 // interface. This means that direct use of boost::error_info tag definitions,
 // BOOST_THROW_EXCEPTION, and boost::diagnostic_information is allowed.
 #include <boost/throw_exception.hpp>
+
+// Helper for assert to give better error messages. Intended usage:
+//   assert(test && PHDL_BUG "message")
+#define PHDL_BUG "internal error: "
 
 namespace phdl {
 
@@ -18,8 +27,37 @@ namespace phdl {
 	// of Boost Exception, as well as in order to benefit in scenerios where
 	// our errors fall-through normal handling, but a generic std::exception is
 	// handled at least somewhat intelligently.
-	struct Error : boost::exception, std::exception {
+	struct Error : virtual boost::exception, virtual std::exception {
 		virtual const char *what() const noexcept override final;
+	};
+
+	// Error severity. These are used primarily by User_Visible_Error, but are
+	// declared outside of that class to simplify the usage syntax.
+	enum class Severity { Error, Warning, Debug };
+
+	// All user-visible errors must contain information about the location of
+	// the error in the user's source files in order to be able to generate
+	// consistent and helpful error messages.
+	struct User_Visible_Error : virtual Error {
+
+		User_Visible_Error (
+			Severity severity,
+			const std::string &file_name,
+			size_t line_number,
+			size_t column_number,
+			const std::string &message
+		);
+
+		// Stitches the file name & position with the given message in a
+		// unified format intended to be directly useable by the end user.
+		friend std::ostream &operator<<(std::ostream &, const User_Visible_Error &);
+
+		private:
+		Severity _severity;
+		std::string _file_name;
+		size_t _line_number;
+		size_t _column_number;
+		std::string _message;
 	};
 
 }
