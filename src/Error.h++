@@ -17,7 +17,7 @@
 //
 // This gives the same interface as static_assert, and also forces the message
 // to be given as a string literal, to ensure that the message is actually
-// available and human readable when the assert triggers.
+// available and human-readable when the assert triggers.
 #define phdl_assert(test, message) \
 	static_assert(\
 		(\
