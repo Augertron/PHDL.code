@@ -9,7 +9,7 @@ package top_package {
 	import "literal.name";
 
 	device resistor {
-		@value = "1 kΩ";
+		attribute @value = "1 kΩ";
 		pin "+", "-";
 	};
 
@@ -21,16 +21,13 @@ package top_package {
 	};
 
 	device my_device {
-		@prefix    = ZA;
-		@footprint = TG831-08;
+		attribute @prefix    = ZA;
+		attribute @footprint = TG831-08;
 
-		pin[1:0] gnd { @voltage = "0.0" } = 5,8;
+		pin[1:0] gnd { @voltage = "0.0"; }; gnd = 5,8;
 		pin      vcc { @voltage = "1.8" } = 1;
 		pin      vio { @voltage = "3.3" } = 7;
-
-		// these are the same
 		pin      vcc, vio { @voltage = "1.8" } = 1,2;
-		pin      vcc, vio = 1,2 { @voltage = "1.8" };
 
 		pin[2:0] data = 6,4,3;
 		data.@voltage =
@@ -43,11 +40,11 @@ package top_package {
 	my_device.data[1]  .@direction = out;
 
 	my_device {
-		@pincount = 8;
-		pin clock = 2 {
-			@direction = in;
-			@voltage = "1.8";
-		};
+		attribute @pincount = 8;
+		pin clock {
+			attribute @direction = in;
+			attribute @voltage = "1.8";
+		} = 2;
 	};
 
 	design my_design {
@@ -55,16 +52,16 @@ package top_package {
 		net vcc;
 		port power_vcc = vcc;
 
-		parameter R1_type = normal_resistor;
-		parameter R2_type = normal_resistor;
-		parameter R1_value;
-		parameter R2_value;
+		parameter $R1_type = normal_resistor;
+		parameter $R2_type = normal_resistor;
+		parameter $R1_value;
+		parameter $R2_value;
 
-		@R1_value_attribute = $R1_value;
+		attribute @R1_value_attribute = $R1_value;
 
 		net[2:0] xyz;
 
-		instance[1:2] res = resistor;
+		instance[1:2] res of resistor;
 		res[1]."+" = vcc;
 		res[1]."-" = res[2]."+";
 		res[2]."-" = gnd;
@@ -75,7 +72,7 @@ package top_package {
 		res   .@value = "231 kΩ", "47 kΩ";
 		res[:].@value = "231 kΩ", "47 kΩ";
 
-		instance dev = my_device {
+		instance dev of my_device {
 			gnd = <gnd>;
 			vcc = vcc;
 			vio = res[1]."-";
@@ -85,32 +82,32 @@ package top_package {
 		net clock = dev.clock;
 		dev.data[1] = xyz[1];
 
-		instance[6:0] dev = my_device {
+		instance[6:0] dev of my_device {
 			@some_attr = value;
 			clock = clock;
 			vio   = vcc;
 		}
 		dev[5:0].data = data5,data4,data3,data2,data1,data0;
 		dev[6].data   = data6;
+
+		// equivalent
 		dev[3:2,0] { vcc = vcc; };
 		dev[6:4,1] { vcc = gnd; };
+		// OR
+		dev[3:2,0].vcc = <vcc>;
+		dev[6:4,1].vcc = <gnd>;
 
 		// essentially equivalent
 		dev.gnd = <gnd>;
 		dev[:].gnd = <gnd>;
 		dev { gnd = gnd };
 
-		instance something = some_package.xyz {
+		instance something of some_package.xyz {
 			@prefix = "IK";
 		};
 		
-		instance something {
-			@prefix = "IK";
-		} = some_package.xyz;
-
-		instance something;
+		instance something of some_package.xyz;
 		something { @prefix = "IK"; };
-		something = some_package.xyz;
 
 		net plain_net;
 		net net_with_assignment = plain_net;
@@ -121,8 +118,8 @@ package top_package {
 		instance a_device { some_pin  = a_net; nc = open;};
 		instance a_design { some_port = a_net; };
 
-		instance parameterized_R1 = $R1_type { @value = $R1_value };
-		instance parameterized_R2 = $R2_type { @value = $R2_value };
+		instance parameterized_R1 of $R1_type { @value = $R1_value };
+		instance parameterized_R2 of $R2_type { @value = $R2_value };
 
 		// replication rules
 		net[31:0] big;
@@ -148,7 +145,7 @@ package top_package {
 		z = example.a; // a, c, x and z all connected
 
 		// parameters and attributes *do* get replaced by the last thing that applies
-		instance example = some.dev {
+		instance example of some.dev {
 			@footer = true;
 			$value  = "2 nF";
 		};
@@ -165,7 +162,7 @@ package top_package {
 		// all okay; keywords are not reserved
 		net net;
 		device device;
-		instance instance;
+		instance instance of of;
 		port port;
 		pin pin;
 
@@ -200,12 +197,18 @@ package top_package {
 		// @voltage   = "1.8","3.3"
 		// @direction = out,in
 		// @something = true
-		x = y = z;
+		x = y;
 
 		// flexible declaration order
 		net x = y; // okay, unless y is never defined
 		net y; // makes the above okay
 		net y; // error, duplicate net name
+
+		// mixing {}'s and ='s
+		a,b,c = n1,n3,n4; // ok
+		a { attribute @abc = xyz; }; // ok
+		a,b,c { attribute @abc = xyz; }; // ambiguous
+		a,b,c = n1,n3,n4 { attribute @abc = xyz; }; // fail, too ambiguous
 	};
 
 };
