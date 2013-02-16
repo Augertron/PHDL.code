@@ -1,6 +1,6 @@
 PHDL Language Reference Manual
 ==============================
-Version 3.0.0 (draft), 2013-02-16
+Version 3.0.0 (draft)
 
 What is PHDL?
 -------------
