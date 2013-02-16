@@ -1,16 +1,163 @@
-PHDL Language Grammar Specification
-===================================
-Version 3.0.0, Unreleased
+PHDL Language Reference Manual
+==============================
+Version 3.0.0 (draft), 2013-02-16
 
-The following specification contains rules (enclosed in ------ lines)
-	followed by explanations.
+What is PHDL?
+-------------
 
-For an example of how the grammar should be interpreted, the tutorials
-at: http://phdl.sourceforge.net/2.1/tutorial/rc_helloworld.php are a
-good resource. As of Jan 17,2013 the behavior described by these tutorials 
-are applicable to this specification, though the grammer detailed on the site
-is that of an implementation rather than exactly coinciding with this spec.
+PHDL is a hardware description language (HDL) for designing printed circuit boards (PCBs).
+PHDL is takes the places of graphical schematics as a way to capture and communicate a complete logical design.
 
+PHDL does not perform physical layout, but outputs traditional schematic and netlist information in various formats to allow this task to be handled by traditional layout tools.
+
+About this Manual
+-----------------
+
+This manual contains a mix of two types of content: _normative_ and _informative_.
+Generally, the which type is which will be obvious from context.
+In situations where there is ambiguity, the type of information is marked explictly.
+
+Normative content exists to concretely define the PHDL language.
+This includes things like grammar description, language semantics, or other specific requirements.
+The important aspect of normative content is that it's unambiguous.
+
+Informative content exists to mainly to help make the language easier to learn and understand.
+This includes general explanatory text, language examples, and so forth.
+This import aspect of informative content is that it's enlightening.
+
+Since informative content is less precise, normative content should be used as the final arbiter if there is any confusion about language requirements.
+However, if there is ever any actual conflict or disagreement between normative and informative content, please file a bug footnote:[Bugs about this document, or the PHDL implementation itself can be filed http://sourceforge.net/p/phdl/bugs/], as that means this document has an error!
+
+Language Concepts
+-----------------
+
+Let's take a look at the various concepts that compose the world of PHDL.
+For example, we've got the designs we're making, the devices we're putting on the board, the nets we use to connect things, the various attributes we put on things, the packages we group our devices in for convenience, the names we give things, and so forth.
+Conceptually, this is no different from the concepts used in graphical schematics, but PHDL uses certain terminology in specific ways.
+
+Attributes
+~~~~~~~~~~
+
+Attributes are the names, prefixed by `@`, that we give to attributes.
+For example, most backends expect the `@prefix` and `@footprint` attributes on devices.
+
+Parameters are the names, prefixed by `$`, that we give to parameters.
+All three of these can be used in most contexts, but in certain cases only certain types of identifiers are allowed.
+
+
+Syntax::
+--------------------
+Attribute_Declaration ⇒ "attribute" (Attribute_Name | Attribute_Assignment);
+Attribute_Assignment  ⇒ Attribute_Name = Attribute_Value;
+Attribute_Name        ⇒ "@" Name | Parameter
+Attribute_Value       ⇒ Name | Parameter
+--------------------
+
+Names
+~~~~~
+
+A name in PHDL is, unsuprisingly, just the logical name we give something.
+
+All names can always any valid Unicode codepoints whatsoever, but if names contain codepoints used as language syntax, they must be quoted.
+Quotes are optional for -- and don't change the meaning of -- names that don't require them.
+
+Syntax
+^^^^^^
+
+--------------------
+Name                   ⇒ Name_Simple | Name_Quoted
+Name_Simple            ⇒ Name_Simple_Literal+
+Name_Quoted            ⇒ "\"" (Name_Quoted_Literal | Name_Quoted_Escape)* "\""
+Name_Quoted_Escape     ⇒ (Name_Escaped_Backslash | Name_Escaped_Quote | Name_Escaped_Codepoint)
+Name_Escaped_Backslash ⇒ "\\\\"
+Name_Escaped_Quote     ⇒ "\\\""
+Name_Escaped_Codepoint ⇒ "\\u{" Name_Escaped_Codepoint_Hex_Value "}"
+--------------------
+
+Name_Simple_Literal::
+A Unicode extended grapheme cluster in which each codepoint of the cluster has the ID_Continue property.
+
+Name_Quoted_Literal::
+A Unicode extended grapheme cluster in which each codepoint of the cluster has either any of the following properties: ID_Continue, Pattern_Syntax, Pattern_White_Space.
+
+Name_Escaped_Codepoint_Hex_Value::
+An arbitrary-length sequence of Unicode codepoints each with the ASCII_Hex_Digit property.
+When interpreted as a hexadecimal number, the resulting value must indicate a valid Unicode codepoint.
+
+Examples
+^^^^^^^^
+
+Mostly names work as you'd expect from experience with other systems, so there are very few surprises.
+For example, names like `regulator`, `Bridge_Chip`, `data3`, and `_internal` should hold no surprises.
+
+In addition, full Unicode support allows us to give more descriptive names such as `"I²C_SDA"`.
+And of course, non-ASCII identifiers, such as `empêche`, `λαμβάνω`, `คงที่`, `ошибка`, `قطب سالب`, `相対売買`, and `"😃→😨"` work fine as well.
+Keep in mind that although PHDL itself is fully Unicode aware, in many cases the backends for some tools will transliterate to something like ASCII or ISO/IEC 8859-1 (Latin-1) for compatibilty.
+
+If we want to use names with non-identifier (as defined by Unicode) characters -- in them, we have to use quotes.
+For example in the above examples, `"I²C_SDA"` was quoted because it contains the non-identifier character `²`, and `"😃→😨"` was quoted because none of those are identifier characters.
+For another example, `"+3.3 V"` needs to be quoted because it uses a plus, a period, and space.
+The same applies to names like `"+"`, `"-"`, `"OE/"`, `"D*"`, `"4.7 kΩ"`, and so forth.
+In general, we're going to use non-quoted names, except in places where doing otherwise adds clarity to our design.
+
+Note that unlike many languages, names can start with numbers.
+For example, there is no problem having names like `1234`, `8_bit`, or `2DIR`.
+No quotes are required here.
+
+Pin
+~~~
+
+A pin is the part of a device that corresponds to an actual pad in layout.
+
+To the user of a device, a pin on a device is just like a port on a design.
+A pin has both a logical name and a physical name.
+The logical name is used when hooking things up in a design.
+The physical name is only used by backends and has to, for example, match the name of the corresponding pad in the footprint definition of the device in our layout tool.
+
+Syntax
+^^^^^^
+
+--------------------
+Pin_Declaration     ⇒ "pin" (Pin_Logical_Name | Pin_Attributes | Pin_Assignment)
+Pin_Assignment      ⇒ Pin_Logical_Name "=" Pin_Physical_Name
+Pin_Attributes      ⇒ "{" ((Attribute_Declaration | Attribute_Assignment) ";")* "}"
+Pin_Logical_Name    ⇒ Identifier
+Pin_Physical_Name   ⇒ Identifier
+--------------------
+
+Examples
+^^^^^^^^
+
+Often the logical name will the name from the datasheet, and the physical name will be the pin number.
+However, we might use a different name when it helps make our design be more descriptive or easier to work with.
+For example, a diodes's footprint in our layout tool might expect pins `1` and `2`, and the datasheet calls them `A` and `C`, but we'll call them `"+"` and `"-"` because that makes our design more uniform.
+
+--------------------
+device diode {
+  ...
+  pin "+" = 1;
+  pin "-" = 2;
+};
+--------------------
+
+Or an FPGA's physical pin name may be called `G17`, which corresponds to something like `IO102_P25_GCLK3` in the datasheet.
+But we decide to use the much more descriptive name `FPGA_clock_in` from our FPGA code when creating our design.
+
+--------------------
+device FPGA {
+  ...
+  pin FPGA_clock_in = G17; // IO102_P25_GCLK3
+};
+--------------------
+
+Port
+~~~~
+
+A port is the part of a design that can be connected when instancing it in a larger design.
+
+To the user of a design, a port on a design is just like a pin on a device.
+A port behaves just like a net inside the design, but it's allowed to be connected externally.
+A port has a single name.
 
 
 ##############################################################################
