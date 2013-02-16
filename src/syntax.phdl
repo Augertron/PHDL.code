@@ -211,4 +211,57 @@ package top_package {
 		a,b,c = n1,n3,n4 { attribute @abc = xyz; }; // fail, too ambiguous
 	};
 
+	// Exhaustive(?) pin syntax
+	device pin_syntax_test {
+
+		// single, no array
+		pin logical;
+		pin logical = physical;
+		pin logical { attribute @a ...; };
+		pin logical { attribute @a ...; } = physical;
+		logical = physical;
+		logical { attribute @a ...; };
+		logical { attribute @a ...; } = physical;
+		logical.@a = ...;
+
+		// single, with array
+		pin[0:1] logical;
+		pin[0:1] logical = physical0, physical1;
+		pin[0:1] logical { attribute @a ...; };
+		pin[0:1] logical { attribute @a ...; } = physical0, physical1;
+		logical = physical0, physical1;
+		logical[0] = physical0; logical[1] = physical1;
+		logical { attribute @a ...; };
+		logical { attribute @a ...; } = physical0, physical1;
+		logical[0] { attribute @a ...; };
+		logical[0] { attribute @a ...; } = physical0;
+		logical.@a = ...;
+		logical[0:1].@a = ...;
+		logical[0].@a = ...; logical[1].@a = ...;
+
+		// multiple, no array
+		pin logical1, logical2;
+		pin logical1, logical2 = physical1, physical2;
+		pin logical1, logical2 { attribute @a ...; };
+		pin logical1, logical2 { attribute @a ...; } = physical1, physical2;
+		logical1, logical2 = physical1, physical2;
+		logical1 = physical1; logical2 = physical2;
+		logical1, logical2 { attribute @a ...; };
+		logical1, logical2 { attribute @a ...; } = physical1, physical2;
+
+		// multiple, with array
+		pin[0:1] logical1, logical2;
+		pin[0:1] logical1, logical2 = physical1_0, physical1_1, physical2_0, physical2_1;
+		pin[0:1] logical1, logical2 { attribute @a ...; };
+		pin[0:1] logical1, logical2 { attribute @a ...; } = physical1_0, physical1_1, physical2_0, physical2_1;
+		logical1 = physical1_0, physical1_1;
+		logical1, logical2 = physical1_0, physical1_1, physical2_0, physical2_1;
+		logical1[0], logical2[0] = physical1_0, physical2_0;
+		logical1, logical2 { attribute @a ...; };
+		logical1, logical2 { attribute @a ...; } = physical1_0, physical1_1, physical2_0, physical2_1;
+		logical1[0], logical2[0] { attribute @a ...; };
+		logical1[0], logical2[0] { attribute @a ...; } = physical1_0, physical2_0;
+
+	};
+
 };
