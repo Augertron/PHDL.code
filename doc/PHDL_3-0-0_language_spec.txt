@@ -35,6 +35,18 @@ Let's take a look at the various concepts that compose the world of PHDL.
 For example, we've got the designs we're making, the devices we're putting on the board, the nets we use to connect things, the various attributes we put on things, the packages we group our devices in for convenience, the names we give things, and so forth.
 Conceptually, this is no different from the concepts used in graphical schematics, but PHDL uses certain terminology in specific ways.
 
+Arrays:: allow grouping pins, nets, and instances into a numbered set.
+Attributes:: are general name-value pairs that can be applied to most other things.
+Designs:: are the blocks of device instances and connected nets that define
+Devices:: are the types of the individial parts we are placing.
+Instances:: are the individual parts we are placing themselves.
+Names:: are logical names we give to things.
+Packages:: let us group things together, like devices, designs & attributes.
+Parameters:: allow a device or design to be parameterized.
+Pins:: correspond to an actual device pads in layout.
+Ports:: allow a design to be instanced into a larger design.
+Slices:: allow pulling out individual instances or bits from an array.
+
 Attributes
 ~~~~~~~~~~
 
@@ -46,8 +58,9 @@ Other attributes may simply added by the user for use by their own backend tools
 Examples are of attribute uses are matching devices to physical layout footprints, generating descriptive parts list information, annotating pins and nets for semantic-driven DRC checks, and so forth.
 
 An attribute is syntactically indicated with the `@` prefix character before a name.
-The `@` is part of the language syntax, not strictly part of the attribute name.
-However, when speaking of attributes (both in this document, and in PHDL designs), we will typically talk about the `@something` attribute, even though technical its name in the dedicated attribute namespace is `something`.
+Attribute names exist in their own namespace; the `@` is part of the language syntax, not strictly part of the attribute name.
+However, when speaking of attributes, we will typically always talk about the `@something` attribute to avoid ambiguity.
+(Technically, as seen by API and backends, its name is just `something`, but it exists in the dedicated attribute namespace.)
 
 All attributes are considered to unconditionaly exist.
 Thus there is no difference between a missing attribute and an attribute with an empty string as its value.
@@ -68,6 +81,22 @@ Attribute_Name            ⇒ Name | Parameter
 
 Examples
 ^^^^^^^^
+
+Here is an example of attributes being set on devices & instances.
+When an attribute is declared in a device, its value can be set or changed in an instance directly.
+If a new attribute is being defined in an instance, it has to be declared using the `attribute` keyword.
+
+--------------------
+device dev {
+	attribute @dev_attribute = default;
+};
+
+instance inst of dev {
+	@dev_attribute = non_default;
+	attribute @inst_attribute = inst_value;
+};
+--------------------
+
 
 Names
 ~~~~~
