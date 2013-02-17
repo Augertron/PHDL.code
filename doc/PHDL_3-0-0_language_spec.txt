@@ -6,7 +6,7 @@ What is PHDL?
 -------------
 
 PHDL is a hardware description language (HDL) for designing printed circuit boards (PCBs).
-PHDL is takes the places of graphical schematics as a way to capture and communicate a complete logical design.
+PHDL takes the place of graphical schematics as a way to capture and communicate a complete logical design.
 
 PHDL does not perform physical layout, but outputs traditional schematic and netlist information in various formats to allow this task to be handled by traditional layout tools.
 
@@ -21,9 +21,9 @@ Normative content exists to concretely define the PHDL language.
 This includes things like grammar description, language semantics, or other specific requirements.
 The important aspect of normative content is that it's unambiguous.
 
-Informative content exists to mainly to help make the language easier to learn and understand.
+Informative content exists mainly to help make the language easier to learn and understand.
 This includes general explanatory text, language examples, and so forth.
-This import aspect of informative content is that it's enlightening.
+The important aspect of informative content is that it's enlightening.
 
 Since informative content is less precise, normative content should be used as the final arbiter if there is any confusion about language requirements.
 However, if there is ever any actual conflict or disagreement between normative and informative content, please file a bug footnote:[Bugs about this document, or the PHDL implementation itself can be filed http://sourceforge.net/p/phdl/bugs/], as that means this document has an error!
@@ -40,8 +40,8 @@ Attributes
 
 Attributes are general name-value pairs that can be applied to devices, instances, nets, ports, and pins.
 
-No attributes are intpreted directly by the PHDL language, but attributes are passed on to backends which can make use of, or even require, these attributes for various purposes.
-Most backends require a minimal set of attributes on devices to function correctly.
+No attributes are intpreted directly by the core language, but attributes are passed on to backends which can make use of these attributes for various purposes.
+Particularly, most backends require a minimal set of attributes on devices to function correctly.
 Other attributes may simply added by the user for use by their own backend tools or processes.
 Examples are of attribute uses are matching devices to physical layout footprints, generating descriptive parts list information, annotating pins and nets for semantic-driven DRC checks, and so forth.
 
@@ -74,7 +74,7 @@ Names
 
 A name in PHDL is, unsuprisingly, just the logical name we give something.
 
-All names can always any valid Unicode codepoints whatsoever, but if names contain codepoints used as language syntax, they must be quoted.
+All names can always consist of any valid Unicode codepoints whatsoever, but if names contain codepoints used as language syntax, they must be quoted.
 Quotes are optional for -- and don't change the meaning of -- names that don't require them.
 
 Syntax
@@ -110,7 +110,7 @@ In addition, full Unicode support allows us to give more descriptive names such 
 And of course, non-ASCII identifiers, such as `empêche`, `λαμβάνω`, `คงที่`, `ошибка`, `قطب سالب`, `相対売買`, and `"😃→😨"` work fine as well.
 Keep in mind that although PHDL itself is fully Unicode aware, in many cases the backends for some tools will transliterate to something like ASCII or ISO/IEC 8859-1 (Latin-1) for compatibilty.
 
-If we want to use names with non-identifier (as defined by Unicode) characters -- in them, we have to use quotes.
+If we want to use names with non-identifier codepoints in them (as defined by Unicode), we have to use quotes.
 For example in the above examples, `"I²C_SDA"` was quoted because it contains the non-identifier character `²`, and `"😃→😨"` was quoted because none of those are identifier characters.
 For another example, `"+3.3 V"` needs to be quoted because it uses a plus, a period, and space.
 The same applies to names like `"+"`, `"-"`, `"OE/"`, `"D*"`, `"4.7 kΩ"`, and so forth.
@@ -138,7 +138,7 @@ The physical name is primarily provided for use by backends.
 Generally the physical name must be the name of the corresponding pad in the footprint definition of the device in our layout program.
 
 In all cases, there must be one physical name assigned to each bit of each logical pin.
-Pin can be defined as arrays and multiple pins can be defined or assigned in a single statement.
+Pins can be defined as arrays and multiple pins can be defined or assigned in a single statement.
 In some cases, this can save a lot of typing and/or unnecessary redundancy, but care should be taken here to avoid creating a hard-to-understand pin definition.
 
 Pins can have an assocated block where attributes can be set.
@@ -165,7 +165,7 @@ Pin_Name                  ⇒ Name | Parameter
 Examples
 ^^^^^^^^
 
-Often the logical name will the name from the datasheet, and the physical name will be the pin number.
+Often the logical name will be the name from the datasheet, and the physical name will be the pin number.
 However, we might use a different name when it helps make our design be more descriptive or easier to work with.
 For example, a diodes's footprint in our layout tool might expect pins `1` and `2`, and the datasheet calls them `A` and `C`, but we'll call them `"+"` and `"-"` because that makes our design more uniform.
 
@@ -218,7 +218,7 @@ device regulator_hard_to_verify_against_datasheet {
 
 Here is another, equivalent, way of writing the same regulator above.
 This time we've lined up things up to match the pictoral BGA table in the datasheet.
-Which way is mostly a matter of opinion and how good the datasheets of the parts we use are!
+Which way we choose is mostly a matter of opinion and how good the datasheets of the parts we use are!
 
 --------------------
 device regulator_easy_to_verify_against_datasheet {
