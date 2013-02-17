@@ -38,20 +38,36 @@ Conceptually, this is no different from the concepts used in graphical schematic
 Attributes
 ~~~~~~~~~~
 
-Attributes are the names, prefixed by `@`, that we give to attributes.
-For example, most backends expect the `@prefix` and `@footprint` attributes on devices.
+Attributes are general name-value pairs that can be applied to devices, instances, nets, ports, and pins.
 
-Parameters are the names, prefixed by `$`, that we give to parameters.
-All three of these can be used in most contexts, but in certain cases only certain types of identifiers are allowed.
+No attributes are intpreted directly by the PHDL language, but attributes are passed on to backends which can make use of, or even require, these attributes for various purposes.
+Most backends require a minimal set of attributes on devices to function correctly.
+Other attributes may simply added by the user for use by their own backend tools or processes.
+Examples are of attribute uses are matching devices to physical layout footprints, generating descriptive parts list information, annotating pins and nets for semantic-driven DRC checks, and so forth.
 
+An attribute is syntactically indicated with the `@` prefix character before a name.
+The `@` is part of the language syntax, not strictly part of the attribute name.
+However, when speaking of attributes (both in this document, and in PHDL designs), we will typically talk about the `@something` attribute, even though technical its name in the dedicated attribute namespace is `something`.
 
-Syntax::
+All attributes are considered to unconditionaly exist.
+Thus there is no difference between a missing attribute and an attribute with an empty string as its value.
+
+Syntax
+^^^^^^
+
 --------------------
-Attribute_Declaration ⇒ "attribute" (Attribute_Name | Attribute_Assignment);
-Attribute_Assignment  ⇒ Attribute_Name = Attribute_Value;
-Attribute_Name        ⇒ "@" Name | Parameter
-Attribute_Value       ⇒ Name | Parameter
+Attribute_Statement       ⇒ (Attribute_Declaration | Attribute_Assignment) ";"
+Attribute_Declaration     ⇒ "attribute" Attribute_Assignment
+Attribute_Assignment      ⇒ Attribute_Keys Attribute_Values
+Attribute_Keys            ⇒ Attribute_Key ("," Attribute_Key)*
+Attribute_Key             ⇒ "@" Attribute_Name
+Attribute_Values          ⇒ "=" Attribute_Value ("," Attribute_Value)*
+Attribute_Value           ⇒ Attribute_Name
+Attribute_Name            ⇒ Name | Parameter
 --------------------
+
+Examples
+^^^^^^^^
 
 Names
 ~~~~~
@@ -104,6 +120,12 @@ Note that unlike many languages, names can start with numbers.
 For example, there is no problem having names like `1234`, `8_bit`, or `2DIR`.
 No quotes are required here.
 
+Parameters
+~~~~~~~~~~
+
+Parameters are the names, prefixed by `$`, that we give to parameters.
+All three of these can be used in most contexts, but in certain cases only certain types of identifiers are allowed.
+
 Pin
 ~~~
 
@@ -126,13 +148,16 @@ Syntax
 ^^^^^^
 
 --------------------
-Pin_Statement             ⇒ (Pin_Declaration | Pin_Assignment | Pin_Attribute_Declaration) ";"
+Pin_Statement             ⇒ (Pin_Declaration | Pin_Assignment | Pin_Attribute_Declaration | Pin_Attribute_Access) ";"
 Pin_Declaration           ⇒ "pin" Pin_Assignment
-Pin_Assignment            ⇒ Pin_Logical_Names Pin_Attribute_Block? Pin_Physical_Names
+Pin_Assignment            ⇒ Pin_Logical_Names (Pin_Attribute_Block | Pin_Physical_Names)
 Pin_Attribute_Declaration ⇒ "pin" Attribute_Declaration ";"
 Pin_Logical_Names         ⇒ Pin_Slice ("," Pin_Slice)*
-Pin_Physical_Names        ⇒ Pin_Name ("," Pin_Name)*
-Pin_Attributes            ⇒ "{" Attribute_Statement* "}"
+Pin_Physical_Names        ⇒ "=" Pin_Name ("," Pin_Name)*
+Pin_Attribute_Block       ⇒ "{" Attribute_Statement* "}" Pin_Physical_Names?
+Pin_Attribute_Assignment  ⇒ Pin_Attribute_Keys Attribute_Values
+Pin_Attribute_Keys        ⇒ Pin_Attribute_Key ("," Pin_Attribute_Key)
+Pin_Attribute_Key         ⇒ Pin_Slice "." Attribute_Key
 Pin_Slice                 ⇒ Pin_Name Slice
 Pin_Name                  ⇒ Name | Parameter
 --------------------
@@ -265,11 +290,12 @@ Attributes can be set on pins when they are declared, or can be set after the fa
 For example, if we were using the `@max_current` attribute to track maximum current on pins and nets in our design, and needed to annotate a connector with special per-pin current requirements, we might do do as follows:
 
 --------------------
-device connector {
+device variable_current_connector {
 	pin[1:2] GND { attribute @max_current = "45 A"; } = GND1, GND2;
 	pin[1:15] p = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15;
 	p[1,7,15] { attribute @max_current = "15 A"; };
-	p[2:6,8:14] { attribute @max_current = "2 A"; };
+	p[2:6,8:13] { attribute @max_current = "2 A"; };
+	p[14] { attribute @max_current = "8 A"; };
 };
 --------------------
 
@@ -278,7 +304,7 @@ Here we only have change the attribute when there is an exception.
 We'll also split things into multiple statements to make logically separate attributes from pin assignments.
 
 --------------------
-device connector {
+device variable_current_connector {
 	pin[1:2] GND = GND1, GND2;
 	pin[1:15] p = 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15;
 
@@ -286,7 +312,20 @@ device connector {
 	GND          { @max_current = "45 A"; };
 	p[1,7,15]    { @max_current = "15 A"; };
 	p[1,7,15]    { @max_current = "15 A"; };
+	p[14]        { @max_current = "8 A";  };
 };
+--------------------
+
+If we instead of the above, we had a different attribute value to set on each pin, we might write this out a little differently.
+While addressing combined attributes in this manner is useful in certain situations, it does need to be used sparingly to avoid making things unreadable.
+Here we line up our attributes with our pins, and it looks pretty nice.
+
+--------------------
+device crazy_connector {
+	pin attribute @max_current;
+	pin[1:8] p     =     1,    2,    3,    4,    5,    6,    7,    8;
+	p.@max_current = "4 A","3 A","2 A","8 A","7 A","2 A","5 A","9 A";
+}
 --------------------
 
 Port
