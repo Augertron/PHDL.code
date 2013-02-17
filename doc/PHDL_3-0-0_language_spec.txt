@@ -33,19 +33,22 @@ Language Concepts
 
 Let's take a look at the various concepts that compose the world of PHDL.
 For example, we've got the designs we're making, the devices we're putting on the board, the nets we use to connect things, the various attributes we put on things, the packages we group our devices in for convenience, the names we give things, and so forth.
-Conceptually, this is no different from the concepts used in graphical schematics, but PHDL uses certain terminology in specific ways.
+Conceptually, this is no different from the concepts used in graphical schematics, but lets look at the specific ways that PHDL uses certain terminology.
 
-Arrays:: allow grouping pins, nets, and instances into a numbered set.
-Attributes:: are general name-value pairs that can be applied to most other things.
-Designs:: are the blocks of device instances and connected nets that define
-Devices:: are the types of the individial parts we are placing.
-Instances:: are the individual parts we are placing themselves.
-Names:: are logical names we give to things.
-Packages:: let us group things together, like devices, designs & attributes.
-Parameters:: allow a device or design to be parameterized.
-Pins:: correspond to an actual device pads in layout.
-Ports:: allow a design to be instanced into a larger design.
-Slices:: allow pulling out individual instances or bits from an array.
+Creating _designs_ are the high-level goal of using PHDL.
+They consist primarily of connecting the _pins_ of _instances_ of individual _devices_.
+When designs have _ports_, they can be instanced like devices inside other designs.
+Either way, we connect things up with _nets_.
+We can group our devices and designs into _packages_.
+
+For convenience, _arrays_ of nets and instances can be created.
+Parts of arrays are accessed via _slices_.
+
+_Names_ are logical names we give to things.
+_Attributes_ are general name-value pairs that can be applied to various objects to pass information to backends.
+_Parameters_ allow a device or design to be parameterized.
+
+Each of these concepts is covered in detail in the sections that follow.
 
 Attributes
 ~~~~~~~~~~
@@ -97,6 +100,7 @@ instance inst of dev {
 };
 --------------------
 
+FIXME more attribute examples go here.
 
 Names
 ~~~~~
