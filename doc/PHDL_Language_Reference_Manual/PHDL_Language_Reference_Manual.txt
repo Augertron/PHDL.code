@@ -89,6 +89,7 @@ Here is an example of attributes being set on devices & instances.
 When an attribute is declared in a device, its value can be set or changed in an instance directly.
 If a new attribute is being defined in an instance, it has to be declared using the `attribute` keyword.
 
+[source,phdl]
 --------------------
 device dev {
 	attribute @dev_attribute = default;
@@ -202,6 +203,7 @@ Often the logical name will be the name from the datasheet, and the physical nam
 However, we might use a different name when it helps make our design be more descriptive or easier to work with.
 For example, a diodes's footprint in our layout tool might expect pins `1` and `2`, and the datasheet calls them `A` and `C`, but we'll call them `"+"` and `"-"` because that makes our design more uniform.
 
+[source,phdl]
 --------------------
 device diode {
 	pin "+" = 1;
@@ -212,6 +214,7 @@ device diode {
 We might want to do the same sort of thing with a power jack, so that we are less likely to make a mistake in our design.
 This time we are even more verbose.
 
+[source,phdl]
 --------------------
 device power_jack {
 	pin center_post  = 1;
@@ -225,6 +228,7 @@ An FPGA's physical pin name may be called `G17`, which corresponds to something 
 But we decide to use the much more descriptive name `FPGA_clock_in` from our FPGA code when creating our design.
 This scheme is particular useful for tools that convert FPGA implementation pin report files into PHDL device descriptions.
 
+[source,phdl]
 --------------------
 device FPGA {
 	pin FPGA_clock_in = G17; // IO102_P25_GCLK3
@@ -236,6 +240,7 @@ We can first declare our pins, then assign them in separate statements inside th
 For example, this could be very useful if the pin description for a regulator in a BGA package is given in the datasheet as a picture of the footprint, rather than a list of what signals are on what pins.
 In our first version, the pins are listed in some logical order, but they are very hard to check against a datasheet that only shows pinout via a footprint picture.
 
+[source,phdl]
 --------------------
 device regulator_hard_to_verify_against_datasheet {
 	pin[1:3] IN = A4,B3,C1;
@@ -253,6 +258,7 @@ Here is another, equivalent, way of writing the same regulator above.
 This time we've lined up things up to match the pictoral BGA table in the datasheet.
 Which way we choose is mostly a matter of opinion and how good the datasheets of the parts we use are!
 
+[source,phdl]
 --------------------
 device regulator_easy_to_verify_against_datasheet {
 	pin[1:3] IN;
@@ -275,6 +281,7 @@ Before splitting into multiple statements it looks like the example below.
 The two pin arrays are flattened and assigned to pins in normal slice order.
 Obviously, we probably want to avoid writing confusing statements like this in real designs.
 
+[source,phdl]
 --------------------
 device hard_to_read_data_ports {
 	pin[7:0] data_in, data_out = 1,2,3,4,5,6,7,8,13,14,15,16,12,11,10,9;
@@ -284,6 +291,7 @@ device hard_to_read_data_ports {
 After splitting the above example into multiple statements, it is much easier to understand.
 Specifically, it is a lot easier see which pins go to which bus, and which part of `data_out` has a reversed pin ordering from the rest.
 
+[source,phdl]
 --------------------
 device easy_to_read_data_ports {
 	pin[7:0] data_in, data_out;
@@ -297,6 +305,7 @@ In this example it's probably unnecessary, but in many occasions, this extra ver
 Perhaps in this situation, we did this because it made it easier to verify aginst a table from a datasheet.
 (Or more likely, we generated this by doing a quick "cut, paste, reformat" from that datasheet table!)
 
+[source,phdl]
 --------------------
 device verbose_data_ports {
 	pin[7:0] data_in, data_out;
@@ -322,6 +331,7 @@ device verbose_data_ports {
 Attributes can be set on pins when they are declared, or can be set after the fact.
 For example, if we were using the `@max_current` attribute to track maximum current on pins and nets in our design, and needed to annotate a connector with special per-pin current requirements, we might do do as follows:
 
+[source,phdl]
 --------------------
 device variable_current_connector {
 	pin[1:2] GND { attribute @max_current = "45 A"; } = GND1, GND2;
@@ -336,6 +346,7 @@ With the same example above, we might instead take advantage of device-scope pin
 Here we only have change the attribute when there is an exception.
 We'll also split things into multiple statements to make logically separate attributes from pin assignments.
 
+[source,phdl]
 --------------------
 device variable_current_connector {
 	pin[1:2] GND = GND1, GND2;
@@ -353,6 +364,7 @@ If we instead of the above, we had a different attribute value to set on each pi
 While addressing combined attributes in this manner is useful in certain situations, it does need to be used sparingly to avoid making things unreadable.
 Here we line up our attributes with our pins, and it looks pretty nice.
 
+[source,phdl]
 --------------------
 device crazy_connector {
 	pin attribute @max_current;
