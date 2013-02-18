@@ -1,6 +1,6 @@
-all: \
-	PHDL_Intermediate_Format.html \
-	PHDL_3-0-0_language_spec.html
+SOURCE_FILES=$(find . -name "*.txt")
 
-%.html: %.txt
-	asciidoc $<
+all: PHDL_Language_Reference_Manual.html
+
+%.html: $(SOURCE_FILES)
+	asciidoc

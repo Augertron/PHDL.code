@@ -120,7 +120,7 @@ Name_Quoted            ⇒ "\"" (Name_Quoted_Literal | Name_Quoted_Escape)* "\""
 Name_Quoted_Escape     ⇒ (Name_Escaped_Backslash | Name_Escaped_Quote | Name_Escaped_Codepoint)
 Name_Escaped_Backslash ⇒ "\\\\"
 Name_Escaped_Quote     ⇒ "\\\""
-Name_Escaped_Codepoint ⇒ "\\u{" Name_Escaped_Codepoint_Hex_Value "}"
+Name_Escaped_Codepoint ⇒ "\\x{" Name_Escaped_Codepoint_Hex_Value "}"
 --------------------
 
 Name_Simple_Literal::
