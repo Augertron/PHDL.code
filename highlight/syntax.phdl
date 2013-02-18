@@ -1,5 +1,7 @@
 // Packages
 // asdf
+/* nested /* comment */ test */
+/* not nested comment */ outside */
 
 package top_package {
 
@@ -273,6 +275,7 @@ package top_package {
 
 	// TODO: make this highlight correctly work
 	net "I²C_SDA", empêche, λαμβάνω, คงที่, ошибка, قطب سالب, 相対売買, "😃→😨";
+	net I²C_SDA;
 	net empêche;
 	attribute @λαμβάνω;
 	parameter $คงที่;
@@ -280,6 +283,7 @@ package top_package {
 	net "قطب سالب";
 	net 相対売買;
 	net "😃→😨";
+	net 😃→😨;
 
 	// FIXME this stuff
 
@@ -297,8 +301,14 @@ package top_package {
 	net "embedded quote -> \" <- right there"
 	net "embedded backslash -> \ <- right there"
 	net "embedded backslashes -> \\ <- right there"
-	net "embedded unicode -> \u{deadbeef} <- right there"
-	net "embedded unicode -> \u{  deadbeeq- } <- right there"
+	net "embedded unicode -> \x{deadbeef} <- right there"
+	net "embedded unicode -> \x{deadbeeq} <- right there"
+	net "embedded unicode -> \x{  deadbeeq- } <- right there"
+	net "embedded unicode -> \x{dead
+		beef} <- right there"
+
+	some random\" what is this \""
+	stray\xstuff\u
 
 	// Comment
 

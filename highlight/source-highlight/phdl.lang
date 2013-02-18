@@ -1,0 +1,71 @@
+# This is a PHDL syntax definition file for use by GNU source-highlight.
+# See <http://www.gnu.org/software/src-highlite> for more information.
+
+# Syntax variables
+vardef NAME = '([[:word:]]|[^[:print:]])+'
+vardef TODO = "TODO|FIXME"
+
+# Comments
+environment comment start "//" begin
+	todo = $TODO
+end
+environment comment delim "/*" "*/" multiline nested begin
+	todo = $TODO
+end
+
+# Attributes
+keyword = "attribute"
+property = "@" + $NAME
+
+# Parameters
+keyword = "parameter"
+variable = "$" + $NAME
+
+# Nets, Ports, and Pins
+keyword = "net|port|pin"
+
+# Instances
+keyword = "instance|of"
+
+# Packages, Designs, and Devices
+function = "package|device|design"
+
+# Imports
+preproc = "import"
+
+# Slices
+environment regexp delim "[" "]" multiline begin
+	number = '[[:digit:]]'
+end
+
+# Expansions
+regexp = "<|>"
+
+# Concatenation
+symbol = ","
+
+# Brackets
+cbracket = "{|}"
+
+# Assignment
+symbol = "="
+
+# Qualification
+symbol = "."
+
+# End-of-Statement
+symbol = ";"
+
+# Names
+error = '\\[^"]'
+environment specialchar delim "\"" "\"" multiline begin
+	specialchar = '\\([\\"])'
+	state specialchar start "\\x" begin
+		specialchar = "{"
+		number = '[[:xdigit:]]+'
+		specialchar = "}" exit
+		error = '.' exit
+	end
+	error = '\\.'
+	normal = '[^\\"]+'
+end
