@@ -60,10 +60,9 @@ symbol = ";"
 error = '\\[^"]'
 environment specialchar delim "\"" "\"" multiline begin
 	specialchar = '\\[\\"]'
-	state specialchar start "\\x" begin
-		specialchar = "{"
+	environment specialchar = '\\x\{[[:xdigit:]]+(?=\})' begin
 		number = '[[:xdigit:]]+'
-		specialchar = "}" exit
+		specialchar = '\}' exit
 		error = '.' exit
 	end
 	error = '\\.'

@@ -5,6 +5,9 @@
 /* nested comment
    with a // line comment inside it */
 
+this is not a \"string \x{deadbeef}
+"this is a \"string\" \x{deadbeef}"
+
 package top_package {
 
 	import other_package;
@@ -305,6 +308,7 @@ package top_package {
 	net "embedded weird escape -> \jx <- right there"
 	net "embedded backslashes -> \\ <- right there"
 	net "embedded unicode -> \x{deadbeef} <- right there"
+	net "embedded unicode ->\x{deadbeef}<- right there"
 	net "embedded unicode -> \x{deadbeeq} <- right there"
 	net "embedded unicode -> \x{  deadbeeq- } <- right there"
 	net "embedded unicode -> \x{dead
