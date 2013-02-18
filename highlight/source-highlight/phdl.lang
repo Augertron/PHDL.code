@@ -59,7 +59,7 @@ symbol = ";"
 # Names
 error = '\\[^"]'
 environment specialchar delim "\"" "\"" multiline begin
-	specialchar = '\\([\\"])'
+	specialchar = '\\[\\"]'
 	state specialchar start "\\x" begin
 		specialchar = "{"
 		number = '[[:xdigit:]]+'
