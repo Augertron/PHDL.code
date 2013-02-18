@@ -1,0 +1,323 @@
+// Packages
+// asdf
+
+package top_package {
+
+	import other_package;
+	import mypackage;
+	import packageit;
+	import my_package;
+	import package_it;
+	import top_package.nested_package;
+	import "literal.name";
+
+	netpindesignpackagedeviceportattribute;
+
+	device resistor {
+		attribute @value = "1 kΩ";
+		pin "+", "-";
+	};
+
+	device flipflop {
+		pin clock, in, out;
+		clock = CLK;
+		in = D;
+		out = Q;
+	};
+
+	device my_device {
+		attribute @prefix    = ZA;
+		attribute @footprint = TG831-08;
+
+		pin[1:0] gnd { @voltage = "0.0"; }; gnd = 5,8;
+		pin      vcc { @voltage = "1.8" } = 1;
+		pin      vio { @voltage = "3.3" } = 7;
+		pin      vcc, vio { @voltage = "1.8" } = 1,2;
+
+		pin[2:0] data = 6,4,3;
+		data.@voltage =
+			"3.3",
+			"1.8",
+			"3.3";
+	};
+
+	my_device.data[0,2].@direction = in;
+	my_device.data[1]  .@direction = out;
+
+	my_device {
+		attribute @pincount = 8;
+		pin clock {
+			attribute @direction = in;
+			attribute @voltage = "1.8";
+		} = 2;
+	};
+
+	design my_design {
+		port power_gnd;
+		net vcc;
+		port power_vcc = vcc;
+
+		parameter $R1_type = normal_resistor;
+		parameter $R2_type = normal_resistor;
+		parameter $R1_value;
+		parameter $R2_value;
+
+		attribute @R1_value_attribute = $R1_value;
+
+		net[2:0] xyz;
+
+		instance[1:2] res of resistor;
+		res[1]."+" = vcc;
+		res[1]."-" = res[2]."+";
+		res[2]."-" = gnd;
+		// set values by
+		res[1].@value = "231 kΩ";
+		res[2].@value = "47 kΩ";
+		// or these equivalents:
+		res   .@value = "231 kΩ", "47 kΩ";
+		res[:].@value = "231 kΩ", "47 kΩ";
+
+		instance dev of my_device {
+			gnd = <gnd>;
+			vcc = vcc;
+			vio = res[1]."-";
+			data[0,2] = xyz[0,2];
+		};
+
+		net clock = dev.clock;
+		dev.data[1] = xyz[1];
+
+		instance[6:0] dev of my_device {
+			@some_attr = value;
+			clock = clock;
+			vio   = vcc;
+		}
+		dev[5:0].data = data5,data4,data3,data2,data1,data0;
+		dev[6].data   = data6;
+
+		// equivalent
+		dev[3:2,0] { vcc = vcc; };
+		dev[6:4,1] { vcc = gnd; };
+		// OR
+		dev[3:2,0].vcc = <vcc>;
+		dev[6:4,1].vcc = <gnd>;
+
+		// essentially equivalent
+		dev.gnd = <gnd>;
+		dev[:].gnd = <gnd>;
+		dev { gnd = gnd };
+
+		instance something of some_package.xyz {
+			@prefix = "IK";
+		};
+		
+		instance something of some_package.xyz;
+		something { @prefix = "IK"; };
+
+		net plain_net;
+		net net_with_assignment = plain_net;
+		net net_with_block { @key = value };
+		net net_with_block_and_assignment { @key = value } = plain_net;
+		net net_with_block_and_assignment = plain_net { @key = value };
+
+		instance a_device { some_pin  = a_net; nc = open;};
+		instance a_design { some_port = a_net; };
+
+		instance parameterized_R1 of $R1_type { @value = $R1_value };
+		instance parameterized_R2 of $R2_type { @value = $R2_value };
+
+		// replication rules
+		net[31:0] big;
+		net[34:0] bigger;
+		net[7:0]  small;
+		big = <small>; // ok
+		big = <small>,<small>; // fails
+		bigger = <small>; // fails
+		bigger = <small>,2,1,0; // ok
+		bigger = 34,33,32,<small>; // ok
+		bigger = 34,33,<small>,0; // ok
+		bigger[31:0] = <small>; // ok
+
+		// net, port, and pin assignments add up; they *don't* get replaced
+		instance example = some.dev {
+			a = x;
+			b = y;
+		};
+		net c = z;
+
+		// these are the same
+		example.a = c; // a, c, x and z all connected
+		z = example.a; // a, c, x and z all connected
+
+		// parameters and attributes *do* get replaced by the last thing that applies
+		instance example of some.dev {
+			@footer = true;
+			$value  = "2 nF";
+		};
+		example.@footer = false; // footer is now false
+		example.$value  = "4 nF"; // value is "4 nF"
+
+		// flexible naming
+		net comme_ci_comme_ça;
+		net été;
+		net 3ィウ;
+		net "+1.8V";
+		net 6;
+
+		// all okay; keywords are not reserved
+		net net;
+		device device;
+		instance instance of of;
+		port port;
+		pin pin;
+
+		// escaping
+		port \@not_an_attribute; // ok
+		port "@not_an_attribute"; //ok 
+		port @an_attribute; // fails
+		port \$not_a_parameter; //ok 
+		port "$not_a_parameter"; //ok 
+		port $a_parameter; // fails
+		port "quote \" in name"; //ok
+
+		// quoting doesn't affect name
+		net "x", y, \z;
+		x = y = z;
+
+		// quoting DOES affect keywords in keyword position
+		net x; // ok;
+		net net; // ok
+		"net" = x; // ok
+		x = net; // ok
+		"net" x; // fails
+		net = x; // fails
+
+		// attributes combine when elaborated; DRC can check for conflicts using this
+		// (empty attribute is the same as no attribute)
+		net x { @voltage = "1.8"; @direction = out; };
+		net y { @direction = in; @something = true; };
+		net z { @voltage = "3.3"; @something = ""; };
+
+		// final net attributes seen by back-end:
+		// @voltage   = "1.8","3.3"
+		// @direction = out,in
+		// @something = true
+		x = y;
+
+		// flexible declaration order
+		net x = y; // okay, unless y is never defined
+		net y; // makes the above okay
+		net y; // error, duplicate net name
+
+		// mixing {}'s and ='s
+		a,b,c = n1,n3,n4; // ok
+		a { attribute @abc = xyz; }; // ok
+		a,b,c { attribute @abc = xyz; }; // ambiguous
+		a,b,c = n1,n3,n4 { attribute @abc = xyz; }; // fail, too ambiguous
+	};
+
+	// Exhaustive(?) pin syntax
+	device pin_syntax_test {
+
+		// single, no array
+		pin logical;
+		pin logical = physical;
+		pin logical { attribute @a ...; };
+		pin logical { attribute @a ...; } = physical;
+		logical = physical;
+		logical { attribute @a ...; };
+		logical { attribute @a ...; } = physical;
+		logical.@a = ...;
+
+		// single, with array
+		pin[0:1] logical;
+		pin[0:1] logical = physical0, physical1;
+		pin[0:1] logical { attribute @a ...; };
+		pin[0:1] logical { attribute @a ...; } = physical0, physical1;
+		logical = physical0, physical1;
+		logical[0] = physical0; logical[1] = physical1;
+		logical { attribute @a ...; };
+		logical { attribute @a ...; } = physical0, physical1;
+		logical[0] { attribute @a ...; };
+		logical[0] { attribute @a ...; } = physical0;
+		logical.@a = ...;
+		logical[0:1].@a = ...;
+		logical[0].@a = ...; logical[1].@a = ...;
+
+		// multiple, no array
+		pin logical1, logical2;
+		pin logical1, logical2 = physical1, physical2;
+		pin logical1, logical2 { attribute @a ...; };
+		pin logical1, logical2 { attribute @a ...; } = physical1, physical2;
+		logical1, logical2 = physical1, physical2;
+		logical1 = physical1; logical2 = physical2;
+		logical1, logical2 { attribute @a ...; };
+		logical1, logical2 { attribute @a ...; } = physical1, physical2;
+
+		// multiple, with array
+		pin[0:1] logical1, logical2;
+		pin[0:1] logical1, logical2 = physical1_0, physical1_1, physical2_0, physical2_1;
+		pin[0:1] logical1, logical2 { attribute @a ...; };
+		pin[0:1] logical1, logical2 { attribute @a ...; } = physical1_0, physical1_1, physical2_0, physical2_1;
+		logical1 = physical1_0, physical1_1;
+		logical1, logical2 = physical1_0, physical1_1, physical2_0, physical2_1;
+		logical1[0], logical2[0] = physical1_0, physical2_0;
+		logical1, logical2 { attribute @a ...; };
+		logical1, logical2 { attribute @a ...; } = physical1_0, physical1_1, physical2_0, physical2_1;
+		logical1[0], logical2[0] { attribute @a ...; };
+		logical1[0], logical2[0] { attribute @a ...; } = physical1_0, physical2_0;
+
+	};
+
+	whatever[3:0,7,2:10,8,2] = stuff;
+
+	// TODO: make this highlight correctly work
+	net "I²C_SDA", empêche, λαμβάνω, คงที่, ошибка, قطب سالب, 相対売買, "😃→😨";
+	net empêche;
+	attribute @λαμβάνω;
+	parameter $คงที่;
+	net ошибка;
+	net "قطب سالب";
+	net 相対売買;
+	net "😃→😨";
+
+	// FIXME this stuff
+
+	net "
+	  string
+	  with.embedded[1:3]
+	  newlines
+	  and stuff
+	  attribute
+	  net
+	  pin
+	  with.embedded[1:3]
+	"
+
+	net "embedded quote -> \" <- right there"
+	net "embedded backslash -> \ <- right there"
+	net "embedded backslashes -> \\ <- right there"
+	net "embedded unicode -> \u{deadbeef} <- right there"
+	net "embedded unicode -> \u{  deadbeeq- } <- right there"
+
+	// Comment
+
+	Not a comment.
+
+	/* 
+	  Comment
+	  Still a comment
+	*/
+
+	Not a comment.
+
+	/*
+	  Comment
+	  /* More comment */
+	  Still comment
+	  FIXME
+	*/
+
+	Not a comment.
+
+};
