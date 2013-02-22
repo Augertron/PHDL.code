@@ -1,4 +1,2 @@
-# Native build files
-*.a
-*.d
-*.o
+# Build directory
+build

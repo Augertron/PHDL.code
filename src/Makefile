@@ -8,26 +8,31 @@ LINK=$(COMPILE_BASE) $(LIBS)
 MAKELIB=ar rcus
 
 SOURCES=$(wildcard *.c++)
-OBJECTS=$(patsubst %.c++,%.o,$(SOURCES))
+OBJECTS=$(patsubst %.c++,build/%.o,$(SOURCES))
 
 TEST_SOURCES=$(wildcard test/*.c++)
-TEST_TARGETS=$(patsubst test/%.c++,test/suite-%,$(TEST_SOURCES))
+TEST_TARGETS=$(patsubst test/%.c++,build/test/suite-%,$(TEST_SOURCES))
 
-all: libphdl.a $(TEST_TARGETS)
+all: make_dirs build/libphdl.a $(TEST_TARGETS)
 
-include $(wildcard *.d test/*.d)
+.PHONY: make_dirs
+make_dirs:
+	@mkdir -p build/test
 
-%.o %.d: %.c++
-	$(COMPILE) $< -o $*.o
+build/%.o build/%.d: %.c++
+	@echo "Compiling $*"
+	@$(COMPILE) $< -o build/$*.o
+include $(wildcard build/*.d build/test/*.d)
 
-libphdl.a: $(OBJECTS)
-	$(MAKELIB) $@ $?
+build/libphdl.a: $(OBJECTS)
+	@$(MAKELIB) $@ $?
 
-test/suite-%: test/%.c++ libphdl.a
-	$(LINK) $^ -o $@
-	./$@ > ./$@.log
+build/test/suite-%: test/%.c++ build/libphdl.a
+	@echo "Testing $*"
+	@$(LINK) $^ -o $@
+	@./$@ > ./$@.log
 
 clean:
-	rm -f *.o *.d *.a
-	rm -f test/suite-*
-	rm -f test/tmp-*
+	@echo "Cleaning"
+	@rm -rf build
+	@rm -rf build
