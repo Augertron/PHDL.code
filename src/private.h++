@@ -57,8 +57,9 @@ namespace phdl {
 	namespace parser {
 
 		// Our individual parsers work on a parser context, which keeps track
-		// of the filename, text, and current position. This context also
-		// provides a convenient view of the file as a stream of characters.
+		// of the filename, text, and current position. This context also acts
+		// like both an iterator and a sequence, providing a convenient view of
+		// the file as a stream of characters.
 		struct Context {
 			~Context();
 
@@ -98,10 +99,41 @@ namespace phdl {
 			private:
 			struct Detail;
 			std::unique_ptr<Detail> detail;
-			//const std::string filename;
-			//const std::shared_ptr<const Characters> text;
-			//size_t position;
 		};
+
+		// Errors thrown by failing parsers are [potentially] user-visible, and
+		// keep track of the context where they were generated, and the parse
+		// error(s) that caused them.
+		struct Parse_Error : User_Visible_Error {
+			Parse_Error (
+				const Context &context,
+				const std::string &expected_syntax,
+				const optional<Parse_Error> cause = none
+			);
+		};
+
+		// Parsers are any function or object which can be called with a
+		// Context and either returns some type of Result, or throws a
+		// Parse_Error exception. Parsers should be called directly when they
+		// must match, but can also be called through the following helper
+		// functions in order to avoid too much boilerplate.
+		//
+		template <typename Result, typename Parser>
+		Result expect (Context &context, Parser &parser) {
+			return parser(context);
+		}
+
+		template <typename Result, typename Parser>
+		optional<Result> match (Context &context, Parser &parser) {
+			try {
+				return parser(context);
+			} catch (const Parse_Error &) {
+				return none;
+			}
+		}
+
+		// These parsers just combine other parsers in common ways.
+
 	}
 
 	//std::string file_error_prefix(const File_Information &);
