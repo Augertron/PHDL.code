@@ -1,5 +1,5 @@
 Examples
-^^^^^^^^
+========
 
 Often the logical name will be the name from the datasheet, and the physical name will be the pin number.
 However, we might use a different name when it helps make our design be more descriptive or easier to work with.
