@@ -19,7 +19,7 @@ all: make_dirs build/libphdl.a $(TEST_TARGETS)
 
 .PHONY: make_dirs
 make_dirs:
-	@mkdir -p build/parser
+	@mkdir -p build/phdl/parser
 	@mkdir -p build/test
 
 build/%.o build/%.d: implement/%.c++
