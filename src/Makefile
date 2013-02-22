@@ -9,8 +9,8 @@ LINK=$(COMPILE_BASE) $(LIBS) $(INCLUDES)
 
 MAKELIB=ar rcus
 
-SOURCES=$(shell find src -name "*.c++")
-OBJECTS=$(patsubst src/%.c++,build/%.o,$(SOURCES))
+SOURCES=$(shell find implement -name "*.c++")
+OBJECTS=$(patsubst implement/%.c++,build/%.o,$(SOURCES))
 
 TEST_SOURCES=$(shell find test -name "*.c++")
 TEST_TARGETS=$(patsubst test/%.c++,build/test/suite-%,$(TEST_SOURCES))
@@ -22,7 +22,7 @@ make_dirs:
 	@mkdir -p build/parser
 	@mkdir -p build/test
 
-build/%.o build/%.d: src/%.c++
+build/%.o build/%.d: implement/%.c++
 	@echo "Compiling $*"
 	@$(COMPILE) $< -o build/$*.o
 include $(wildcard build/*.d build/test/*.d)
