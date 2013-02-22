@@ -11,6 +11,7 @@
 // us, we are instead explicitly declaring Boost Exception a public part of our
 // interface. This means that direct use of boost::error_info tag definitions,
 // BOOST_THROW_EXCEPTION, and boost::diagnostic_information is allowed.
+#include <boost/exception/all.hpp>
 #include <boost/throw_exception.hpp>
 
 // Wrapper for assert to give a nicer, more consistent interface.

@@ -1,17 +1,8 @@
-#include "Error.h++"
+#include "phdl/error.h++"
 
 #include <sstream>
-#include <typeinfo>
 
 namespace phdl {
-
-	// In normal circumstances, this function will never be called. Thus, we
-	// don't need anything special here, just enough to identify the exception
-	// in a debugging scenerio. This means we can just use the output from
-	// std::type_info::name with no worries about its human-readability.
-	const char *Error::what() const noexcept {
-		return typeid(*this).name();
-	}
 
 	User_Visible_Error::User_Visible_Error (
 		Severity severity,
@@ -28,7 +19,17 @@ namespace phdl {
 	{}
 
 	// Output user error messages into a GCC-like format, which is kind of the
-	// de-facto standard for compiler error messages:
+	// de-facto standard for compiler error messages.
+	//
+	// For example:
+	//
+	//   User_Visible_Error err(
+	//     Severity::Error, "example.phdl", 5, 19,
+	//     "an error occurred, please fix it"
+	//   );
+	//   os << err;
+	//
+	// Yields:
 	//
 	//   example.phdl:5:19: error: an error occurred, please fix it
 	//

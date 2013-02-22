@@ -1,4 +1,4 @@
-#include "private.h++"
+#include "phdl/private.h++"
 
 // ICU headers
 #include <unicode/brkiter.h>

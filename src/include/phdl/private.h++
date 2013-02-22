@@ -11,7 +11,8 @@
 #include <boost/optional.hpp>
 #include <boost/variant.hpp>
 
-#include "Error.h++"
+// Our error subsystem
+#include "error.h++"
 
 namespace phdl {
 

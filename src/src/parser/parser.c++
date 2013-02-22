@@ -1,4 +1,4 @@
-#include "private.h++"
+#include "phdl/private.h++"
 
 namespace phdl { namespace parser {
 

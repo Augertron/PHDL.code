@@ -1,15 +1,17 @@
 #include "test.h++"
 
+#include "phdl/private.h++"
+
 using phdl::parser::Context;
 
 struct Make_Test_Files {
 	Make_Test_Files() {
 		{
-			std::ofstream ofs("build/test/tmp-parser-context-001.tmp");
+			std::ofstream ofs("tmp-parser-context-001.tmp");
 			ofs << "abc 123\r\nxyz 789\n";
 		}
 		{
-			std::ofstream ofs("build/test/tmp-parser-context-002.tmp");
+			std::ofstream ofs("tmp-parser-context-002.tmp");
 			ofs << "abc 123\r\nxyz 789\n";
 		}
 	}
@@ -18,12 +20,12 @@ struct Make_Test_Files {
 struct Fixture {
 	Context context;
 	Fixture() :
-		context("build/test/tmp-parser-context-001.tmp")
+		context("tmp-parser-context-001.tmp")
 	{}
 };
 
 TEST_METHOD(Fixture, filename_is_correct) {
-	EXPECT(context.filename() == "build/test/tmp-parser-context-001.tmp");
+	EXPECT(context.filename() == "tmp-parser-context-001.tmp");
 }
 
 TEST_METHOD(Fixture, basic_positioning) {
@@ -114,13 +116,13 @@ TEST_METHOD(Fixture, assigning_and_comparing) {
 }
 
 TEST_METHOD(Fixture, not_equal_if_files_differ) {
-	Context context2("build/test/tmp-parser-context-002.tmp");
+	Context context2("tmp-parser-context-002.tmp");
 	EXPECT(context != context2);
 }
 
 TEST_METHOD(Fixture, fail_if_file_not_found) {
 	try {
-		Context context2("build/test/tmp-parser-context-999.tmp");
+		Context context2("tmp-parser-context-999.tmp");
 		EXPECT(false);
 	} catch (const std::runtime_error &) {
 		// FIXME: should look for a PHDL-specific exception

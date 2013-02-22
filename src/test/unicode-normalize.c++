@@ -1,5 +1,7 @@
 #include "test.h++"
 
+#include "phdl/private.h++"
+
 using namespace phdl::unicode;
 
 TEST(basic_normalization_works) {
