@@ -28,6 +28,7 @@ namespace phdl {
 
 	// Functions abstracting Unicode manipulation.
 	namespace unicode {
+
 		// Normalize the given string to NFC. Invalid sequences are replaced
 		// with the standard Unicode replacement character, U+FFFD.
 		std::string normalize(const std::string &);

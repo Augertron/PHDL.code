@@ -1,2 +1,4 @@
-# Native object files
+# Native build files
+*.a
+*.d
 *.o

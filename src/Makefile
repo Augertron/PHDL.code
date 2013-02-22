@@ -1,6 +1,33 @@
-COMPILE=g++ -std=c++11 -Wall -Werror -Wextra -licuuc -licui18n
+ICU_LIBS=-licuuc -licui18n
+LIBS=$(ICU_LIBS)
 
-all: run_test
+COMPILE_BASE=g++ -std=c++11 -Wall -Werror -Wextra
+COMPILE=$(COMPILE_BASE) -c -MMD
+LINK=$(COMPILE_BASE) $(LIBS)
 
-run_test:
-	for test in test/*.c++; do export TARGET=test/suite-$$(basename $$test .c++); echo "Test suite $$TARGET"; $(COMPILE) $$test $(wildcard *.c++) -o $$TARGET && ./$$TARGET > $$TARGET.log; done
+MAKELIB=ar rcus
+
+SOURCES=$(wildcard *.c++)
+OBJECTS=$(patsubst %.c++,%.o,$(SOURCES))
+
+TEST_SOURCES=$(wildcard test/*.c++)
+TEST_TARGETS=$(patsubst test/%.c++,test/suite-%,$(TEST_SOURCES))
+
+all: libphdl.a $(TEST_TARGETS)
+
+include $(wildcard *.d test/*.d)
+
+%.o %.d: %.c++
+	$(COMPILE) $< -o $*.o
+
+libphdl.a: $(OBJECTS)
+	$(MAKELIB) $@ $?
+
+test/suite-%: test/%.c++ libphdl.a
+	$(LINK) $^ -o $@
+	./$@ > ./$@.log
+
+clean:
+	rm -f *.o *.d *.a
+	rm -f test/suite-*
+	rm -f test/tmp-*
