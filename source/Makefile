@@ -13,14 +13,14 @@ SOURCES=$(shell find implement -name "*.c++")
 OBJECTS=$(patsubst implement/%.c++,build/%.o,$(SOURCES))
 
 TEST_SOURCES=$(shell find test -name "*.c++")
-TEST_TARGETS=$(patsubst test/%.c++,build/test/suite-%,$(TEST_SOURCES))
+TEST_TARGETS=$(patsubst test/%.c++,build/test/%,$(TEST_SOURCES))
 
 all: make_dirs build/libphdl.a $(TEST_TARGETS)
 
 .PHONY: make_dirs
 make_dirs:
 	@mkdir -p build/phdl/parser
-	@mkdir -p build/test
+	@mkdir -p build/test/phdl/parser
 
 build/%.o build/%.d: implement/%.c++
 	@echo "Compiling $*"
@@ -30,10 +30,10 @@ include $(wildcard build/*.d build/test/*.d)
 build/libphdl.a: $(OBJECTS)
 	@$(MAKELIB) $@ $?
 
-build/test/suite-%: test/%.c++ build/libphdl.a
+build/test/%: test/%.c++ build/libphdl.a
 	@echo "Testing $*"
 	@$(LINK) $^ -o $@
-	@(cd $$(dirname $@); ./suite-$* > suite-$*.log)
+	@(cd build/test; ./$* > $*.log)
 
 clean:
 	@echo "Cleaning"
