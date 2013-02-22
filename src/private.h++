@@ -9,8 +9,18 @@
 #include <boost/exception/all.hpp>
 #include <boost/format.hpp>
 #include <boost/optional.hpp>
+#include <boost/variant.hpp>
+
+#include "Error.h++"
 
 namespace phdl {
+
+	// We use boost::optional and boost::none directly in all code.
+	using boost::optional;
+	using boost::none;
+
+	// We use boost::variant directly in all code.
+	using boost::variant;
 
 	// A character is a UTF-8 encoded Unicode extended grapheme cluster.
 	using Character  = std::string;
