@@ -1,3 +1,6 @@
+#ifndef phdl__private__header
+#define phdl__private__header
+
 // standard headers
 #include <cassert>
 #include <fstream>
@@ -11,8 +14,8 @@
 #include <boost/optional.hpp>
 #include <boost/variant.hpp>
 
-// Our error subsystem
-#include "error.h++"
+// phdl headers
+#include <phdl/error.h++>
 
 namespace phdl {
 
@@ -26,26 +29,6 @@ namespace phdl {
 	// A character is a UTF-8 encoded Unicode extended grapheme cluster.
 	using Character  = std::string;
 	using Characters = std::vector<Character>;
-
-	// Functions abstracting Unicode manipulation.
-	namespace unicode {
-
-		// Normalize the given string to NFC. Invalid sequences are replaced
-		// with the standard Unicode replacement character, U+FFFD.
-		std::string normalize(const std::string &);
-
-		// Split the given string into individual characters.
-		Characters split_characters(const std::string &);
-
-		// Combine split characters back into a string.
-		std::string combine_characters(const Characters &);
-
-		// Return whether the given character is whitespace or not.
-		bool is_whitespace(const Character &c);
-
-		// Return whether the given character is a newline or not.
-		bool is_newline(const Character &c);
-	}
 
 	// Transform position into line and column numbers as well as content
 	// and pointer strings for use primarily in error reporting.
@@ -148,3 +131,9 @@ namespace phdl {
 
 
 }
+
+// phdl headers
+// FIXME: merge with above part once this header is just a grouping
+#include <phdl/unicode.h++>
+
+#endif

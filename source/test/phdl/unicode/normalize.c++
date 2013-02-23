@@ -1,6 +1,6 @@
 #include "test.h++"
 
-#include "phdl/private.h++"
+#include <phdl/private.h++>
 
 using namespace phdl::unicode;
 
@@ -59,7 +59,19 @@ TEST(surrogates_replaced) {
 	EXPECT(normalize("wx\xed\xae\x80yz") == u8"wx\ufffdyz"); // D+DB80
 }
 
-TEST(replacing_replacement_character) {
+TEST(replacing_replacement_characters) {
 	EXPECT(normalize(u8"wx\ufffdyz") == u8"wx\ufffdyz"); // D+FFFD
+}
+
+TEST(unassigned_characters_are_untouched) {
+	EXPECT(normalize(u8"wx\ufffeyz")     == u8"wx\ufffeyz"    ); // D+FFFE
+	EXPECT(normalize(u8"wx\uffffyz")     == u8"wx\uffffyz"    ); // D+FFFF
+	EXPECT(normalize(u8"wx\U0010fffeyz") == u8"wx\U0010fffeyz"); // D+10FFFE
+	EXPECT(normalize(u8"wx\U0010ffffyz") == u8"wx\U0010ffffyz"); // D+10FFFF
+}
+
+TEST(private_use_characters_are_untouched) {
+	EXPECT(normalize(u8"wx\uf51ayz")     == u8"wx\uf51ayz"    ); // D+F51A
+	EXPECT(normalize(u8"wx\U000f2a82yz") == u8"wx\U000f2a82yz"); // D+F2A82
 }
 

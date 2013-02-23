@@ -1,5 +1,5 @@
-#ifndef phdl__Error__header
-#define phdl__Error__header
+#ifndef phdl__error__header
+#define phdl__error__header
 
 // Standard headers
 #include <cassert>
