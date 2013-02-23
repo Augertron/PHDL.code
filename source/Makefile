@@ -34,6 +34,7 @@ build/%.o build/%.d: implement/%.c++
 -include $(shell find build -name "*.d")
 
 build/libphdl.a: $(OBJECTS)
+	@echo "Constructing libphdl"
 	@$(MAKELIB) $@ $?
 
 build/test/%: test/%.c++ build/libphdl.a
