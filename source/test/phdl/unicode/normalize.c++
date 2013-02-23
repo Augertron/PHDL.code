@@ -44,7 +44,8 @@ TEST(invalid_sequences_replaced) {
 }
 
 TEST(multiple_invalid_sequences) {
-	EXPECT(normalize("\xc0wx\xfc\xf9yz\x8a") == u8"\ufffdwx\ufffd\ufffdyz\ufffd");
+	EXPECT(normalize("\xc0wx\xfc\xf9yz\x8a")     == u8"\ufffdwx\ufffd\ufffdyz\ufffd");
+	EXPECT(normalize("\xfc\x83wx\x86\xf8yz\x80") == u8"\ufffdwx\ufffd\ufffdyz\ufffd");
 }
 
 TEST(long_sequences_replaced) {
