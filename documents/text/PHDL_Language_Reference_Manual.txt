@@ -197,7 +197,7 @@ Pin_Name                  ⇒ Name | Parameter
 --------------------
 
 :leveloffset: 3
-include::include/Pin_Examples.txt[]
+include::PHDL_Language_Reference_Manual/Pin_Examples.txt[]
 :leveloffset: 0
 
 Port
