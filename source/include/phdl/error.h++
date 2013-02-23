@@ -30,7 +30,7 @@
 		),\
 		"string literal required"\
 	);\
-	assert(((void) message , (test)))
+	assert((test) && message)
 
 namespace phdl {
 
