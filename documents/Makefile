@@ -1,4 +1,4 @@
-SOURCES=$(shell find text -name "*.txt")
+SOURCES=$(shell find text -maxdepth 2 -name "*.txt")
 TARGETS=$(patsubst text/%.txt,build/%.html,$(SOURCES))
 
 all: make_dirs $(TARGETS)
