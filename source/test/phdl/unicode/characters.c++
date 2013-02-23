@@ -4,6 +4,7 @@
 
 using phdl::unicode::normalize;
 using phdl::unicode::split_characters;
+using phdl::unicode::combine_characters;
 using C = phdl::unicode::Characters;
 
 TEST(basic_splitting_works) {
@@ -11,6 +12,11 @@ TEST(basic_splitting_works) {
 	EXPECT(split_characters(u8"\u00e9xpose\u0301") == C({
 		"\u00e9", "x", "p", "o", "s", "e\u0301"
 	}));
+}
+
+TEST(basic_combining_works) {
+	EXPECT(combine_characters({ "a", "b", "c", "d" }) == "abcd");
+	EXPECT(combine_characters({"\u00e9", "x", "p", "o", "s", "e\u0301"}) == u8"\u00e9xpose\u0301");
 }
 
 TEST(newline_characters) {
@@ -23,6 +29,12 @@ TEST(examples_from_uax29) {
 	EXPECT(split_characters(u8"\u0ba8\u0bbf"      ) == C({ u8"\u0ba8\u0bbf"       }));
 	EXPECT(split_characters(u8"\u0e01\u0e33"      ) == C({ u8"\u0e01\u0e33"       }));
 	EXPECT(split_characters(u8"\u0937\u093f"      ) == C({ u8"\u0937\u093f"       }));
+
+	EXPECT(u8"\u0067\u0308"       == combine_characters({ u8"\u0067\u0308"       }));
+	EXPECT(u8"\u1100\u1161\u11a8" == combine_characters({ u8"\u1100\u1161\u11a8" }));
+	EXPECT(u8"\u0ba8\u0bbf"       == combine_characters({ u8"\u0ba8\u0bbf"       }));
+	EXPECT(u8"\u0e01\u0e33"       == combine_characters({ u8"\u0e01\u0e33"       }));
+	EXPECT(u8"\u0937\u093f"       == combine_characters({ u8"\u0937\u093f"       }));
 }
 
 TEST(examples_from_tr15) {
@@ -38,6 +50,19 @@ TEST(examples_from_tr15) {
 	EXPECT(split_characters(u8"\u0064\u0307\u0323") == C({ u8"\u0064\u0307\u0323" }));
 	EXPECT(split_characters(u8"\u0071\u0307\u0323") == C({ u8"\u0071\u0307\u0323" }));
 	EXPECT(split_characters(u8"\u0071\u0323\u0307") == C({ u8"\u0071\u0323\u0307" }));
+
+	EXPECT(u8"\u212b"             == combine_characters({ u8"\u212b"             }));
+	EXPECT(u8"\u0041\u030a"       == combine_characters({ u8"\u0041\u030a"       }));
+	EXPECT(u8"\u2126"             == combine_characters({ u8"\u2126"             }));
+	EXPECT(u8"\u006f\u0302"       == combine_characters({ u8"\u006f\u0302"       }));
+	EXPECT(u8"\u0073\u0323\u0307" == combine_characters({ u8"\u0073\u0323\u0307" }));
+	EXPECT(u8"\u0073\u0307\u0323" == combine_characters({ u8"\u0073\u0307\u0323" }));
+	EXPECT(u8"\u1e0b\u0323"       == combine_characters({ u8"\u1e0b\u0323"       }));
+	EXPECT(u8"\u0064\u0323\u0307" == combine_characters({ u8"\u0064\u0323\u0307" }));
+	EXPECT(u8"\u0064\u0307\u0323" == combine_characters({ u8"\u0064\u0307\u0323" }));
+	EXPECT(u8"\u0064\u0307\u0323" == combine_characters({ u8"\u0064\u0307\u0323" }));
+	EXPECT(u8"\u0071\u0307\u0323" == combine_characters({ u8"\u0071\u0307\u0323" }));
+	EXPECT(u8"\u0071\u0323\u0307" == combine_characters({ u8"\u0071\u0323\u0307" }));
 }
 
 TEST(examples_from_tr15_normalized) {
@@ -57,3 +82,4 @@ TEST(examples_from_tr15_normalized) {
 	EXPECT(norm_split(u8"x\u0071\u0307\u0323y") == C({ "x", u8"\u0071\u0323\u0307", "y" }));
 	EXPECT(norm_split(u8"x\u0071\u0323\u0307y") == C({ "x", u8"\u0071\u0323\u0307", "y" }));
 }
+

@@ -1,4 +1,6 @@
-#include "phdl/private.h++"
+#include <phdl/position.h++>
+
+#include <algorithm>
 
 namespace phdl { namespace position {
 

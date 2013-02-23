@@ -1,6 +1,6 @@
 #include "test.h++"
 
-#include "phdl/private.h++"
+#include <phdl/position.h++>
 
 using namespace phdl;
 using namespace phdl::position;

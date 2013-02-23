@@ -1,5 +1,5 @@
-#ifndef phdl__private__header
-#define phdl__private__header
+#ifndef phdl__parser__header
+#define phdl__parser__header
 
 // standard headers
 #include <cassert>
@@ -16,32 +16,16 @@
 
 // phdl headers
 #include <phdl/error.h++>
+#include <phdl/position.h++>
 #include <phdl/unicode.h++>
 
-namespace phdl {
+namespace phdl { namespace parser {
 
-	// We use boost::optional and boost::none directly in all code.
-	using boost::optional;
-	using boost::none;
-
-	// We use boost::variant directly in all code.
-	using boost::variant;
-
-	// We use our unicode character types everywhere, so we want to import them
-	// into the top level namespace.
-	using phdl::unicode::Character;
-	using phdl::unicode::Characters;
-
-	// Transform position into line and column numbers as well as content
-	// and pointer strings for use primarily in error reporting.
-	namespace position {
-		size_t      line_number  (const Characters &text, size_t position);
-		size_t      column_number(const Characters &text, size_t position);
-		std::string line_content (const Characters &text, size_t position);
-		std::string line_pointer (const Characters &text, size_t position);
-	}
-
-	namespace parser {
+		// We use boost optional and boost variant types in lots of parser
+		// code, so just import them into this namespace.
+		using boost::optional;
+		using boost::none;
+		using boost::variant;
 
 		// Our individual parsers work on a parser context, which keeps track
 		// of the filename, text, and current position. This context also acts

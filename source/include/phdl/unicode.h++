@@ -29,4 +29,11 @@ namespace phdl { namespace unicode {
 
 }}
 
+namespace phdl {
+	// We use our unicode character types everywhere, so we want to import them
+	// into the top level namespace.
+	using phdl::unicode::Character;
+	using phdl::unicode::Characters;
+}
+
 #endif

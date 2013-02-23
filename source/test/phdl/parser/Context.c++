@@ -1,6 +1,6 @@
 #include "test.h++"
 
-#include "phdl/private.h++"
+#include <phdl/parser.h++>
 
 using phdl::parser::Context;
 
