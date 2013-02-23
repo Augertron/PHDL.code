@@ -4,7 +4,7 @@ QT_LIBRARIES=-lQtCore
 
 ICU_LIBRARIES=-licuuc -licui18n
 
-INCLUDES=-Iinclude $(QT_INCLUDES)
+INCLUDES=-Isource $(QT_INCLUDES)
 LIBRARIES=$(ICU_LIBRARIES) $(QT_LIBRARIES)
 
 COMPILE_BASE=g++ -std=c++11 -fwrapv -pipe -pthread -Wall -Werror -Wextra --optimize=2
@@ -13,31 +13,32 @@ LINK=$(COMPILE_BASE) $(LIBRARIES) $(INCLUDES)
 
 MAKELIB=ar rcus
 
-SOURCES=$(shell find implement -name "*.c++")
-OBJECTS=$(patsubst implement/%.c++,build/%.o,$(SOURCES))
+SOURCES=$(shell find source -name "*.c++" | grep -v ".test.c++")
+OBJECTS=$(patsubst source/%.c++,build/object/%.o,$(SOURCES))
 
-TEST_SOURCES=$(shell find test -name "*.c++")
-TEST_TARGETS=$(patsubst test/%.c++,build/test/%,$(TEST_SOURCES))
+TEST_SOURCES=$(shell find source -name "*.test.c++")
+TEST_TARGETS=$(patsubst source/%.test.c++,build/test/%,$(TEST_SOURCES))
 
 all: make_dirs build/libphdl.a $(TEST_TARGETS)
 
 .PHONY: make_dirs
 make_dirs:
-	@for ns in parser unicode; do\
-		mkdir -p build/phdl/$$ns;\
-		mkdir -p build/test/phdl/$$ns;\
+	@for type in object test; do\
+		for dir in parser unicode; do\
+			mkdir -p build/$$type/phdl/$$dir;\
+		done;\
 	done
 
-build/%.o build/%.d: implement/%.c++
+build/object/%.o build/object/%.d: source/%.c++
 	@echo "Compiling $*"
-	@$(COMPILE) $< -o build/$*.o
+	@$(COMPILE) $< -o build/object/$*.o
 -include $(shell find build -name "*.d" 2> /dev/null)
 
 build/libphdl.a: $(OBJECTS)
 	@echo "Constructing libphdl"
 	@$(MAKELIB) $@ $?
 
-build/test/%: test/%.c++ build/libphdl.a
+build/test/%: source/%.test.c++ build/libphdl.a
 	@echo "Testing $*"
 	@$(LINK) $^ -o $@
 	@(cd build/test; ./$* > $*.log)

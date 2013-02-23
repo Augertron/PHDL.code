@@ -1,7 +1,7 @@
 all:
 	$(MAKE) -C documents
-	$(MAKE) -C source
+	$(MAKE) -C libphdl
 
 clean:
 	$(MAKE) -C documents clean
-	$(MAKE) -C source    clean
+	$(MAKE) -C libphdl   clean
