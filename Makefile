@@ -1,4 +1,4 @@
-DIRECTORIES=documents programs
+DIRECTORIES=documents software
 
 .PHONY: all
 all:
