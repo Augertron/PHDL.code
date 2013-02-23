@@ -31,7 +31,7 @@ make_dirs:
 build/%.o build/%.d: implement/%.c++
 	@echo "Compiling $*"
 	@$(COMPILE) $< -o build/$*.o
--include $(shell find build -name "*.d")
+-include $(shell find build -name "*.d" 2> /dev/null)
 
 build/libphdl.a: $(OBJECTS)
 	@echo "Constructing libphdl"
