@@ -4,7 +4,7 @@ namespace phdl { namespace parser {
 
 	struct Context::Detail {
 		std::string filename;
-		std::shared_ptr<Characters> text;
+		std::shared_ptr<unicode::Characters> text;
 		size_t position;
 	};
 
@@ -28,7 +28,7 @@ namespace phdl { namespace parser {
 
 		// Convert to characters and store as a shared pointer so that
 		// multiple context objects can efficiently share the same content.
-		detail->text.reset(new Characters(
+		detail->text.reset(new unicode::Characters(
 			unicode::split_characters(unicode::normalize(ss.str()))
 		));
 
@@ -70,7 +70,7 @@ namespace phdl { namespace parser {
 		detail->position = new_position;
 	}
 
-	const Character &Context::operator[](int offset) const {
+	const unicode::Character &Context::operator[](int offset) const {
 		// Access the character from the text. If we're out of bounds, return
 		// an placeholder empty character instead.
 		try {
@@ -81,11 +81,11 @@ namespace phdl { namespace parser {
 		}
 	}
 
-	const Character &Context::operator*() const {
+	const unicode::Character &Context::operator*() const {
 		return (*this)[0];
 	}
 
-	const Character *Context::operator->() const {
+	const unicode::Character *Context::operator->() const {
 		return &(*this)[0];
 	}
 

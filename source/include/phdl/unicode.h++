@@ -1,9 +1,15 @@
 #ifndef phdl__unicode__header
 #define phdl__unicode__header
 
-#include <phdl/private.h++>
+// standard headers
+#include <string>
+#include <vector>
 
 namespace phdl { namespace unicode {
+
+	// A character is a UTF-8 encoded Unicode extended grapheme cluster.
+	using Character  = std::string;
+	using Characters = std::vector<Character>;
 
 	// Normalize the given string to NFC. Invalid sequences are replaced
 	// with the standard Unicode replacement character, U+FFFD.

@@ -1,6 +1,6 @@
 #include "test.h++"
 
-#include <phdl/private.h++>
+#include <phdl/unicode.h++>
 
 using phdl::unicode::normalize;
 

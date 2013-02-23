@@ -1,3 +1,4 @@
+#include <phdl/error.h++>
 #include <phdl/unicode.h++>
 
 // ICU headers

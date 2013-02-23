@@ -16,6 +16,7 @@
 
 // phdl headers
 #include <phdl/error.h++>
+#include <phdl/unicode.h++>
 
 namespace phdl {
 
@@ -26,9 +27,10 @@ namespace phdl {
 	// We use boost::variant directly in all code.
 	using boost::variant;
 
-	// A character is a UTF-8 encoded Unicode extended grapheme cluster.
-	using Character  = std::string;
-	using Characters = std::vector<Character>;
+	// We use our unicode character types everywhere, so we want to import them
+	// into the top level namespace.
+	using phdl::unicode::Character;
+	using phdl::unicode::Characters;
 
 	// Transform position into line and column numbers as well as content
 	// and pointer strings for use primarily in error reporting.
@@ -131,9 +133,5 @@ namespace phdl {
 
 
 }
-
-// phdl headers
-// FIXME: merge with above part once this header is just a grouping
-#include <phdl/unicode.h++>
 
 #endif

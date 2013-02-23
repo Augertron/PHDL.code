@@ -2,6 +2,9 @@
 
 namespace phdl { namespace position {
 
+	using unicode::Character;
+	using unicode::Characters;
+
 	static bool  is_newline(const Character &c) { return  unicode::is_newline(c); };
 	static bool not_newline(const Character &c) { return !unicode::is_newline(c); };
 

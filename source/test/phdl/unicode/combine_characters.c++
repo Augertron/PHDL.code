@@ -1,8 +1,8 @@
 #include "test.h++"
 
-#include "phdl/private.h++"
+#include <phdl/unicode.h++>
 
-using namespace phdl::unicode;
+using phdl::unicode::combine_characters;
 
 TEST(basic_combining_works) {
 	EXPECT(combine_characters({ "a", "b", "c", "d" }) == "abcd");
