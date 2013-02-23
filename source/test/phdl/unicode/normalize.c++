@@ -43,6 +43,10 @@ TEST(invalid_sequences_replaced) {
 	EXPECT(normalize("wxyz\xff") == u8"wxyz\ufffd");
 }
 
+TEST(multiple_invalid_sequences) {
+	EXPECT(normalize("\xc0wx\xfc\xf9yz\x8a") == u8"\ufffdwx\ufffd\ufffdyz\ufffd");
+}
+
 TEST(long_sequences_replaced) {
 	EXPECT(normalize("wx\xc0\x8ayz"                ) == u8"wx\ufffdyz"); // U+A (long)
 	EXPECT(normalize("wx\xe0\x80\x8ayz"            ) == u8"wx\ufffdyz"); // U+A (long)
