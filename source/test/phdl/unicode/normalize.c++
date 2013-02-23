@@ -2,7 +2,7 @@
 
 #include <phdl/private.h++>
 
-using namespace phdl::unicode;
+using phdl::unicode::normalize;
 
 TEST(basic_normalization_works) {
 	EXPECT(normalize(u8"abcd1234")          == u8"abcd1234"        );
