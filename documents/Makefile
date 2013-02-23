@@ -13,6 +13,7 @@ build/%.html: text/%.txt $(SOURCES)
 	@echo "Asciidocing $*"
 	(cd build; asciidoc -o $*.html ../$<)
 
+.PHONY: clean
 clean:
 	@echo "Cleaning"
 	@rm -rf build
