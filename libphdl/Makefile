@@ -19,6 +19,7 @@ OBJECTS=$(patsubst source/%.c++,build/object/%.o,$(SOURCES))
 TEST_SOURCES=$(shell find source -name "*.test.c++")
 TEST_TARGETS=$(patsubst source/%.test.c++,build/test/%,$(TEST_SOURCES))
 
+.PHONY: all
 all: make_dirs build/libphdl.a $(TEST_TARGETS)
 
 .PHONY: make_dirs

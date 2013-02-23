@@ -1,7 +1,13 @@
-all:
-	$(MAKE) -C documents
-	$(MAKE) -C libphdl
+DIRECTORIES=documents libphdl
 
+.PHONY: all
+all:
+	for dir in $(DIRECTORIES); do\
+		$(MAKE) -C $$dir\
+	done
+
+.PHONY: clean
 clean:
-	$(MAKE) -C documents clean
-	$(MAKE) -C libphdl   clean
+	for dir in $(DIRECTORIES); do\
+		$(MAKE) -C $$dir clean\
+	done
