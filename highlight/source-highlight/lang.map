@@ -1,1 +1,2 @@
-phdl = phdl.lang
+phdl   = phdl.lang
+syntax = syntax.lang

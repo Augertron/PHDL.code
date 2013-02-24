@@ -1,0 +1,20 @@
+# This is a syntax definition file for use by GNU source-highlight for the
+# formal syntax defintion "syntax" sections of phdl documentation.
+# See <http://www.gnu.org/software/src-highlite> for more information.
+
+# Keywords
+keyword = "⇒"
+
+# Terminals
+usertype = '_[[:alnum:]_]+'
+
+# Productions
+type = '[[:alnum:]_]+'
+
+# Literals
+environment string delim "\"" "\"" begin
+	specialchar = '\\.'
+end
+
+# Symbols
+symbol = '[^[:alnum:]]'
