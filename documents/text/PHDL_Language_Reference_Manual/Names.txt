@@ -1,17 +1,51 @@
-Names
-=====
-
-. Names, values, identifiers, etc
-. Things that are named
-. Full Unicode compatibility
-. Relationship to attributes & parameters
-. Formal syntax
-. Source code examples
+Names & Values
+==============
 
 A name in PHDL is, unsuprisingly, just the logical name we give something.
+_Names_ are the identifiers used as we construct our design and connect things together.
+Essentially, names are just strings.
+Names can be quoted, but don't usually need to be.
+_Values_ are just names used as uninterpreted literals.
 
-All names can always consist of any valid Unicode codepoints whatsoever, but if names contain codepoints used as language syntax, they must be quoted.
-Quotes are optional for -- and don't change the meaning of -- names that don't require them.
+Just about everything has a name.
+Some things also have values.
+Designs and instances have names.
+Every device or pin has both a logical name and physical name.
+Instances have names.
+Nets, ports and pins have names.
+Attributes & parameters have both names and values.
+The physical names of devices and pins are effectively values, since they are not used as logical identifiers.
+
+Mostly names work as you'd expect, so there are very few surprises.
+For example, names like `abcd`, `regulator`, `Bridge_Chip`, `data3`, and `_internal` should hold no surprises.
+Names can start with digits.
+For example, there is no problem having names like `1234`, `8_bit`, or `2DIR`.
+
+In addition, our full Unicode support allows us to give more descriptive names such as `"I²C_SDA"`.
+And of course, non-ASCII identifiers, such as `empêche`, `λαμβάνω`, `คงที่`, `ошибка`, `"قطب سالب"`, `相対売買`, and `"😃→😨"` work fine as well.
+(Backends which transcode to legacy encodings always must do so in a standard, round-trip-reversable way footnote:[Examples of such methods include Base64, Quoted-Printable, UTF-7, UTF-EBCDIC, and so forth.].)
+
+If we want to use names with characters disallowed by `_Name_Simple_Literal`, we have to use quotes.
+For example in the above examples, `"I²C_SDA"` was quoted because it contains the `²` character, and `"قطب سالب"` was quoted because it contains a space.
+The same applies to names like `"+3.3 V"`, `"-"`, `"OE/"`, `"D*"`, `"4.7 kΩ"`, and so forth.
+For convenience, we're likely to use mostly non-quoted names, reserving quoted names only for when it adds clarity to our design.
+
+Below is an example of how some of these names mentioned above look in PHDL code.
+
+[source,phdl]
+--------------------
+// These names don't need to be quoted.
+net empêche, λαμβάνω, คงที่, ошибка, 相対売買;
+
+// These names must be quoted.
+net "I²C_SDA", "😃→😨", "+3.3 V", "-", "OE/";
+
+// These statements are all equivalent.
+1234 = abcd;
+1234 = "abcd";
+"1234" = abcd;
+"1234" = "abcd";
+--------------------
 
 Syntax
 ------
@@ -19,7 +53,7 @@ Syntax
 [source,syntax]
 --------------------
 Name                   ⇒ Name_Simple | Name_Quoted
-Name_Simple            ⇒ _Name_Simple_Literal+
+Name_Simple            ⇒ _Name_Simple_Literal_Start _Name_Simple_Literal*
 Name_Quoted            ⇒ "\"" (_Name_Quoted_Literal | Name_Quoted_Escape)* "\""
 Name_Quoted_Escape     ⇒ (Name_Escaped_Backslash | Name_Escaped_Quote | Name_Escaped_Codepoint)
 Name_Escaped_Backslash ⇒ "\\\\"
@@ -27,34 +61,19 @@ Name_Escaped_Quote     ⇒ "\\\""
 Name_Escaped_Codepoint ⇒ "\\x{" _Name_Escaped_Codepoint_Hex_Value "}"
 --------------------
 
+_Name_Simple_Literal_Start::
+A Unicode codepoint with either the `ID_Start` property, or a general category of either `Nd` or `Pc`.
+
 _Name_Simple_Literal::
-A Unicode extended grapheme cluster in which each codepoint of the cluster has the ID_Continue property.
+A Unicode codepoint with the `ID_Continue` property.
 
 _Name_Quoted_Literal::
-A Unicode extended grapheme cluster in which each codepoint of the cluster has either any of the following properties: ID_Continue, Pattern_Syntax, Pattern_White_Space.
+Any Unicode valid codepoint except for `"` (U+22, QUOTATION MARK) or `\` (U+5C, REVERSE SOLIDUS).
 
 _Name_Escaped_Codepoint_Hex_Value::
-An arbitrary-length sequence of Unicode codepoints each with the ASCII_Hex_Digit property.
-When interpreted as a hexadecimal number, the resulting value must indicate a valid Unicode codepoint.
+An sequence of Unicode codepoints each with the `ASCII_Hex_Digit` property.
+When interpreted as a hexadecimal number written most-significant-digit-first, the resulting value must indicate a valid Unicode codepoint.
 
 Examples
 --------
-
-Mostly names work as you'd expect from experience with other systems, so there are very few surprises.
-For example, names like `regulator`, `Bridge_Chip`, `data3`, and `_internal` should hold no surprises.
-
-In addition, full Unicode support allows us to give more descriptive names such as `"I²C_SDA"`.
-And of course, non-ASCII identifiers, such as `empêche`, `λαμβάνω`, `คงที่`, `ошибка`, `قطب سالب`, `相対売買`, and `"😃→😨"` work fine as well.
-Keep in mind that although PHDL itself is fully Unicode aware, in many cases the backends for some tools will transliterate to something like ASCII or ISO/IEC 8859-1 (Latin-1) for compatibilty.
-
-If we want to use names with non-identifier codepoints in them (as defined by Unicode), we have to use quotes.
-For example in the above examples, `"I²C_SDA"` was quoted because it contains the non-identifier character `²`, and `"😃→😨"` was quoted because none of those are identifier characters.
-For another example, `"+3.3 V"` needs to be quoted because it uses a plus, a period, and space.
-The same applies to names like `"+"`, `"-"`, `"OE/"`, `"D*"`, `"4.7 kΩ"`, and so forth.
-In general, we're going to use non-quoted names, except in places where doing otherwise adds clarity to our design.
-
-Note that unlike many languages, names can start with numbers.
-For example, there is no problem having names like `1234`, `8_bit`, or `2DIR`.
-No quotes are required here.
-
 
