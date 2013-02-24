@@ -2,11 +2,11 @@
 
 #include <phdl/parser.h++>
 #include <phdl/error.h++>
-
-#include <iostream>
+#include <phdl/unicode.h++>
 
 using phdl::parser::Context;
 using phdl::parser::Parse_Error;
+using phdl::unicode::split_characters;
 
 struct Make_Test_Files {
 	Make_Test_Files() {
@@ -33,7 +33,7 @@ TEST_METHOD(Fixture, filename_is_correct) {
 }
 
 TEST_METHOD(Fixture, text_is_correct) {
-	EXPECT(context.text() == "abc 123\r\nxyz 789\n");
+	EXPECT(context.text() == split_characters("abc 123\r\nxyz 789\n"));
 }
 
 TEST_METHOD(Fixture, basic_positioning) {

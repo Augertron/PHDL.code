@@ -61,8 +61,8 @@ namespace phdl { namespace parser {
 	}
 
 	Characters Context::text() const {
-		phdl_assert(detail->text, "somehow we have an invalid text shared_ptr");
-		return *detail->text;
+		if (!detail->text) return {};
+		else return *detail->text;
 	}
 
 	size_t Context::position() const {
