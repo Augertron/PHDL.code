@@ -32,6 +32,10 @@ TEST_METHOD(Fixture, filename_is_correct) {
 	EXPECT(context.filename() == "tmp-parser-context-001.tmp");
 }
 
+TEST_METHOD(Fixture, text_is_correct) {
+	EXPECT(context.text() == "abc 123\r\nxyz 789\n");
+}
+
 TEST_METHOD(Fixture, basic_positioning) {
 	EXPECT(context.position() == 0);
 	context.set_position(5);
