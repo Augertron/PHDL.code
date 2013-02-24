@@ -11,7 +11,7 @@ COMPILE_BASE=g++ -std=c++11 -fwrapv -pipe -pthread -Wall -Werror -Wextra --optim
 COMPILE=$(COMPILE_BASE) -c -MMD -MP $(INCLUDES)
 LINK=$(COMPILE_BASE) $(LIBRARIES) $(INCLUDES)
 
-MAKELIB=ar rcus
+MAKELIB=ar rcs
 
 SOURCES=$(shell find source -name "*.c++" | grep -v ".test.c++")
 OBJECTS=$(patsubst source/%.c++,build/object/%.o,$(SOURCES))
@@ -25,7 +25,7 @@ all: make_dirs build/libphdl.a $(TEST_TARGETS)
 .PHONY: make_dirs
 make_dirs:
 	@for type in object test; do\
-		for dir in parser unicode; do\
+		for dir in error parser unicode; do\
 			mkdir -p build/$$type/phdl/$$dir;\
 		done;\
 	done
@@ -37,12 +37,12 @@ build/object/%.o build/object/%.d: source/%.c++
 
 build/libphdl.a: $(OBJECTS)
 	@echo "Constructing libphdl"
-	@$(MAKELIB) $@ $?
+	@$(MAKELIB) $@ $^
 
 build/test/%: source/%.test.c++ build/libphdl.a
 	@echo "Testing $*"
 	@$(LINK) $^ -o $@
-	@(cd build/test; ./$* > $*.log)
+	@(cd build/test; ./$* > $*.log || rm ./$*)
 
 .PHONY: clean
 clean:
