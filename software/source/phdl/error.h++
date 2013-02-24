@@ -32,7 +32,7 @@
 	);\
 	assert((test) && message)
 
-namespace phdl {
+namespace phdl { namespace error {
 
 	// We inherit from boost::exception to enable the use of generic error info
 	// annotation. This feature is of primary value when debugging rather than
@@ -77,6 +77,12 @@ namespace phdl {
 		std::string _message;
 	};
 
+}}
+
+namespace phdl {
+	// We use errors everywhere, so bring them into our main namespace.
+	using phdl::error::Error;
+	using phdl::error::User_Visible_Error;
 }
 
 #endif

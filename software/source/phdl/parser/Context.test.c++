@@ -1,8 +1,12 @@
 #include "test.h++"
 
 #include <phdl/parser.h++>
+#include <phdl/error.h++>
+
+#include <iostream>
 
 using phdl::parser::Context;
+using phdl::parser::Parse_Error;
 
 struct Make_Test_Files {
 	Make_Test_Files() {
@@ -122,9 +126,10 @@ TEST_METHOD(Fixture, not_equal_if_files_differ) {
 
 TEST_METHOD(Fixture, fail_if_file_not_found) {
 	try {
-		Context context2("tmp-parser-context-999.tmp");
+		Context context("tmp-parser-context-999.tmp");
 		EXPECT(false);
-	} catch (const std::runtime_error &) {
-		// FIXME: should look for a PHDL-specific exception
+	} catch (const Parse_Error &error) {
+		std::cout << error;
+		EXPECT(true);
 	}
 }

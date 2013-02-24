@@ -1,9 +1,9 @@
 #include "test.h++"
-#include "phdl/error.h++"
+#include <phdl/error.h++>
 
 #include <iostream>
 
-using phdl::Error;
+using phdl::error::Error;
 
 struct My_Error : Error {};
 

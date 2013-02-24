@@ -7,7 +7,7 @@ namespace phdl { namespace parser {
 	struct Context::Detail {
 		std::string filename;
 		std::shared_ptr<unicode::Characters> text;
-		size_t position;
+		size_t position = 0;
 	};
 
 	Context::~Context() {}
@@ -24,7 +24,7 @@ namespace phdl { namespace parser {
 			std::ios_base::in | std::ios_base::binary
 		);
 		// FIXME: throw exception here to generate the right error
-		if (!ifs) throw std::runtime_error("file opening failed");
+		if (!ifs) throw Parse_Error(*this, "could not open file");
 		std::ostringstream ss;
 		ss << ifs.rdbuf();
 
@@ -33,9 +33,6 @@ namespace phdl { namespace parser {
 		detail->text.reset(new unicode::Characters(
 			unicode::split_characters(unicode::normalize(ss.str()))
 		));
-
-		// Start at position 0
-		detail->position = 0;
 	}
 
 	Context::Context(const Context &other) 
@@ -59,9 +56,13 @@ namespace phdl { namespace parser {
 		return !(*this == other);
 	}
 
-	// Get the filename.
 	std::string Context::filename() const {
 		return detail->filename;
+	}
+
+	Characters Context::text() const {
+		if (detail->text) return *detail->text;
+		else return {};
 	}
 
 	size_t Context::position() const {

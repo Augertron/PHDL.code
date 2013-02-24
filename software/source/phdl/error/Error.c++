@@ -1,8 +1,8 @@
-#include "phdl/error.h++"
+#include <phdl/error.h++>
 
 #include <typeinfo>
 
-namespace phdl {
+namespace phdl { namespace error {
 
 	// In normal circumstances, this function will never be called. Thus, we
 	// don't need anything special here, just enough to identify the exception
@@ -12,4 +12,4 @@ namespace phdl {
 		return typeid(*this).name();
 	}
 
-}
+}}

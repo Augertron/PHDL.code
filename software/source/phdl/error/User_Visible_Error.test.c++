@@ -1,10 +1,10 @@
 #include "test.h++"
-#include "phdl/error.h++"
+#include <phdl/error.h++>
 
 #include <iostream>
 
-using phdl::Severity;
-using phdl::User_Visible_Error;
+using phdl::error::Severity;
+using phdl::error::User_Visible_Error;
 
 TEST(error_message) {
 	User_Visible_Error error(Severity::Error, "the_file_name", 39, 13, "the error message");

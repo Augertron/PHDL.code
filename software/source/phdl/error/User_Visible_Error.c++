@@ -1,8 +1,8 @@
-#include "phdl/error.h++"
+#include <phdl/error.h++>
 
 #include <sstream>
 
-namespace phdl {
+namespace phdl { namespace error {
 
 	User_Visible_Error::User_Visible_Error (
 		Severity severity,
@@ -57,4 +57,4 @@ namespace phdl {
 
 	}
 
-}
+}}
