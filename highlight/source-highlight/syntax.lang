@@ -6,10 +6,10 @@
 keyword = "⇒"
 
 # Terminals
-usertype = '_[[:alnum:]_]+'
+type = '_[[:alnum:]_]+'
 
 # Productions
-type = '[[:alnum:]_]+'
+usertype = '[[:alnum:]_]+'
 
 # Literals
 environment string delim "\"" "\"" begin
