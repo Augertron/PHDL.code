@@ -1,7 +1,7 @@
 // Scutl -- Simple C++ Unit Testing Library
 // by Wesley J. Landaker <wjl@icecavern.net>
 // =========================================
-// Version 1.0.0
+// Version 1.1.0
 //
 // Scutl is a unit testing library that makes it painless to add unit tests to
 // your software with a minimum of hassle. The entire library implementation
@@ -243,7 +243,7 @@
 //     int main(int argc, char **argv) {
 //         // your implementation here
 //         scutl::Default_Reporter reporter;
-//         scutl::run(reporter);
+//         bool passed = scutl::run(reporter);
 //         // your implementation here
 //     }
 //
@@ -631,8 +631,9 @@ namespace scutl { namespace detail {
 namespace scutl {
 
 	// The scutl entry point, which can be called by the user when ready to
-	// run all the registered tests against the given reporter.
-	void run(Reporter &reporter) {
+	// run all the registered tests against the given reporter. Returns true
+	// if everything passed, otherwise false.
+	bool run(Reporter &reporter) {
 
 		// Zero out statistics we will be collecting while running
 		Test_Statistics statistics;
@@ -662,6 +663,13 @@ namespace scutl {
 
 		// Report the final summary
 		reporter.report_test_summary(statistics);
+
+		return
+			(statistics.count == statistics.started) &&
+			(statistics.count == statistics.complete) &&
+			(statistics.count == statistics.passed) &&
+			(statistics.failed == 0) &&
+			(statistics.aborted == 0);
 	}
 
 	// Implementation of the default reporter.
@@ -783,8 +791,8 @@ namespace scutl {
 
 int main() {
 	scutl::SCUTL_REPORTER reporter;
-	scutl::run(reporter);
-	return 0;
+	bool passed = scutl::run(reporter);
+	return !passed;
 }
 #endif
 
