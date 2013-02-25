@@ -9,11 +9,10 @@ _Values_ are just names used as uninterpreted literals.
 
 Just about everything has a name.
 Some things also have values.
-Designs and instances have names.
-Every device or pin has both a logical name and physical name.
-Instances have names.
+Designs, devices and instances have names.
 Nets, ports and pins have names.
 Attributes & parameters have both names and values.
+Every device or pin has both a logical name and physical name.
 The physical names of devices and pins are effectively values, since they are not used as logical identifiers.
 
 Mostly names work as you'd expect, so there are very few surprises.
@@ -25,22 +24,43 @@ In addition, our full Unicode support allows us to give more descriptive names s
 And of course, non-ASCII identifiers, such as `empêche`, `λαμβάνω`, `คงที่`, `ошибка`, `"قطب سالب"`, `相対売買`, and `"😃→😨"` work fine as well.
 (Backends which transcode to legacy encodings always must do so in a standard, round-trip-reversable way footnote:[Examples of such methods include Base64, Quoted-Printable, UTF-7, UTF-EBCDIC, and so forth.].)
 
-If we want to use names with characters disallowed by `_Name_Simple_Literal`, we have to use quotes.
+[source,phdl]
+--------------------
+// These names do not need quotes.
+net abcd, 1234, empêche, λαμβάνω, คงที่, ошибка, 相対売買;
+
+// These names require quotes.
+net "I²C_SDA", "😃→😨", "+3.3 V", "OE/";
+--------------------
+
+If we want to use names with normally disallowed characters, we have to use quotes.
 For example in the above examples, `"I²C_SDA"` was quoted because it contains the `²` character, and `"قطب سالب"` was quoted because it contains a space.
 The same applies to names like `"+3.3 V"`, `"-"`, `"OE/"`, `"D*"`, `"4.7 kΩ"`, and so forth.
 For convenience, we're likely to use mostly non-quoted names, reserving quoted names only for when it adds clarity to our design.
 
-Below is an example of how some of these names mentioned above look in PHDL code.
+[source,phdl]
+--------------------
+// The resistance units are explicitly stated.
+// The intended use of the pins is unambiguous.
+device easier_to_use_resistor of 0604 {
+	attribute @resistance = "4.7 kΩ";
+	pin "+" = 1;
+	pin "-" = 2;
+}
+
+// The resistance units have to be inferred.
+// The intended use of the pins is clear, but verbose.
+device harder_to_use_resistor of 0604 {
+	attribute @resistance = 4700;
+	pin positive = 1;
+	pin negative = 2;
+}
+--------------------
+
+Quotes are optional when not required. These assignment statements below are all equivalent:
 
 [source,phdl]
 --------------------
-// These names don't need to be quoted.
-net empêche, λαμβάνω, คงที่, ошибка, 相対売買;
-
-// These names must be quoted.
-net "I²C_SDA", "😃→😨", "+3.3 V", "-", "OE/";
-
-// These statements are all equivalent.
 1234 = abcd;
 1234 = "abcd";
 "1234" = abcd;
@@ -73,7 +93,3 @@ Any Unicode valid codepoint except for `"` (U+22, QUOTATION MARK) or `\` (U+5C, 
 _Name_Escaped_Codepoint_Hex_Value::
 An sequence of Unicode codepoints each with the `ASCII_Hex_Digit` property.
 When interpreted as a hexadecimal number written most-significant-digit-first, the resulting value must indicate a valid Unicode codepoint.
-
-Examples
---------
-
