@@ -1,0 +1,102 @@
+Parameters
+==========
+
+Description
+-----------
+
+`Parameters` are used to allow instances of devices or designs to vary in an extremely flexible but controlled manner.
+First, parameters are placed on a device or design, possibly with default values.
+Then, each instance may use different parameter values to get a parameterized instance.
+If a parameter does not have a specified default value, then a value is required to be assigned for each instance.
+
+[source,phdl]
+--------------------
+design some_design {
+	parameter $a = 123;
+	parameter $b;
+	...
+};
+
+instance some_instance of some_design {
+	// $a defaults to 123
+	// error if $b was never assigned
+	$b = something;
+	...
+};
+--------------------
+
+In most respects, parameters work just like names, but are always prefixed by a `$` character.
+Some examples of valid parameter names are `$width`, `$resistor_type` or `$"+V"`.
+Notice that the prefix character is never quoted, even if the rest of the name is.
+
+[source,phdl]
+--------------------
+// These are all valid parameter names
+parameter $width, $resistor_type, $"+V";
+
+// This is a name, not a parameter.
+net "$not a parameter";
+--------------------
+
+Once parameters have been declared, they can be used many ways to control a device or design.
+For example, we can use parameters to select what device or design an instance uses, control the width of ports, or to propagate attribute values down through hierarchy.
+Depending on how sophisticated we want to try to be, there are other a number of other possible uses of parameters.
+
+This example shows how a we might use a parameter to select a particular design to instaniate:
+
+[source,phdl]
+--------------------
+// Assuming we've set up the design so that any
+// value of $regulator_type has the same ports.
+instance regulator of $regulator_type {
+	Vin  = Vin;
+	Vout = Vout;
+	...
+};
+--------------------
+
+Here is an example that shows the basic of idea of how we can use a parameter to control the width of ports.
+It also demonstrates how to use a parameter to set a attribute on instances.
+
+[source,phdl]
+--------------------
+device resistor {
+	attribute @value;
+	pin "+" = 1;
+	pin "-" = 2;
+};
+
+design resistor_pack {
+	parameter $width;
+	parameter $value;
+	port[1:$width] "+";
+	port[1:$width] "-";
+	instance[1:$width] resistors of resistor {
+		@value = $value;
+	}
+	resistors."+" = "+";
+	resistors."-" = "-";
+};
+
+instance pulldowns of resistor_pack {
+	$width = 12;
+	$value = "1 MΩ";
+};
+resistors[1:12]."-" = <gnd>;
+resistors[1:12]."+" = ...;
+--------------------
+
+Syntax
+------
+
+All parameters follow the rule for `Parameter` as given below.
+
+[source,syntax]
+--------------------
+Parameter ⇒ "$" Name
+--------------------
+
+After parsing, `Parameter` nodes simply contain a `Name` node with the corresponding name.
+
+Parameter::
+* `name` : `Name`

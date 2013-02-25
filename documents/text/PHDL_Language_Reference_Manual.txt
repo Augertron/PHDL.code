@@ -107,13 +107,9 @@ FIXME more attribute examples go here.
 
 include::PHDL_Language_Reference_Manual/Names.txt[]
 
+include::PHDL_Language_Reference_Manual/Parameters.txt[]
+
 :leveloffset: 0
-
-Parameters
-~~~~~~~~~~
-
-Parameters are the names, prefixed by `$`, that we give to parameters.
-All three of these can be used in most contexts, but in certain cases only certain types of identifiers are allowed.
 
 Pin
 ~~~

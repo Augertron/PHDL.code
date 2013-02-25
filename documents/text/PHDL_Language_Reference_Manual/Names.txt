@@ -49,7 +49,7 @@ device easier_to_use_resistor of 0604 {
 	attribute @resistance = "4.7 kΩ";
 	pin "+" = 1;
 	pin "-" = 2;
-}
+};
 
 // The resistance units have to be inferred.
 // The intended use of the pins is clear, but verbose.
@@ -57,7 +57,7 @@ device harder_to_use_resistor of 0604 {
 	attribute @resistance = 4700;
 	pin positive = 1;
 	pin negative = 2;
-}
+};
 --------------------
 
 Quotes are optional when not required. These assignment statements below are all equivalent:
