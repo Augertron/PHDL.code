@@ -104,7 +104,9 @@ instance inst of dev {
 FIXME more attribute examples go here.
 
 :leveloffset: 1
+
 include::PHDL_Language_Reference_Manual/Names.txt[]
+
 :leveloffset: 0
 
 Parameters
