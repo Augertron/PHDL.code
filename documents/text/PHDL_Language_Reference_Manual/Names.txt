@@ -5,7 +5,7 @@ Description
 -----------
 
 A name in PHDL is, unsuprisingly, just the logical name we give something.
-_Names_ are the identifiers used as we construct our design and connect things together.
+_Names_ are the identifiers we use to construct our designs and connect things together.
 Essentially, names are just strings.
 Names can be quoted, but don't usually need to be.
 _Values_ are just names used as uninterpreted literals.
