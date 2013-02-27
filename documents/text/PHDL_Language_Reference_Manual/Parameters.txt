@@ -4,9 +4,9 @@ Parameters
 Description
 -----------
 
-`Parameters` are used to allow instances of devices or designs to vary in an extremely flexible but controlled manner.
-First, parameters are placed on a device or design, possibly with default values.
-Then, each instance may use different parameter values to get a parameterized instance.
+We use `Parameters` to allow instances of devices or designs to vary in an extremely flexible but controlled manner.
+First, we place parameters on a device or design, possibly with default values.
+Then, each instance can use different parameter values to get various parameterized instance types.
 If a parameter does not have a specified default value, then a value is required to be assigned for each instance.
 
 [source,phdl]
@@ -18,9 +18,14 @@ design some_design {
 };
 
 instance some_instance of some_design {
-	// $a defaults to 123
-	// error if $b was never assigned
+	// $a defaults to 123 if not assigned
+
+	// there is no default value for $b, so we'll get
+	// an error if we forget to assign it a value
 	$b = something;
+
+	// error here: $c was not declared in the design
+	$c = abcd;
 	...
 };
 --------------------
@@ -40,7 +45,7 @@ net "$not a parameter";
 
 Once parameters have been declared, they can be used many ways to control a device or design.
 For example, we can use parameters to select what device or design an instance uses, control the width of ports, or to propagate attribute values down through hierarchy.
-Depending on how sophisticated we want to try to be, there are other a number of other possible uses of parameters.
+Depending on how sophisticated we want to try to be, there are any number of possible uses of parameters.
 
 This example shows how a we might use a parameter to select a particular design to instaniate:
 
@@ -60,7 +65,7 @@ It also demonstrates how to use a parameter to set a attribute on instances.
 
 [source,phdl]
 --------------------
-device resistor {
+device resistor is 0604 {
 	attribute @value;
 	pin "+" = 1;
 	pin "-" = 2;
@@ -89,14 +94,14 @@ resistors[1:12]."+" = ...;
 Syntax
 ------
 
-All parameters follow the rule for `Parameter` as given below.
-
 [source,syntax]
 --------------------
-Parameter ⇒ "$" Name
+Parameter_Name        ⇒ "$" Name
+Parameter_Value       ⇒ Value | Parameter
+Parameter_Declaration ⇒ "parameter" Parameter_Name_List Parameter_Assignment?
+Parameter_Assignment  ⇒ "=" Parameter_Value_List
+
+# Local rules
+Parameter_Name_List   ⇒ Parameter_Name  ("," Parameter_Name )*
+Parameter_Value_List  ⇒ Parameter_Value ("," Parameter_Value)*
 --------------------
-
-After parsing, `Parameter` nodes simply contain a `Name` node with the corresponding name.
-
-Parameter::
-* `name` : `Name`

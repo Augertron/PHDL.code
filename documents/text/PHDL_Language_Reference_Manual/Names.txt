@@ -60,7 +60,9 @@ device harder_to_use_resistor of 0604 {
 };
 --------------------
 
-Quotes are optional when not required. These assignment statements below are all equivalent:
+Quotes are optional when not required.
+Regardless of whether names are simple or quoted, the resulting `Name` is semantically the same.
+Thus, the assignment statements below are all exactly equivalent:
 
 [source,phdl]
 --------------------
@@ -73,11 +75,12 @@ Quotes are optional when not required. These assignment statements below are all
 Syntax
 ------
 
-All names and values follow the rule for `Name` as given below.
-
 [source,syntax]
 --------------------
 Name                   ⇒ Name_Simple | Name_Quoted
+Value                  ⇒ Name
+
+# Local rules
 Name_Simple            ⇒ _Name_Simple_Codepoint_Start _Name_Simple_Codepoint_Continue*
 Name_Quoted            ⇒ "\"" (_Name_Quoted_Codepoint | Name_Quoted_Escape)* "\""
 Name_Quoted_Escape     ⇒ (Name_Escaped_Backslash | Name_Escaped_Quote | Name_Escaped_Codepoint)
@@ -98,9 +101,3 @@ Any Unicode valid codepoint except for `"` (`U+22 QUOTATION MARK`) or `\` (`U+5C
 _Name_Escaped_Codepoint_Hex_Value::
 An sequence of Unicode codepoints each with the `ASCII_Hex_Digit` property.
 When interpreted as a hexadecimal number written most-significant-digit-first, the resulting value must indicate a valid Unicode codepoint.
-
-After parsing, `Name` nodes simply contain a single string with the corresponding name.
-Regardless of whether names are simple or quoted, the resulting `Name` is semantically the same.
-
-Name::
-* `name` : string

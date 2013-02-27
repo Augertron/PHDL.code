@@ -1,0 +1,71 @@
+Attributes
+==========
+
+Description
+-----------
+
+To promote a uniform method to communicate information to backend tools, `Attributes` are general name-value pairs that can be applied to just about anything.
+In particular, it's possible apply attributes to designs, devices, instances, nets, ports, and pins.
+
+What attributes are necessary or useful depends on the particular backend tools that are being targeted.
+No attributes are interpreted directly by the core language, but attributes are passed on to backends which can make use of these attributes for various purposes.
+Some backends require a minimal set of attributes to function correctly.
+Other attributes may simply be added by the user for use by their own backend tools or processes.
+For example, we might use attributes to annotate pins and nets with information used by automated, semantic-driven DRC checks.
+Or, we may simply use them to add extra human-readable information fields to our parts list.
+
+[source,phdl]
+--------------------
+device some_device {
+	attribute @a = 123;
+	attribute @b;
+	...
+};
+
+instance some_instance of some_device {
+	// @a defaults to 123 if not assigned
+
+	// there is no default value for @b, so we'll get
+	// an error if we forget to assign it a value
+	@b = something;
+
+	// error here: @c was not declared in the design
+	@c = abcd;
+
+	// we can optionally put it here anyway if we wish
+	attribute @c = 5;
+	...
+};
+--------------------
+
+Attributes can only be assigned after they have been declared.
+However, from the perspective of backends, all attributes are considered to unconditionaly exist.
+Thus there is no difference between a missing attribute and an attribute with an empty string as its value.
+
+An attribute is syntactically identified by a `@` prefix character as the first part of the name.
+Some examples of valid attribute names are `@value`, `@refdes`, or `@"Estimated Cost"`.
+Notice that the prefix character is never quoted, even if the rest of the name is.
+
+[source,phdl]
+--------------------
+// These are all valid attribute names
+attribute @value, @refdes, @"Estimated Cost";
+
+// This is a name, not a parameter.
+net "@not a parameter";
+--------------------
+
+Syntax
+------
+
+[source,syntax]
+--------------------
+Attribute_Name        ⇒ "@" Name
+Attribute_Value       ⇒ Name | Parameter
+Attribute_Declaration ⇒ "parameter" Attribute_Name_List Attribute_Assignment?
+Attribute_Assignment  ⇒ "=" Attribute_Value_List
+
+# Local rules
+Attribute_Name_List   ⇒ Attribute_Name  ("," Attribute_Name )*
+Attribute_Value_List  ⇒ Attribute_Value ("," Attribute_Value)*
+--------------------

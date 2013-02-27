@@ -1,0 +1,50 @@
+Introduction
+============
+
+What is PHDL?
+-------------
+
+PHDL is a hardware description language (HDL) for designing printed circuit boards (PCBs).
+PHDL takes the place of graphical schematics as a way to capture and communicate a complete logical design.
+
+PHDL does not perform physical layout, but outputs traditional schematic and netlist information in various formats to allow this task to be handled by traditional layout tools.
+
+About this Manual
+-----------------
+
+This manual contains a mix of two types of content: _normative_ and _informative_.
+Generally, the which type is which will be obvious from context.
+In situations where there is ambiguity, the type of information is marked explictly.
+
+Normative content exists to concretely define the PHDL language.
+This includes things like grammar description, language semantics, or other specific requirements.
+The important aspect of normative content is that it's unambiguous.
+
+Informative content exists mainly to help make the language easier to learn and understand.
+This includes general explanatory text, language examples, and so forth.
+The important aspect of informative content is that it's enlightening.
+
+Since informative content is less precise, normative content should be used as the final arbiter if there is any confusion about language requirements.
+However, if there is ever any actual conflict or disagreement between normative and informative content, please file a bug footnote:[Bugs about this document, or the PHDL implementation itself can be filed http://sourceforge.net/p/phdl/bugs/], as that means this document has an error!
+
+Language Concepts
+-----------------
+
+Let's take a look at the various concepts that compose the world of PHDL.
+For example, we've got the designs we're making, the devices we're putting on the board, the nets we use to connect things, the various attributes we put on things, the packages we group our devices in for convenience, the names we give things, and so forth.
+Conceptually, this is no different from the concepts used in graphical schematics, but lets look at the specific ways that PHDL uses certain terminology.
+
+Creating _designs_ are the high-level goal of using PHDL.
+They consist primarily of connecting the _pins_ of _instances_ of individual _devices_.
+When designs have _ports_, they can be instanced like devices inside other designs.
+Either way, we connect things up with _nets_.
+We can group our devices and designs into _packages_.
+
+For convenience, _arrays_ of nets and instances can be created.
+Parts of arrays are accessed via _slices_.
+
+_Names_ are logical names we give to things.
+_Attributes_ are general name-value pairs that can be applied to various objects to pass information to backends.
+_Parameters_ allow a device or design to be parameterized.
+
+Each of these concepts is covered in detail in the sections that follow.
