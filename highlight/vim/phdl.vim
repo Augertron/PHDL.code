@@ -28,19 +28,19 @@ execute "syntax match phdlAttribute \"@" . s:NAME . "\""
 " Parameters
 syntax keyword phdlKeyword parameter
 execute "syntax match phdlParameter \"$" . s:NAME . "\""
-"
+
 " Nets, Ports, and Pins
 syntax keyword phdlKeyword net port pin
-"
+
 " Instances
 syntax keyword phdlKeyword instance of
-"
+
 " Packages, Designs, and Devices
-syntax keyword phdlDefinition package device design
-"
+syntax keyword phdlKeyword package device design is
+
 " Imports
 syntax keyword phdlImport import
-"
+
 " Slices
 syntax match phdlSliceNumber "[[:digit:]+]" contained
 syntax region phdlSlice start="\[" end="\]" contains=phdlSliceNumber
@@ -75,7 +75,6 @@ syntax region phdlName start=/"/ skip=/\\"/ end=/"/ contains=phdlNameError,phdlN
 highlight default link phdlAttribute String
 highlight default link phdlBlockComment Comment
 highlight default link phdlBracket Delimiter
-highlight default link phdlDefinition Function
 highlight default link phdlError Error
 highlight default link phdlImport PreProc
 highlight default link phdlKeyword Keyword

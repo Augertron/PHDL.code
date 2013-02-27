@@ -28,7 +28,7 @@ keyword = "net|port|pin"
 keyword = "instance|of"
 
 # Packages, Designs, and Devices
-function = "package|device|design"
+keyword = "package|design|device|is"
 
 # Imports
 preproc = "import"

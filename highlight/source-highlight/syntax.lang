@@ -2,6 +2,9 @@
 # formal syntax defintion "syntax" sections of phdl documentation.
 # See <http://www.gnu.org/software/src-highlite> for more information.
 
+# Comments
+comment start "#"
+
 # Keywords
 keyword = "⇒"
 
