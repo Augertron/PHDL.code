@@ -12,46 +12,8 @@ include::PHDL_Language_Reference_Manual/Parameters.txt[]
 
 include::PHDL_Language_Reference_Manual/Attributes.txt[]
 
-:leveloffset: 0
+include::PHDL_Language_Reference_Manual/Pins.txt[]
 
-Pin
-~~~
-
-A pin is the part of a device that corresponds to an actual pad in layout.
-
-To the user of a device, a pin on a device is just like a port on a design.
-A pin has both a logical name and a physical name.
-The logical name is used when hooking things up in a design.
-The physical name is primarily provided for use by backends.
-Generally the physical name must be the name of the corresponding pad in the footprint definition of the device in our layout program.
-
-In all cases, there must be one physical name assigned to each bit of each logical pin.
-Pins can be defined as arrays and multiple pins can be defined or assigned in a single statement.
-In some cases, this can save a lot of typing and/or unnecessary redundancy, but care should be taken here to avoid creating a hard-to-understand pin definition.
-
-Pins can have an assocated block where attributes can be set.
-Device-scope and package- scope pin attributes are automatically in scope in these blocks.
-
-Syntax
-^^^^^^
-
---------------------
-Pin_Statement             ⇒ (Pin_Declaration | Pin_Assignment | Pin_Attribute_Declaration | Pin_Attribute_Access) ";"
-Pin_Declaration           ⇒ "pin" Pin_Assignment
-Pin_Assignment            ⇒ Pin_Logical_Names (Pin_Attribute_Block | Pin_Physical_Names)
-Pin_Attribute_Declaration ⇒ "pin" Attribute_Declaration ";"
-Pin_Logical_Names         ⇒ Pin_Slice ("," Pin_Slice)*
-Pin_Physical_Names        ⇒ "=" Pin_Name ("," Pin_Name)*
-Pin_Attribute_Block       ⇒ "{" Attribute_Statement* "}" Pin_Physical_Names?
-Pin_Attribute_Assignment  ⇒ Pin_Attribute_Keys Attribute_Values
-Pin_Attribute_Keys        ⇒ Pin_Attribute_Key ("," Pin_Attribute_Key)
-Pin_Attribute_Key         ⇒ Pin_Slice "." Attribute_Key
-Pin_Slice                 ⇒ Pin_Name Slice
-Pin_Name                  ⇒ Name | Parameter
---------------------
-
-:leveloffset: 3
-include::PHDL_Language_Reference_Manual/Pin_Examples.txt[]
 :leveloffset: 0
 
 Port
