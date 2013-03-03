@@ -198,6 +198,8 @@ package top_package {
 		// quoting doesn't affect name
 		net "x", y, \z;
 		x = y = z;
+		x = y;
+		x = z;
 
 		// quoting DOES affect keywords in keyword position
 		net x; // ok;

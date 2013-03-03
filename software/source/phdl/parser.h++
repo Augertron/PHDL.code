@@ -7,6 +7,7 @@
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 // boost headers
 #include <boost/format.hpp>
@@ -19,12 +20,6 @@
 #include <phdl/unicode.h++>
 
 namespace phdl { namespace parser {
-
-	// We use boost optional and boost variant types in lots of parser
-	// code, so just import them into this namespace.
-	using boost::optional;
-	using boost::none;
-	using boost::variant;
 
 	// Our individual parsers work on a parser context, which keeps track
 	// of the filename, text, and current position. This context also acts
@@ -79,7 +74,7 @@ namespace phdl { namespace parser {
 		// is a match, the result is returned and the position is advanced.
 		// Otherwise, no result is returned, and the context stays unchanged.
 		template <typename Result, typename Parser>
-		optional<Result> match (Parser &parser);
+		boost::optional<Result> match (Parser &parser);
 
 		// Require the current context to match with the given parser and
 		// return the result. This is really no different from calling a parser
@@ -100,9 +95,99 @@ namespace phdl { namespace parser {
 		Parse_Error (
 			const Context &context,
 			const std::string &expected_syntax,
-			const optional<Parse_Error> cause = none
+			const boost::optional<Parse_Error> cause = boost::none
 		);
 	};
+
+	// Our AST is made of simple data types. This is appropriate here, as the
+	// AST is intended to be as simple as possible so that the parser can
+	// convert text to structure with very little unnecessary intelligence. The
+	// parser is very forgiving, and most language checking is done after this
+	// is converted into our more robust internal representation.
+
+	namespace ast {
+
+		// We strictly limit allowed indices to [-2**15,2**15), under the
+		// assumption that a 64 Kibit bus should be wide enough for anybody.
+		using Index = int16_t;
+
+		// A range consists of either a single index, or a pair of indices
+		// indicating the start and stop index in normal left to right order.
+		struct Range {
+			boost::variant<
+				Index,
+				std::pair<Index,Index>
+			> index;
+		};
+
+		// A slice just is a collection of ranges. The language requires that a
+		// slice has at least one range element. (This fact is enforced in both
+		// parsing and elaboration, but this object doesn't care.)
+		struct Slice {
+			std::vector<Range> ranges;
+		};
+
+		// Although certain types of names (e.g. hierarchical vs. simple,
+		// sliced vs. plain, normal vs. attribute) are allowed in different
+		// places in the language, the parser encodes all names encountered
+		// while into the same type of node for simplicity. Many constraints
+		// are validated during parsing (basically just where its convenient to
+		// do so); the rest of are checked during elaboration.
+		struct Name {
+			enum class Type { Normal, Parameter, Attribute };
+			Type type;
+			std::vector<std::string> parts;
+			boost::optional<Slice> slice;
+		};
+
+		// Forward declaration of blocks so they can be used in assignments.
+		struct Block;
+
+		// Almost every line in the language is fundamentally some type of
+		// assignment. The parser follows suit and encodes anything
+		// assignment-like into this node type. The decoded target and source
+		// names are stored here, but validation of the compatibility between
+		// target and source width and type is left alone until elaboration.
+		// Likewise with the semantics of the associated block.
+		struct Assignment {
+			std::vector<Name> targets;
+			std::vector<Name> sources;
+			boost::optional<boost::recursive_wrapper<Block>> block;
+		};
+		
+		// All types of declarations are coalesced into a single type by the
+		// parser. Many constraints are checked during parsing; the rest are
+		// handled during elaboration. Almost all information is stored in the
+		// nested Assignment object since declarations are effectively just
+		// initial assignments.
+		struct Declaration {
+			enum class Type {
+				Attribute ,
+				Board     ,
+				Design    ,
+				Device    ,
+				Net       ,
+				Package   ,
+				Parameter ,
+				Pin       ,
+				Port      ,
+			};
+			Type type;
+			Assignment assignment;
+		};
+
+		// All language block sections are unified into this single collection
+		// of statements. Largely, the parser only validates allowed statement
+		// insofar as it is convenient to do so. Further detailed analysis
+		// happens during elaboration.
+		struct Block {
+			std::vector<boost::variant<
+				Assignment,
+				Declaration
+			>> statements;
+		};
+
+	}
 
 }}
 

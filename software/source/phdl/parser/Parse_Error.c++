@@ -8,7 +8,7 @@ namespace phdl { namespace parser {
 	Parse_Error::Parse_Error (
 		const Context &context,
 		const std::string &expected_syntax,
-		const optional<Parse_Error>
+		const boost::optional<Parse_Error>
 	) :
 		User_Visible_Error(
 			error::Severity::Error,
