@@ -14,6 +14,13 @@ include::PHDL_Language_Reference_Manual/Attributes.txt[]
 
 include::PHDL_Language_Reference_Manual/Pins.txt[]
 
+// TODO:
+//include::PHDL_Language_Reference_Manual/Slices.txt[]
+//include::PHDL_Language_Reference_Manual/Ports.txt[]
+//include::PHDL_Language_Reference_Manual/Devices.txt[]
+//include::PHDL_Language_Reference_Manual/Designs.txt[]
+//include::PHDL_Language_Reference_Manual/Packages.txt[]
+
 :leveloffset: 0
 
 Port
