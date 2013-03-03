@@ -19,27 +19,6 @@ In some cases, this can save a lot of typing and/or unnecessary redundancy, but 
 Pins can have an assocated block where attributes can be set.
 Device-scope and package- scope pin attributes are automatically in scope in these blocks.
 
-Syntax
-------
-
---------------------
-Pin_Statement             ⇒ (Pin_Declaration | Pin_Assignment | Pin_Attribute_Declaration | Pin_Attribute_Access) ";"
-Pin_Declaration           ⇒ "pin" Pin_Assignment
-Pin_Assignment            ⇒ Pin_Logical_Names (Pin_Attribute_Block | Pin_Physical_Names)
-Pin_Attribute_Declaration ⇒ "pin" Attribute_Declaration ";"
-Pin_Logical_Names         ⇒ Pin_Slice ("," Pin_Slice)*
-Pin_Physical_Names        ⇒ "=" Pin_Name ("," Pin_Name)*
-Pin_Attribute_Block       ⇒ "{" Attribute_Statement* "}" Pin_Physical_Names?
-Pin_Attribute_Assignment  ⇒ Pin_Attribute_Keys Attribute_Values
-Pin_Attribute_Keys        ⇒ Pin_Attribute_Key ("," Pin_Attribute_Key)
-Pin_Attribute_Key         ⇒ Pin_Slice "." Attribute_Key
-Pin_Slice                 ⇒ Pin_Name Slice
-Pin_Name                  ⇒ Name | Parameter
---------------------
-
-Examples
---------
-
 Often the logical name will be the name from the datasheet, and the physical name will be the pin number.
 However, we might use a different name when it helps make our design be more descriptive or easier to work with.
 For example, a diodes's footprint in our layout tool might expect pins `1` and `2`, and the datasheet calls them `A` and `C`, but we'll call them `"+"` and `"-"` because that makes our design more uniform.
@@ -67,7 +46,7 @@ device power_jack {
 Here is another example.
 An FPGA's physical pin name may be called `G17`, which corresponds to something like `IO102_P25_GCLK3` in the datasheet.
 But we decide to use the much more descriptive name `FPGA_clock_in` from our FPGA code when creating our design.
-This scheme is particular useful for tools that convert FPGA implementation pin report files into PHDL device descriptions.
+For example, this scheme is particularly useful for tools that convert FPGA implementation pin report files into PHDL device descriptions.
 
 [source,phdl]
 --------------------
@@ -79,11 +58,11 @@ device FPGA {
 Although we'll usually just keep pin definitions simple on-liners, there is no requirement to do so.
 We can first declare our pins, then assign them in separate statements inside the same device block.
 For example, this could be very useful if the pin description for a regulator in a BGA package is given in the datasheet as a picture of the footprint, rather than a list of what signals are on what pins.
-In our first version, the pins are listed in some logical order, but they are very hard to check against a datasheet that only shows pinout via a footprint picture.
+In our first version, the pins are listed in some logical order, which is great if our datasheet gave this pinout in a list like this, but they are very hard to check against a datasheet that only shows pinout via a footprint picture.
 
 [source,phdl]
 --------------------
-device regulator_hard_to_verify_against_datasheet {
+device regulator_with_list_of_pins_per_signal {
 	pin[1:3] IN = A4,B3,C1;
 	pin[1:2] OUT = D2,D4;
 	pin      ADJ_SENSE = A2;
@@ -96,12 +75,12 @@ device regulator_hard_to_verify_against_datasheet {
 --------------------
 
 Here is another, equivalent, way of writing the same regulator above.
-This time we've lined up things up to match the pictoral BGA table in the datasheet.
-Which way we choose is mostly a matter of opinion and how good the datasheets of the parts we use are!
+This time we've lined up things up to match the pictoral BGA in the datasheet.
+Which way we choose in any given situation probably depends largely on how our part datasheets are written, but ultimately is just a matter of style.
 
 [source,phdl]
 --------------------
-device regulator_easy_to_verify_against_datasheet {
+device regulator_with_tabular_pin_assignments {
 	pin[1:3] IN;
 	pin[1:2] OUT, PGND, AGND;
 	pin      ADJ_SENSE, SHDN_N:
@@ -126,7 +105,7 @@ Obviously, we probably want to avoid writing confusing statements like this in r
 --------------------
 device hard_to_read_data_ports {
 	pin[7:0] data_in, data_out = 1,2,3,4,5,6,7,8,13,14,15,16,12,11,10,9;
-}
+};
 --------------------
 
 After splitting the above example into multiple statements, it is much easier to understand.
@@ -138,7 +117,7 @@ device easy_to_read_data_ports {
 	pin[7:0] data_in, data_out;
 	data_in = 1,2,3,4,5,6,7,8;
 	data_out[0:3], data_out[7:4] = 9,10,11,12,13,14,15,16;
-}
+};
 --------------------
 
 In some situations, it's less confusing to just write the whole thing out, one statement per pin.
@@ -166,7 +145,7 @@ device verbose_data_ports {
 	data_out[6] = 14;
 	data_out[5] = 15;
 	data_out[4] = 16;
-}
+};
 --------------------
 
 Attributes can be set on pins when they are declared, or can be set after the fact.
@@ -212,6 +191,33 @@ device crazy_connector {
 	pin[1:8] p     =     1,    2,    3,    4,    5,    6,    7,    8;
 	p.@max_current = "4 A","3 A","2 A","8 A","7 A","2 A","5 A","9 A";
 }
+--------------------
+
+Syntax
+------
+
+[source,syntax]
+--------------------
+Pin_Declaration           ⇒ "pin" Pin_Name_List Pin_Assignment?
+Pin_Assignment            ⇒ Pin_Attribute_Block? ("=" Pin_Value_List)?
+
+# Local rules
+Pin_Name                  ⇒ (Name | Parameter) Slice?
+Pin_Value                 ⇒ Name | Parameter
+Pin_Name_List             ⇒ Pin_Name  ("," Pin_Name )*
+Pin_Value_List            ⇒ Pin_Value ("," Pin_Value)*
+
+Pin_Statement             ⇒ (Pin_Declaration | Pin_Assignment | Pin_Attribute_Declaration | Pin_Attribute_Access) ";"
+Pin_Assignment            ⇒ Pin_Logical_Names (Pin_Attribute_Block | Pin_Physical_Names)
+Pin_Attribute_Declaration ⇒ "pin" Attribute_Declaration ";"
+Pin_Logical_Names         ⇒ Pin_Slice ("," Pin_Slice)*
+Pin_Physical_Names        ⇒ "=" Pin_Name ("," Pin_Name)*
+Pin_Attribute_Block       ⇒ "{" Attribute_Statement* "}" Pin_Physical_Names?
+Pin_Attribute_Assignment  ⇒ Pin_Attribute_Keys Attribute_Values
+Pin_Attribute_Keys        ⇒ Pin_Attribute_Key ("," Pin_Attribute_Key)
+Pin_Attribute_Key         ⇒ Pin_Slice "." Attribute_Key
+Pin_Slice                 ⇒ Pin_Name Slice
+Pin_Name                  ⇒ Name | Parameter
 --------------------
 
 

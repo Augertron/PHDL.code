@@ -1,0 +1,29 @@
+Slices
+======
+
+Description
+-----------
+
+Slices are for slicing things.
+If not given, start and end are implied.
+Direction is automatically determined to be either ascending or descending.
+Expansion order is exactly as written, left to right.
+
+Syntax
+------
+
+[source,syntax]
+--------------------
+Slice                ⇒ "[" Slice_Ranges "]"
+Expansion            ⇒ "<" Identifier ">"
+
+# Local rules
+Slice_Ranges         ⇒ Slice_Range ("," Slice_Range)*
+Slice_Range          ⇒ Slice_Range_Start | Slice_Range_No_Start
+Slice_Range_Start    ⇒ _Slice_Index (":" _Slice_Index)?
+Slice_Range_No_Start ⇒ ":" _Slice_Index?
+--------------------
+
+_Slice_Index::
+An sequence of Unicode codepoints between `0` (`U+30 DIGIT ZERO`) and `9` (`U+39 DIGIT NINE`) inclusive.
+This is interpreted as a decimal number written most-significant-digit-first.

@@ -6,7 +6,7 @@ Description
 
 We use `Parameters` to allow instances of devices or designs to vary in an extremely flexible but controlled manner.
 First, we place parameters on a device or design, possibly with default values.
-Then, each instance can use different parameter values to get various parameterized instance types.
+Then, each instance can use different parameter values to get different types of instances.
 If a parameter does not have a specified default value, then a value is required to be assigned for each instance.
 
 [source,phdl]

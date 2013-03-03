@@ -38,9 +38,10 @@ instance some_instance of some_device {
 };
 --------------------
 
-Attributes can only be assigned after they have been declared.
-However, from the perspective of backends, all attributes are considered to unconditionaly exist.
+Attributes can only be assigned after they have been declared, and if declared must be assigned a value.
+However, from the perspective of a backend, all attributes are considered to unconditionally exist.
 Thus there is no difference between a missing attribute and an attribute with an empty string as its value.
+Backends will usually use such empty or missing attributes to represent "default" values.
 
 An attribute is syntactically identified by a `@` prefix character as the first part of the name.
 Some examples of valid attribute names are `@value`, `@refdes`, or `@"Estimated Cost"`.
