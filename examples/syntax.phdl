@@ -18,6 +18,13 @@ package top_package {
 	import top_package.nested_package;
 	import "literal.name";
 
+	net       name;
+	net       "a name";
+	attribute @attribute;
+	attribute @"an \"attribute\"\x{3fca} H \\n";
+	parameter $parameter;
+	attribute $"a  \"parameter\"\x{3fca} H \\n";
+
 	netpindesignpackagedeviceportattribute;
 
 	device resistor {
@@ -68,6 +75,7 @@ package top_package {
 		parameter $R2_type = normal_resistor;
 		parameter $R1_value;
 		parameter $R2_value;
+		parameter $"R2_value";
 
 		attribute @R1_value_attribute = $R1_value;
 
@@ -283,7 +291,9 @@ package top_package {
 	net I²C_SDA;
 	net empêche;
 	attribute @λαμβάνω;
+	attribute @"I²C_SDA";
 	parameter $คงที่;
+	parameter $"คงที่";
 	net ошибка;
 	net "قطب سالب";
 	net 相対売買;

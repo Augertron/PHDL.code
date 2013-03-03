@@ -16,18 +16,13 @@ syntax case match
 let s:NAME = "\\([[:alnum:]_]\\|[^[:print:]]\\)\\+"
 let s:TODO = "TODO\\|FIXME"
 
+" Escapes
+syntax match phdlError /\\./
+
 " Comments
 syntax match phdlTODO "TODO\|FIXME" contained
 syntax match phdlLineComment "//.*" contains=phdlTODO
 syntax region phdlBlockComment start="/\*" end="\*/" contains=phdlBlockComment,phdlTODO
-
-" Attributes
-syntax keyword phdlKeyword attribute
-execute "syntax match phdlAttribute \"@" . s:NAME . "\""
-
-" Parameters
-syntax keyword phdlKeyword parameter
-execute "syntax match phdlParameter \"$" . s:NAME . "\""
 
 " Nets, Ports, and Pins
 syntax keyword phdlKeyword net port pin
@@ -63,29 +58,45 @@ syntax match phdlSymbol "\."
 " End-of-Statement
 syntax match phdlSymbol "\;"
 
+" Quoted Subrules
+syntax match phdlQuotedError /\\[^"\\]/ contains=NONE contained
+syntax match phdlQuotedEscape /\\[\\"]/ contains=NONE contained
+syntax match phdlQuotedEscapeNumber /[[:xdigit:]]\+/ contains=NONE contained
+syntax match phdlQuotedEscape /\\x{[[:xdigit:]]\+}/ contains=phdlQuotedEscapeNumber contained
+syntax match phdlQuotedQuotes /"/ contains=NONE contained
+syntax match phdlQuotedText /[^\\"]\+/ transparent contains=NONE contained
+syntax cluster phdlQuoted contains=phdlQuotedError,phdlQuotedEscape,phdlQuotedQuotes,phdlQuotedText
+
+" Attributes
+syntax keyword phdlKeyword attribute
+execute "syntax match phdlAttribute \"@" . s:NAME . "\""
+syntax region phdlAttribute start=/@"/ skip=/\\"/ end=/"/ keepend contains=@phdlQuoted
+
+" Parameters
+syntax keyword phdlKeyword parameter
+execute "syntax match phdlParameter \"$" . s:NAME . "\""
+syntax region phdlParameter start=/\$"/ skip=/\\"/ end=/"/ keepend contains=@phdlQuoted
+
 " Names
-syntax match phdlError /\\./
-syntax match phdlNameError /\\[^"\\]/ contained
-syntax match phdlNameEscape /\\[\\"]/ contained
 syntax match phdlNameText /[^\\"]\+/ contained
-syntax match phdlNameEscapeNumber /[[:xdigit:]]\+/ contained
-syntax match phdlNameEscape /\\x{[[:xdigit:]]\+}/ contains=phdlNameEscapeNumber contained
-syntax region phdlName start=/"/ skip=/\\"/ end=/"/ contains=phdlNameError,phdlNameEscape,phdlNameText
+syntax region phdlName start=/"/ skip=/\\"/ end=/"/ keepend contains=@phdlQuoted
 
 highlight default link phdlAttribute String
+highlight default link phdlAttributeText String
 highlight default link phdlBlockComment Comment
 highlight default link phdlBracket Delimiter
 highlight default link phdlError Error
 highlight default link phdlImport PreProc
 highlight default link phdlKeyword Keyword
 highlight default link phdlLineComment Comment
-highlight default link phdlName SpecialChar
+highlight default link phdlName Normal
 highlight default link phdlNameText Normal
-highlight default link phdlNameError Error
-highlight default link phdlNameEscape SpecialChar
-highlight default link phdlNameEscapeNumber Number
-highlight default link phdlNameQuotes SpecialChar
 highlight default link phdlParameter Identifier
+highlight default link phdlParameterText Identifier
+highlight default link phdlQuotedError Error
+highlight default link phdlQuotedEscape SpecialChar
+highlight default link phdlQuotedEscapeNumber Number
+highlight default link phdlQuotedQuotes SpecialChar
 highlight default link phdlSlice Special
 highlight default link phdlSliceNumber Number
 highlight default link phdlSymbol Operator

@@ -5,6 +5,9 @@
 vardef NAME = '([[:word:]]|[^[:print:]])+'
 vardef TODO = "TODO|FIXME"
 
+# Escapes
+error = '\\.'
+
 # Comments
 environment comment start "//" begin
 	todo = $TODO
@@ -12,14 +15,6 @@ end
 environment comment delim "/*" "*/" multiline nested begin
 	todo = $TODO
 end
-
-# Attributes
-keyword = "attribute"
-property = "@" + $NAME
-
-# Parameters
-keyword = "parameter"
-variable = "$" + $NAME
 
 # Nets, Ports, and Pins
 keyword = "net|port|pin"
@@ -56,8 +51,41 @@ symbol = "."
 # End-of-Statement
 symbol = ";"
 
+# Attributes
+keyword = "attribute"
+environment property delim '@' '' multiline begin
+	property = $NAME exit
+	environment specialchar delim "\"" "\"" multiline begin
+		specialchar = '\\[\\"]'
+		environment specialchar = '\\x\{[[:xdigit:]]+(?=\})' begin
+			number = '[[:xdigit:]]+'
+			specialchar = '\}' exit
+			error = '.' exit
+		end
+		error = '\\.'
+		property = '[^\\"]+'
+	end
+	normal = '' exit
+end
+
+# Parameters
+keyword = "parameter"
+environment variable delim '\$' '' multiline begin
+	variable = $NAME exit
+	environment specialchar delim "\"" "\"" multiline begin
+		specialchar = '\\[\\"]'
+		environment specialchar = '\\x\{[[:xdigit:]]+(?=\})' begin
+			number = '[[:xdigit:]]+'
+			specialchar = '\}' exit
+			error = '.' exit
+		end
+		error = '\\.'
+		variable = '[^\\"]+'
+	end
+	normal = '' exit
+end
+
 # Names
-error = '\\[^"]'
 environment specialchar delim "\"" "\"" multiline begin
 	specialchar = '\\[\\"]'
 	environment specialchar = '\\x\{[[:xdigit:]]+(?=\})' begin
@@ -68,3 +96,4 @@ environment specialchar delim "\"" "\"" multiline begin
 	error = '\\.'
 	normal = '[^\\"]+'
 end
+
