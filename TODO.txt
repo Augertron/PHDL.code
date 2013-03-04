@@ -1,1 +1,6 @@
-Create TODO list
+Parse into phdl::parser::ast
+Define phdl::model
+Transform phdl::parser::ast into phdl::model
+Define rich backend interface (e.g. pretty-printing, graphviz)
+Define flat backend interface (e.g. netlist generation, DRC)
+PHDL LRM document
