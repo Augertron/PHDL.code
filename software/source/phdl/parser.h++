@@ -92,20 +92,31 @@ namespace phdl { namespace parser {
 		template <typename Result, typename Parser>
 		Result expect (Parser &parser);
 
+		// Parse errors should be be thrown via this interface.
+		void parse_error(
+			const std::string &expected_syntax,
+			boost::optional<const phdl::error::User_Visible_Error> wrapped = boost::none
+		);
+
 		private:
 		struct Detail;
 		std::unique_ptr<Detail> detail;
 	};
 
 	// Errors thrown by failing parsers are [potentially] user-visible, and
-	// keep track of the context where they were generated.
-	struct Parse_Error : User_Visible_Error {
+	// keep track of the context where they were generated. These are always
+	// based on a context object and should only be thrown via the interface
+	// that Context provides.
+	struct Parse_Error : phdl::error::User_Visible_Error {
+		private:
+		friend class Context;
 		Parse_Error (
 			const Context &context,
 			const std::string &expected_syntax,
-			boost::optional<const User_Visible_Error> wrapped = boost::none
+			boost::optional<const phdl::error::User_Visible_Error> wrapped = boost::none
 		);
 	};
+
 
 	// Our PHDL AST is made of simple data types. This is appropriate here, as the
 	// AST is intended to be as simple as possible so that the parser can

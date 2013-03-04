@@ -4,6 +4,8 @@
 
 namespace phdl { namespace parser {
 
+	using phdl::error::User_Visible_Error;
+
 	Parse_Error::Parse_Error (
 		const Context &context,
 		const std::string &expected_syntax,
