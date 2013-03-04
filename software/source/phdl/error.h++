@@ -56,7 +56,8 @@ namespace phdl { namespace error {
 	};
 
 	// Error severity. These are used primarily by User_Visible_Error, but are
-	// declared outside of that class to simplify the usage syntax.
+	// declared outside of that class both to simplify the usage syntax, and
+	// because this severity information is semantically independent.
 	enum class Severity { Error, Warning, Debug };
 
 	// All user-visible errors must contain information about the location of
