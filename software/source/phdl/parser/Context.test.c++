@@ -195,7 +195,7 @@ TEST(basic_error_messages) {
 
 	for (auto msg : messages) {
 		try {
-			context.parse_error("some error message");
+			context.throw_error("some error message");
 			REQUIRE(false);
 		} catch (const User_Visible_Error &error) {
 			std::ostringstream ss;

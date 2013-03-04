@@ -34,7 +34,7 @@ namespace phdl { namespace parser {
 	//
 	// A parser is just a concept: any function or object which can be called
 	// with a Context object and either returns some type of result, or throws
-	// a Parse_Error exception. Parsers can be called directly, but for
+	// a user-visible error exception. Parsers can be called directly, but for
 	// convenience will usually be called through these helper methods in order
 	// to promote uniformity and avoid boilerplate.
 	struct Context {
@@ -93,11 +93,11 @@ namespace phdl { namespace parser {
 		Result expect (Parser &parser);
 
 		// Parse errors should be be thrown via this interface, which will
-		// generate a chain of User_Visible_Errors. Errors thrown by failing
-		// parsers are not always reported to the user (e.g. during normal
-		// parser backtracking), but we always track all the context needed to
-		// generate good error messages when necessary.
-		void parse_error (
+		// conveniently populates and throws a User_Visible_Error. Errors
+		// thrown by failing parsers are not always reported to the user (e.g.
+		// during normal parser backtracking), but we always track all the
+		// context needed to generate good error messages when necessary.
+		void throw_error (
 			const std::string &message,
 			boost::optional<const phdl::error::User_Visible_Error> wrapped = boost::none
 		);

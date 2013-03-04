@@ -88,7 +88,7 @@ namespace phdl { namespace parser {
 	Context &Context::operator+=(int offset) { detail->position += offset; return *this; }
 	Context &Context::operator-=(int offset) { detail->position -= offset; return *this; }
 
-	void Context::parse_error (
+	void Context::throw_error (
 		const std::string &message,
 		boost::optional<const User_Visible_Error> wrapped
 	) {

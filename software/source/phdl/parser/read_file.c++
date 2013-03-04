@@ -13,7 +13,7 @@ namespace phdl { namespace parser {
 
 		if (!ifs) {
 			Context context(filename, std::shared_ptr<Characters>());
-			context.parse_error("could not open file");
+			context.throw_error("could not open file");
 		}
 		std::ostringstream ss;
 		ss << ifs.rdbuf();
