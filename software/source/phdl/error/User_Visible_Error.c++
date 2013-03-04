@@ -9,14 +9,18 @@ namespace phdl { namespace error {
 		const std::string &file_name,
 		size_t line_number,
 		size_t column_number,
-		const std::string &message
+		const std::string &message,
+		boost::optional<const User_Visible_Error &> wrapped
 	) :
 		_severity(severity),
 		_file_name(file_name),
 		_line_number(line_number),
 		_column_number(column_number),
-		_message(message)
+		_message(message),
+		_wrapped(wrapped)
 	{}
+
+	User_Visible_Error::~User_Visible_Error() throw() {}
 
 	// Output user error messages into a GCC-like format, which is kind of the
 	// de-facto standard for compiler error messages.
@@ -45,6 +49,7 @@ namespace phdl { namespace error {
 		};
 
 		std::stringstream ss;
+		if (error._wrapped) ss << (*error._wrapped).get();
 		ss
 			<< error._file_name     << ":"
 			<< error._line_number   << ":"

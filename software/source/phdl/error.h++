@@ -14,6 +14,11 @@
 #include <boost/exception/all.hpp>
 #include <boost/throw_exception.hpp>
 
+// We use boost::optional and boost::recursive_wrapper from boost::varient for
+// handling our optional arguments.
+#include <boost/optional.hpp>
+#include <boost/variant.hpp>
+
 // Wrapper for assert to give a nicer, more consistent interface.
 //
 // This gives the same interface as static_assert, and also forces the message
@@ -45,6 +50,7 @@ namespace phdl { namespace error {
 	// handled at least somewhat intelligently.
 	struct Error : virtual boost::exception, virtual std::exception {
 		virtual const char *what() const noexcept override final;
+		virtual ~Error() throw() = default;
 		protected:
 		Error() = default;
 	};
@@ -56,14 +62,21 @@ namespace phdl { namespace error {
 	// All user-visible errors must contain information about the location of
 	// the error in the user's source files in order to be able to generate
 	// consistent and helpful error messages.
+	//
+	// Each error can optionally contain another wrapped User_Visible_Error.
+	// The error (and any deeper down the chain) is presented to the user
+	// before the current error, because we assume that is the most likely
+	// order of cause and effect.
 	struct User_Visible_Error : virtual Error {
 		User_Visible_Error (
 			Severity severity,
 			const std::string &file_name,
 			size_t line_number,
 			size_t column_number,
-			const std::string &message
+			const std::string &message,
+			boost::optional<const User_Visible_Error &> wrapped = boost::none
 		);
+		virtual ~User_Visible_Error() throw();
 
 		// Stitches the file name & position with the given message in a
 		// unified format intended to be directly useable by the end user.
@@ -75,6 +88,7 @@ namespace phdl { namespace error {
 		size_t _line_number;
 		size_t _column_number;
 		std::string _message;
+		boost::optional<boost::recursive_wrapper<User_Visible_Error>> _wrapped;
 	};
 
 }}

@@ -98,13 +98,12 @@ namespace phdl { namespace parser {
 	};
 
 	// Errors thrown by failing parsers are [potentially] user-visible, and
-	// keep track of the context where they were generated, and the parse
-	// error(s) that caused them.
+	// keep track of the context where they were generated.
 	struct Parse_Error : User_Visible_Error {
 		Parse_Error (
 			const Context &context,
 			const std::string &expected_syntax,
-			const boost::optional<Parse_Error> cause = boost::none
+			boost::optional<const User_Visible_Error> wrapped = boost::none
 		);
 	};
 
