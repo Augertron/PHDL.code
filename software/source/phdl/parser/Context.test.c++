@@ -6,6 +6,7 @@
 
 using phdl::parser::Context;
 using phdl::parser::Parse_Error;
+using phdl::parser::read_file;
 using phdl::unicode::split_characters;
 
 struct Make_Test_Files {
@@ -24,7 +25,7 @@ struct Make_Test_Files {
 struct Fixture {
 	Context context;
 	Fixture() :
-		context("tmp-parser-context-001.tmp")
+		context("tmp-parser-context-001.tmp", read_file("tmp-parser-context-001.tmp"))
 	{}
 };
 
@@ -124,13 +125,13 @@ TEST_METHOD(Fixture, assigning_and_comparing) {
 }
 
 TEST_METHOD(Fixture, not_equal_if_files_differ) {
-	Context context2("tmp-parser-context-002.tmp");
+	Context context2("tmp-parser-context-002.tmp", read_file("tmp-parser-context-002.tmp"));
 	EXPECT(context != context2);
 }
 
 TEST_METHOD(Fixture, fail_if_file_not_found) {
 	try {
-		Context context("tmp-parser-context-999.tmp");
+		Context context("tmp-parser-context-999.tmp", read_file("tmp-parser-context-999.tmp"));
 		EXPECT(false);
 	} catch (const Parse_Error &error) {
 		std::cout << error;

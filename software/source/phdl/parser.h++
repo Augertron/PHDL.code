@@ -21,6 +21,12 @@
 
 namespace phdl { namespace parser {
 
+	// This helper function reads the entire text from the given filename and
+	// throws a parse error if there is a problem. The return text is
+	// guaranteed to be normalized, split into Unicode characters, and directly
+	// in the format expected for use by parser context objects.
+	std::shared_ptr<Characters> read_file(const std::string &filename);
+
 	// Our individual parsers work on a parser context, which keeps track
 	// of the filename, text, and current position. This context also acts
 	// like both an iterator and a sequence, providing a convenient view of
@@ -34,9 +40,12 @@ namespace phdl { namespace parser {
 	struct Context {
 		~Context();
 
-		// Read the content of the given file an create a context ready
-		// for parsing.
-		Context(const std::string &filename);
+		// With the given filename and text (assumed to be the content of that
+		// file) create a context ready for parsing.
+		Context(
+			const std::string &filename,
+			std::shared_ptr<Characters> text
+		);
 
 		// Copy a context (to allow indepedent positions).
 		Context(const Context &);
@@ -99,7 +108,7 @@ namespace phdl { namespace parser {
 		);
 	};
 
-	// Our AST is made of simple data types. This is appropriate here, as the
+	// Our PHDL AST is made of simple data types. This is appropriate here, as the
 	// AST is intended to be as simple as possible so that the parser can
 	// convert text to structure with very little unnecessary intelligence. The
 	// parser is very forgiving, and most language checking is done after this
@@ -166,6 +175,7 @@ namespace phdl { namespace parser {
 				Board     ,
 				Design    ,
 				Device    ,
+				Instance  ,
 				Net       ,
 				Package   ,
 				Parameter ,
@@ -188,6 +198,11 @@ namespace phdl { namespace parser {
 		};
 
 	}
+
+	// This is the top-level parse function that parses a PHDL file and returns
+	// the resulting AST starting with the implied top-level Block. A parse
+	// error is thrown if any error is encountered.
+	ast::Block parse_phdl(Context &);
 
 }}
 

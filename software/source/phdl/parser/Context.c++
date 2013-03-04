@@ -12,27 +12,15 @@ namespace phdl { namespace parser {
 
 	Context::~Context() {}
 
-	Context::Context(const std::string &filename) :
+	Context::Context(
+		const std::string &filename,
+		std::shared_ptr<Characters> text
+	) :
 		detail(new Detail)
 	{
-		// Keep track of the filename
+		// Keep track of the filename & text
 		detail->filename = filename;
-
-		// Read the content of the given file.
-		std::ifstream ifs(
-			filename.c_str(),
-			std::ios_base::in | std::ios_base::binary
-		);
-		// FIXME: throw exception here to generate the right error
-		if (!ifs) throw Parse_Error(*this, "could not open file");
-		std::ostringstream ss;
-		ss << ifs.rdbuf();
-
-		// Convert to characters and store as a shared pointer so that
-		// multiple context objects can efficiently share the same content.
-		detail->text.reset(new unicode::Characters(
-			unicode::split_characters(unicode::normalize(ss.str()))
-		));
+		detail->text     = text;
 	}
 
 	Context::Context(const Context &other) 
