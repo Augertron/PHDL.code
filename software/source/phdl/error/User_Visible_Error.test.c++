@@ -21,21 +21,33 @@ TEST_METHOD(Fixture, error_message) {
 	User_Visible_Error error(Severity::Error, "the_file_name", text, 1, "the error message");
 	std::ostringstream ss;
 	ss << error;
-	EXPECT(ss.str() == "the_file_name:1:2: error: the error message\n");
+	EXPECT(ss.str() ==
+		"the_file_name:1:2: error: the error message\n"
+		"the_file_name:1:2: context: abc\n"
+		"the_file_name:1:2: context:  ^\n"
+	);
 }
 
 TEST_METHOD(Fixture, warning_message) {
 	User_Visible_Error error(Severity::Warning, "the_file_name", text, 6, "the error message");
 	std::ostringstream ss;
 	ss << error;
-	EXPECT(ss.str() == "the_file_name:2:3: warning: the error message\n");
+	EXPECT(ss.str() ==
+		"the_file_name:2:3: warning: the error message\n"
+		"the_file_name:2:3: context: 123\n"
+		"the_file_name:2:3: context:   ^\n"
+	);
 }
 
 TEST_METHOD(Fixture, debug_message) {
 	User_Visible_Error error(Severity::Debug, "the_file_name", text, 7, "the error message");
 	std::ostringstream ss;
 	ss << error;
-	EXPECT(ss.str() == "the_file_name:2:4: debug: the error message\n");
+	EXPECT(ss.str() ==
+		"the_file_name:2:4: debug: the error message\n"
+		"the_file_name:2:4: context: 123\n"
+		"the_file_name:2:4: context:    ^\n"
+	);
 }
 
 TEST_METHOD(Fixture, context_message) {
@@ -53,7 +65,11 @@ TEST_METHOD(Fixture, basic_error_chaining_works) {
 	ss << debug;
 	EXPECT(ss.str() ==
 		"error_file_name:1:3: error: the error message\n"
+		"error_file_name:1:3: context: abc\n"
+		"error_file_name:1:3: context:   ^\n"
 		"warning_file_name:3:2: warning: the warning message\n"
+		"warning_file_name:3:2: context: xyz\n"
+		"warning_file_name:3:2: context:  ^\n"
 		"debug_file_name:4:1: debug: the debug message\n"
 	);
 }

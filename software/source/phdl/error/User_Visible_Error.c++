@@ -29,48 +29,71 @@ namespace phdl { namespace error {
 	// For example:
 	//
 	//   User_Visible_Error err(
-	//     Severity::Error, "example.phdl", 5, 19,
+	//     Severity::Error, "example.phdl", text, 134,
 	//     "an error occurred, please fix it"
 	//   );
 	//   os << err;
 	//
-	// Yields:
+	// Might yield:
 	//
 	//   example.phdl:5:19: error: an error occurred, please fix it
-	//
+	//   example.phdl:5:19: context: net abcd = x;yz
+	//   example.phdl:5:19: context:             ^
+
+	static std::string severity_to_string(Severity severity) {
+		switch (severity) {
+			case Severity::Error:   return "error";
+			case Severity::Warning: return "warning";
+			case Severity::Debug:   return "debug";
+			case Severity::Context: return "context";
+			default: phdl_assert(false, "invalid severity level");
+		}
+	}
+
 	std::ostream &operator<<(std::ostream &os, const User_Visible_Error &error) {
 
-		auto severity_to_string = [](Severity severity) {
-			switch (severity) {
-				case Severity::Error:   return "error";
-				case Severity::Warning: return "warning";
-				case Severity::Debug:   return "debug";
-				case Severity::Context: return "context";
-				default: phdl_assert(false, "invalid severity level");
-			}
-		};
-
-		std::stringstream ss;
-		if (error._wrapped) ss << (*error._wrapped).get();
+		if (error._wrapped) os << (*error._wrapped).get();
 
 		size_t line_number   = 1;
 		size_t column_number = 1;
 
 		if (error._text) {
-			line_number   = phdl::position::line_number  (*error._text, error._position); 
-			column_number = phdl::position::column_number(*error._text, error._position); 
+			line_number   = phdl::position::line_number  (*error._text, error._position);
+			column_number = phdl::position::column_number(*error._text, error._position);
 		}
 
+		std::stringstream ss;
 		ss
 			<< error._filename << ":"
 			<< line_number     << ":"
 			<< column_number   << ":"
 			<< " " << severity_to_string(error._severity) << ": "
-			<< error._message       << "\n"
+			<< error._message  << "\n"
 		;
 		os << ss.str();
-		return os;
 
+		// If we're inside valid text, and the severity isn't already context,
+		// print extra context information.
+		if (
+			(error._text) &&
+			(error._position < error._text->size()) &&
+			(error._severity != Severity::Context)
+		) {
+
+			os << User_Visible_Error (
+				phdl::error::Severity::Context,
+				error._filename, error._text, error._position,
+				phdl::position::line_content(*error._text, error._position)
+			);
+
+			os << User_Visible_Error (
+				phdl::error::Severity::Context,
+				error._filename, error._text, error._position,
+				phdl::position::line_pointer(*error._text, error._position)
+			);
+		}
+
+		return os;
 	}
 
 }}

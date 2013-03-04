@@ -93,33 +93,13 @@ namespace phdl { namespace parser {
 		boost::optional<const User_Visible_Error> wrapped
 	) {
 
-		User_Visible_Error error (
+		throw User_Visible_Error (
 			phdl::error::Severity::Error,
 			filename(), text(), position(),
 			message,
 			boost::optional<const User_Visible_Error &>(wrapped)
 		);
 
-		if (!text() || (position() >= text()->size())) throw error;
-
-		auto line_content = phdl::position::line_content(*text(), position());
-		auto line_pointer = phdl::position::line_pointer(*text(), position());
-
-		User_Visible_Error content (
-			phdl::error::Severity::Context,
-			filename(), text(), position(),
-			line_content,
-			error
-		);
-
-		User_Visible_Error pointer (
-			phdl::error::Severity::Context,
-			filename(), text(), position(),
-			line_pointer,
-			content
-		);
-
-		throw pointer;
 	}
 
 }}
