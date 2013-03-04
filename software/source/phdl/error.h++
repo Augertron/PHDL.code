@@ -19,6 +19,9 @@
 #include <boost/optional.hpp>
 #include <boost/variant.hpp>
 
+// We need the unicode Characters type using in our user-visible errors.
+#include <phdl/unicode.h++>
+
 // Wrapper for assert to give a nicer, more consistent interface.
 //
 // This gives the same interface as static_assert, and also forces the message
@@ -58,7 +61,7 @@ namespace phdl { namespace error {
 	// Error severity. These are used primarily by User_Visible_Error, but are
 	// declared outside of that class both to simplify the usage syntax, and
 	// because this severity information is semantically independent.
-	enum class Severity { Error, Warning, Debug };
+	enum class Severity { Error, Warning, Debug, Context };
 
 	// All user-visible errors must contain information about the location of
 	// the error in the user's source files in order to be able to generate
@@ -71,9 +74,9 @@ namespace phdl { namespace error {
 	struct User_Visible_Error : virtual Error {
 		User_Visible_Error (
 			Severity severity,
-			const std::string &file_name,
-			size_t line_number,
-			size_t column_number,
+			const std::string &filename,
+			std::shared_ptr<Characters> text,
+			size_t position,
 			const std::string &message,
 			boost::optional<const User_Visible_Error &> wrapped = boost::none
 		);
@@ -85,9 +88,9 @@ namespace phdl { namespace error {
 
 		private:
 		Severity _severity;
-		std::string _file_name;
-		size_t _line_number;
-		size_t _column_number;
+		std::string _filename;
+		std::shared_ptr<Characters> _text;
+		size_t _position;
 		std::string _message;
 		boost::optional<boost::recursive_wrapper<User_Visible_Error>> _wrapped;
 	};

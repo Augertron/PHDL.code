@@ -1,4 +1,5 @@
 #include <phdl/error.h++>
+#include <phdl/position.h++>
 
 #include <sstream>
 
@@ -6,16 +7,16 @@ namespace phdl { namespace error {
 
 	User_Visible_Error::User_Visible_Error (
 		Severity severity,
-		const std::string &file_name,
-		size_t line_number,
-		size_t column_number,
+		const std::string &filename,
+		std::shared_ptr<Characters> text,
+		size_t position,
 		const std::string &message,
 		boost::optional<const User_Visible_Error &> wrapped
 	) :
 		_severity(severity),
-		_file_name(file_name),
-		_line_number(line_number),
-		_column_number(column_number),
+		_filename(filename),
+		_text(text),
+		_position(position),
 		_message(message),
 		_wrapped(wrapped)
 	{}
@@ -44,16 +45,26 @@ namespace phdl { namespace error {
 				case Severity::Error:   return "error";
 				case Severity::Warning: return "warning";
 				case Severity::Debug:   return "debug";
+				case Severity::Context: return "context";
 				default: phdl_assert(false, "invalid severity level");
 			}
 		};
 
 		std::stringstream ss;
 		if (error._wrapped) ss << (*error._wrapped).get();
+
+		size_t line_number   = 1;
+		size_t column_number = 1;
+
+		if (error._text) {
+			line_number   = phdl::position::line_number  (*error._text, error._position); 
+			column_number = phdl::position::column_number(*error._text, error._position); 
+		}
+
 		ss
-			<< error._file_name     << ":"
-			<< error._line_number   << ":"
-			<< error._column_number << ":"
+			<< error._filename << ":"
+			<< line_number     << ":"
+			<< column_number   << ":"
 			<< " " << severity_to_string(error._severity) << ": "
 			<< error._message       << "\n"
 		;

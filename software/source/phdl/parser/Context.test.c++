@@ -4,8 +4,8 @@
 #include <phdl/error.h++>
 #include <phdl/unicode.h++>
 
+using phdl::User_Visible_Error;
 using phdl::parser::Context;
-using phdl::parser::Parse_Error;
 using phdl::parser::read_file;
 using phdl::unicode::Characters;
 using phdl::unicode::split_characters;
@@ -35,7 +35,8 @@ TEST_METHOD(Fixture, filename_is_correct) {
 }
 
 TEST_METHOD(Fixture, text_is_correct) {
-	EXPECT(context.text() == split_characters("abc 123\r\nxyz 789\n"));
+	REQUIRE(context.text());
+	EXPECT(*context.text() == split_characters("abc 123\r\nxyz 789\n"));
 }
 
 TEST_METHOD(Fixture, basic_positioning) {
@@ -141,7 +142,7 @@ TEST_METHOD(Fixture, fail_if_file_not_found) {
 	try {
 		Context context("tmp-parser-context-999.tmp", read_file("tmp-parser-context-999.tmp"));
 		EXPECT(false);
-	} catch (const Parse_Error &error) {
+	} catch (const User_Visible_Error &error) {
 		std::cout << error;
 		EXPECT(true);
 	}
@@ -149,45 +150,59 @@ TEST_METHOD(Fixture, fail_if_file_not_found) {
 
 TEST(basic_error_messages) {
 	Context context("file.phdl", std::make_shared<Characters>(split_characters("abc\r\nωéヽђ\n")));
+
 	std::string messages[] = {
-		"file.phdl:1:1: error: some error message\n",
-		"file.phdl:1:1: info: abc\n",
-		"file.phdl:1:1: info: ^\n",
-		"file.phdl:1:2: error: some error message\n",
-		"file.phdl:1:2: info: abc\n",
-		"file.phdl:1:2: info:  ^\n",
-		"file.phdl:1:3: error: some error message\n",
-		"file.phdl:1:3: info: abc\n",
-		"file.phdl:1:3: info:   ^\n",
-		"file.phdl:1:4: error: some error message\n",
-		"file.phdl:1:4: info: abc\n",
-		"file.phdl:1:4: info:    ^\n",
-		"file.phdl:2:1: error: some error message\n",
-		"file.phdl:2:1: info: ωéヽђ\n",
-		"file.phdl:2:1: info: ^\n",
-		"file.phdl:2:2: error: some error message\n",
-		"file.phdl:2:2: info: ωéヽђ\n",
-		"file.phdl:2:2: info:  ^\n",
-		"file.phdl:2:3: error: some error message\n",
-		"file.phdl:2:3: info: ωéヽђ\n",
-		"file.phdl:2:3: info:   ^\n",
-		"file.phdl:2:4: error: some error message\n",
-		"file.phdl:2:4: info: ωéヽђ\n",
-		"file.phdl:2:4: info:    ^\n",
-		"file.phdl:2:5: error: some error message\n",
-		"file.phdl:2:5: info: ωéヽђ\n",
-		"file.phdl:2:5: info:     ^\n",
+		"file.phdl:1:1: error: some error message\n"
+		"file.phdl:1:1: context: abc\n"
+		"file.phdl:1:1: context: ^\n",
+
+		"file.phdl:1:2: error: some error message\n"
+		"file.phdl:1:2: context: abc\n"
+		"file.phdl:1:2: context:  ^\n",
+
+		"file.phdl:1:3: error: some error message\n"
+		"file.phdl:1:3: context: abc\n"
+		"file.phdl:1:3: context:   ^\n",
+
+		"file.phdl:1:4: error: some error message\n"
+		"file.phdl:1:4: context: abc\n"
+		"file.phdl:1:4: context:    ^\n",
+
+		"file.phdl:2:1: error: some error message\n"
+		"file.phdl:2:1: context: ωéヽђ\n"
+		"file.phdl:2:1: context: ^\n",
+
+		"file.phdl:2:2: error: some error message\n"
+		"file.phdl:2:2: context: ωéヽђ\n"
+		"file.phdl:2:2: context:  ^\n",
+
+		"file.phdl:2:3: error: some error message\n"
+		"file.phdl:2:3: context: ωéヽђ\n"
+		"file.phdl:2:3: context:   ^\n",
+
+		"file.phdl:2:4: error: some error message\n"
+		"file.phdl:2:4: context: ωéヽђ\n"
+		"file.phdl:2:4: context:    ^\n",
+
+		"file.phdl:2:5: error: some error message\n"
+		"file.phdl:2:5: context: ωéヽђ\n"
+		"file.phdl:2:5: context:     ^\n",
+
 		"file.phdl:3:1: error: some error message\n",
+
 		"file.phdl:3:1: error: some error message\n",
 	};
 
 	for (auto msg : messages) {
-		Parse_Error error(context, "some error message");
-		std::ostringstream ss;
-		ss << error;
-		EXPECT(ss.str() == msg);
-		std::cerr << ss.str();
-		++context;
+		try {
+			context.parse_error("some error message");
+			REQUIRE(false);
+		} catch (const User_Visible_Error &error) {
+			std::ostringstream ss;
+			ss << error;
+			EXPECT(ss.str() == msg);
+			++context;
+		}
 	}
 }
 

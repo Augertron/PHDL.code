@@ -7,7 +7,7 @@ namespace phdl { namespace parser {
 			auto result = parser(context);
 			*this = std::move(context);
 			return result;
-		} catch (const Parse_Error &) {
+		} catch (const phdl::User_Visible_Error &) {
 			return boost::none;
 		}
 	}
