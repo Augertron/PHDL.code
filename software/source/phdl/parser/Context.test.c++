@@ -7,6 +7,7 @@
 using phdl::parser::Context;
 using phdl::parser::Parse_Error;
 using phdl::parser::read_file;
+using phdl::unicode::Characters;
 using phdl::unicode::split_characters;
 
 struct Make_Test_Files {
@@ -124,6 +125,13 @@ TEST_METHOD(Fixture, assigning_and_comparing) {
 	EXPECT(context   ==   context2);
 }
 
+TEST_METHOD(Fixture, works_without_reading_file) {
+	Context context2("tmp-parser-context-001.tmp", std::make_shared<Characters>(split_characters("abc 123\r\nxyz 789\n")));
+	Context context3("tmp-parser-context-002.tmp", std::make_shared<Characters>(split_characters("abc 123\r\nxyz 789\n")));
+	EXPECT(context2 == context);
+	EXPECT(context3 != context);
+}
+
 TEST_METHOD(Fixture, not_equal_if_files_differ) {
 	Context context2("tmp-parser-context-002.tmp", read_file("tmp-parser-context-002.tmp"));
 	EXPECT(context != context2);
@@ -138,3 +146,4 @@ TEST_METHOD(Fixture, fail_if_file_not_found) {
 		EXPECT(true);
 	}
 }
+
