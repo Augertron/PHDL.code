@@ -1,0 +1,123 @@
+PHDL Output Netlist Descriptions
+================================
+This document is intended to hold descriptions of the various netlist formats we wish to support.
+
+
+Mentor PADS
+-----------
+To support the PADS layout tool we need to generate two output files.  The .p file that lists the parts used in the design and associates them with the layout decal.  The .asc file holds the actual netlist data.
+
+
+PADS .ASC File
+~~~~~~~~~~~~~~
+The PADS .asc file is required to have an invariable header followed by three sections, *PART*, *CONNECTION* and *MISC*.  
+
+The *PART* section contains a list of every device instantiated in the design, by reference designator. A device identifier then follows the reference designator.  This device identifier is made up of <schematic symbol name>@<layout decal name>.  In Mentor DxDesigner the schematic symbol name comes directly from the DEVICE attribute placed on the schematic symbol.  The layout decal name comes directly from the PKG_TYPE attribute attached to the schematic symbol.
+
+The *CONNECTION* section lists each net in the design followed by a list of the part pins attached to it.
+
+The *MISC* section can be empty or nonexistant.
+
+The .asc file is terminated by a *END* statement.
+
+Below is a little example .asc file.
+
+!PADS-POWERPCB-V9.0-MILS
+
+*PART*
+U13 6VLX75T@FF784
+U8 AD9739@AD9739
+U7 ADC12D1000@ADC12D1000
+U12 ADCLK914@ADCLK914
+T1 ADTL2-18_6-2@ADTL2-18
+P2 ATX12V@ATX12V
+C31 CAP_0402@CC0402
+C32 CAP_0402@CC0402
+C33 CAP_0402@CC0402
+C34 CAP_0402@CC0402
+
+*CONNECTION*
+*SIGNAL* $4I4\$1N1965
+R31.2 U13.N7
+*SIGNAL* $4I4\$1N1804
+DS2.1 R30.1
+*SIGNAL* $4I4\$1N1790
+DS1.1 R29.1
+*SIGNAL* $4I3\PCIE_PRSNT_N
+P1.A1 P1.B31
+*SIGNAL* $4I280\ADC_VTC
+U7.G1 U7.G3
+U7.G3 U7.G4
+U7.G4 U7.H2
+U7.H2 U7.J3
+U7.J3 U7.K3
+
+*MISC*
+
+*END*
+
+
+
+
+PADS .P File
+~~~~~~~~~~~~
+The requirement for the PADS .p file is often misunderstood.  It was created back in the day when surface mount devices were just being introduced. Board layout drafters were given the option of switching between say a 16 pin DIP through-hole package and a 16 pin SOIC surface mount package.  These days, selection of component footprint is an important decision usually made by the engineer at schematic capture time therefor more than one layout footprint is never associated with a component.
+
+Still, the .p file is required to get a netlist into PADS Layout.  Without the .p file the layout engineer must spend hours of time going through each component and reassociating it with its layout footprint.  Fortunately the .p file is easy to generate from board connectivity data.
+
+The .p file begings with an invariable header followed by a list of component/footprint associations. 
+
+The first string in the component/footprint associations is the DEVICE attribute on the Mentor DxDesigner schematic symbol.  We can just take the symbol name from the device declaration.  It just has to be unique.
+
+The second string is the layout footprint for the part. In DxDesigner this comes from the PKG_TYPE attribute.  In PHDL 2.0 we ended up using the LIBRARY attrubute for this. That was bad. Every layout tool needs this so we should be able to come up with something that works for all layout tools. That will make our PHDL designs portable.
+
+Each component/footprint association statement then has some extra strings and numbers that don't seem to do anything. Then there is a GATE statement with a list of all the pins on the part.
+
+The .p file is terminated by a *END* statement.
+
+Below is a sample .p file.
+==============================================================================
+
+*PADS-LIBRARY-PART-TYPES-V9*
+6VLX75T FF784 I TTL 0 34 0 0 0
+GATE 0 26 1
+N14 0 L
+N13 0 L
+AH6 0 B
+AG6 0 L
+H6 0 L
+L6 0 B
+AF6 0 S
+T13 0 L
+T14 0 L
+N7 0 L
+M6 0 B
+...
+
+
+AD9739 AD9739 I TTL 0 1 0 0 0
+GATE 0 160 1
+M10 0 S
+G13 0 L
+C3 0 L
+D3 0 L
+P1 0 S
+N1 0 S
+P11 0 S
+N11 0 S
+P12 0 S
+...
+
+
+ADTL2-18_6-2 ADTL2-18 I TTL 0 1 0 0 0
+GATE 0 6 1
+2 0 U
+5 0 U
+6 0 U
+4 0 U
+1 0 U
+3 0 U
+
+*END
+
+==============================================================================
