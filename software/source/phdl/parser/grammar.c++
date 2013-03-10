@@ -175,6 +175,51 @@ namespace phdl { namespace parser { namespace grammar {
 		return slice;
 	}
 
+	std::string unquoted_name(Context &) {
+		std::string name;
+		return name;
+	}
+
+	std::string quoted_name(Context &context) {
+		std::string name;
+
+		REQUIRE(context, literal("\""));
+		while (true) {
+			if (MATCH(context, literal("\""))) {
+				if (name.size() == 0) context.throw_error("name may not be empty");
+				else return name;
+			} else if (MATCH(context, literal("\\"))) {
+				if      (MATCH(context, literal("\\"))) name += "\\";
+				else if (MATCH(context, literal("\""))) name += "\"";
+				else if (MATCH(context, literal("x{"))) {
+					std::string digits;
+					while (true) {
+						if (MATCH(context, literal("}"))) {
+							if (digits.size() == 0) context.throw_error("expected Unicode codepoint");
+							// FIXME: compute Unicode codepoint from digits correctly
+							// FIXME: append computed codepoint to name
+							break;
+						}
+						digits += *context;
+						++context;
+					}
+				} else {
+					context.throw_error("invalid escape in quoted name");
+				}
+			}
+			name += *context;
+			++context;
+		}
+
+		return name;
+	}
+
+	ast::Name name(Context &context) {
+		ast::Name name;
+		name.context = context;
+		return name;
+	}
+
 	//static std::string parse_identifier(const Characters &characters) {
 	//	return "";
 	//}

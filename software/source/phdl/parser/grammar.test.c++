@@ -26,7 +26,7 @@ Context make_context(const std::string &filename, const std::string &text) {
 		} catch (const User_Visible_Error &e) {\
 			std::cerr << e;\
 		}\
-		EXPECT(matched);\
+		REQUIRE(matched);\
 		EXPECT(context.position() == end_position);\
 	}
 
@@ -38,7 +38,7 @@ Context make_context(const std::string &filename, const std::string &text) {
 			rule(context);\
 			matched = true;\
 		} catch (const User_Visible_Error &) {}\
-		EXPECT(!matched);\
+		REQUIRE(!matched);\
 	}
 
 TEST_MATCH   (literal("abcd"), "abcd", 4);
@@ -117,6 +117,10 @@ TEST_NO_MATCH(range, "x:y:z");
 TEST_NO_MATCH(range, ":9");
 TEST_NO_MATCH(range, "9:");
 
+TEST_MATCH   (slice, "[1]", 3);
+TEST_MATCH   (slice, "[1:2]", 5);
+TEST_MATCH   (slice, "  [ 1 ] ", 7);
+TEST_MATCH   (slice, "[ 1 : 2 ]", 9);
 TEST_MATCH   (slice, "[1,2:3,5:4,6,7]", 15);
 TEST_MATCH   (slice, "[1,2:3,5:4,6,7]xyz", 15);
 TEST_MATCH   (slice, " [ 1 , 2 : 3 , 5 : 4 , 6 , 7 ] ", 30);
@@ -129,3 +133,54 @@ TEST_NO_MATCH(slice, "[1,]");
 TEST_NO_MATCH(slice, " [3:2,1,45:100");
 TEST_NO_MATCH(slice, " [3:2,1,45:100");
 TEST_NO_MATCH(slice, " [3:2,1,45:");
+
+TEST_MATCH   (unquoted_name, "abcd", 4);
+TEST_MATCH   (unquoted_name, "  abcd", 6);
+TEST_MATCH   (unquoted_name, "1234", 4);
+TEST_MATCH   (unquoted_name, "ab12", 4);
+TEST_MATCH   (unquoted_name, "12ab", 4);
+TEST_MATCH   (unquoted_name, "_123", 4);
+TEST_MATCH   (unquoted_name, "a_b_", 4);
+TEST_MATCH   (unquoted_name, "ab cd", 2);
+TEST_NO_MATCH(unquoted_name, "\"hello\"");
+TEST_NO_MATCH(unquoted_name, "+1");
+
+TEST_MATCH   (quoted_name, "\"abcd\"", 6);
+TEST_MATCH   (quoted_name, "\"1234\"", 6);
+TEST_MATCH   (quoted_name, "\"ab12\"", 6);
+TEST_MATCH   (quoted_name, "\"12ab\"", 6);
+TEST_MATCH   (quoted_name, "\"_123\"", 6);
+TEST_MATCH   (quoted_name, "\"a_b_\"", 6);
+TEST_MATCH   (quoted_name, "\"+1.4\"", 6);
+TEST_MATCH   (quoted_name, "\"[1:4]\"", 7);
+TEST_MATCH   (quoted_name, "\"ab cd\"", 7);
+TEST_MATCH   (quoted_name, "\"\\\"\"", 4);
+TEST_MATCH   (quoted_name, "\"\\\\\"", 4);
+TEST_MATCH   (quoted_name, "\"\\\\\"", 4);
+TEST_MATCH   (quoted_name, "\"\\\\\"", 4);
+TEST_NO_MATCH(quoted_name, "hello");
+TEST_NO_MATCH(quoted_name, "+1");
+
+TEST_MATCH   (name, "abcd", 4);
+TEST_MATCH   (name, "  abcd", 6);
+TEST_MATCH   (name, "1234", 4);
+TEST_MATCH   (name, "ab12", 4);
+TEST_MATCH   (name, "12ab", 4);
+TEST_MATCH   (name, "_123", 4);
+TEST_MATCH   (name, "a_b_", 4);
+TEST_MATCH   (name, "ab cd", 2);
+TEST_MATCH   (name, "\"abcd\"", 6);
+TEST_MATCH   (name, "  \"abcd\"", 8);
+TEST_MATCH   (name, "\"1234\"", 6);
+TEST_MATCH   (name, "\"ab12\"", 6);
+TEST_MATCH   (name, "\"12ab\"", 6);
+TEST_MATCH   (name, "\"_123\"", 6);
+TEST_MATCH   (name, "\"a_b_\"", 6);
+TEST_MATCH   (name, "\"+1.4\"", 6);
+TEST_MATCH   (name, "\"[1:4]\"", 7);
+TEST_MATCH   (name, "\"ab cd\"", 7);
+TEST_MATCH   (name, "\"\\\"\"", 4);
+TEST_MATCH   (name, "\"\\\\\"", 4);
+TEST_MATCH   (name, "\"\\\\\"", 4);
+TEST_MATCH   (name, "\"\\\\\"", 4);
+TEST_NO_MATCH(name, "+1");

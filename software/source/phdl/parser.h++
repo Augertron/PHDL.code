@@ -241,6 +241,15 @@ namespace phdl { namespace parser {
 
 		// Parse a slice.
 		ast::Slice slice(Context &context);
+
+		// Parse an simple unquoted name part, with no hierarchy or slice part.
+		std::string unquoted_name(Context &context);
+
+		// Parse a simple quoted name part, with no hierarchy or slice part.
+		std::string quoted_name(Context &context);
+
+		// Parse a fully-qualified, optionally sliced name of any kind.
+		ast::Name name(Context &context);
 	}
 
 }}
