@@ -9,6 +9,17 @@ using phdl::parser::Context;
 using phdl::parser::read_file;
 using phdl::unicode::Characters;
 using phdl::unicode::split_characters;
+using phdl::unicode::combine_characters;
+
+TEST(default_constructor_leaves_context_in_valid_state) {
+	Context context;
+	REQUIRE(context.filename() == "");
+	REQUIRE(context.text()->size() == 0);
+	REQUIRE(context.position() == 0);
+	REQUIRE(*context == "");
+	REQUIRE(context->size() == 0);
+	REQUIRE(combine_characters(*context.text()) == "");
+}
 
 struct Make_Test_Files {
 	Make_Test_Files() {

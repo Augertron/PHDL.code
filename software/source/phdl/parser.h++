@@ -38,6 +38,7 @@ namespace phdl { namespace parser {
 	// convenience will usually be called through these helper methods in order
 	// to promote uniformity and avoid boilerplate.
 	struct Context {
+		Context();
 		~Context();
 
 		// With the given filename and text (assumed to be the content of that
@@ -79,19 +80,6 @@ namespace phdl { namespace parser {
 		Context  operator--(int);
 		Context &operator-=(int);
 
-		// Optionally match the current context with the given parser. If there
-		// is a match, the result is returned and the position is advanced.
-		// Otherwise, no result is returned, and the context stays unchanged.
-		template <typename Result, typename Parser>
-		boost::optional<Result> match (Parser &parser);
-
-		// Require the current context to match with the given parser and
-		// return the result. This is really no different from calling a parser
-		// directly with the current context, but is provided to allow a
-		// similar calling convention to the match function.
-		template <typename Result, typename Parser>
-		Result expect (Parser &parser);
-
 		// Parse errors should be be thrown via this interface, which will
 		// conveniently populates and throws a User_Visible_Error. Errors
 		// thrown by failing parsers are not always reported to the user (e.g.
@@ -115,13 +103,22 @@ namespace phdl { namespace parser {
 
 	namespace ast {
 
+		// The node base type exists just to hold common attributes, such as a
+		// pointer to the context corresponding to the particular node. This is
+		// not to be used as polymorphic base class.
+		struct Node {
+			Context context;
+		};
+
 		// We strictly limit allowed indices to [-2**15,2**15), under the
 		// assumption that a 64 Kibit bus should be wide enough for anybody.
-		using Index = int16_t;
+		struct Index : Node {
+			int16_t index;
+		};
 
 		// A range consists of either a single index, or a pair of indices
 		// indicating the start and stop index in normal left to right order.
-		struct Range {
+		struct Range : Node {
 			boost::variant<
 				Index,
 				std::pair<Index,Index>
@@ -131,7 +128,7 @@ namespace phdl { namespace parser {
 		// A slice just is a collection of ranges. The language requires that a
 		// slice has at least one range element. (This fact is enforced in both
 		// parsing and elaboration, but this object doesn't care.)
-		struct Slice {
+		struct Slice : Node {
 			std::vector<Range> ranges;
 		};
 
@@ -141,7 +138,7 @@ namespace phdl { namespace parser {
 		// while into the same type of node for simplicity. Many constraints
 		// are validated during parsing (basically just where its convenient to
 		// do so); the rest of are checked during elaboration.
-		struct Name {
+		struct Name : Node {
 			enum class Type { Normal, Parameter, Attribute };
 			Type type;
 			std::vector<std::string> parts;
@@ -157,7 +154,7 @@ namespace phdl { namespace parser {
 		// names are stored here, but validation of the compatibility between
 		// target and source width and type is left alone until elaboration.
 		// Likewise with the semantics of the associated block.
-		struct Assignment {
+		struct Assignment : Node {
 			std::vector<Name> targets;
 			std::vector<Name> sources;
 			boost::optional<boost::recursive_wrapper<Block>> block;
@@ -168,7 +165,7 @@ namespace phdl { namespace parser {
 		// handled during elaboration. Almost all information is stored in the
 		// nested Assignment object since declarations are effectively just
 		// initial assignments.
-		struct Declaration {
+		struct Declaration : Node {
 			enum class Type {
 				Attribute ,
 				Board     ,
@@ -189,7 +186,7 @@ namespace phdl { namespace parser {
 		// of statements. Largely, the parser only validates allowed statement
 		// insofar as it is convenient to do so. Further detailed analysis
 		// happens during elaboration.
-		struct Block {
+		struct Block : Node {
 			std::vector<boost::variant<
 				Assignment,
 				Declaration
@@ -203,8 +200,40 @@ namespace phdl { namespace parser {
 	// error is thrown if any error is encountered.
 	ast::Block parse_phdl(Context &);
 
-}}
+	// Everything in the grammar namespace are the individual parsers for
+	// pieces of the language. They are declared publicly here primarily so
+	// that they can be more easily unit-tested. In general, these do not need
+	// to ever be called individually.
+	namespace grammar {
 
-#include "parser/Context.template.h++"
+		// We often use boost::optional when matching against parsers. Since it
+		// doesn't work with the void type, we make our own type to use to mark
+		// the fact that a parser returns results that are simply ignored.
+		struct ignored {};
+
+		// Create a parser to match the given literal value.
+		std::function<ignored(Context &)> literal(std::string value);
+
+		// Match the end of file.
+		ignored end_of_file(Context &context);
+
+		// Match actual whitespace (not including comments).
+		ignored actual_whitespace(Context &context);
+
+		// Match a single-line comment.
+		ignored single_line_comment(Context &context);
+
+		// Match a multi-line comment.
+		ignored multi_line_comment(Context &context);
+
+		// Match any type of comment.
+		ignored comment(Context &context);
+
+		// Match any effective whitespace (actual whitespace or comments).
+		ignored whitespace(Context &context);
+
+	}
+
+}}
 
 #endif

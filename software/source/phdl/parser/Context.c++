@@ -10,6 +10,12 @@ namespace phdl { namespace parser {
 		size_t position = 0;
 	};
 
+	Context::Context() :
+		detail(new Detail)
+	{
+		detail->text.reset(new unicode::Characters());
+	}
+
 	Context::~Context() {}
 
 	Context::Context(
