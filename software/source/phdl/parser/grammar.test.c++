@@ -23,7 +23,9 @@ Context make_context(const std::string &filename, const std::string &text) {
 		try {\
 			rule(context);\
 			matched = true;\
-		} catch (const User_Visible_Error &) {}\
+		} catch (const User_Visible_Error &e) {\
+			std::cerr << e;\
+		}\
 		EXPECT(matched);\
 		EXPECT(context.position() == end_position);\
 	}
@@ -37,7 +39,6 @@ Context make_context(const std::string &filename, const std::string &text) {
 			matched = true;\
 		} catch (const User_Visible_Error &) {}\
 		EXPECT(!matched);\
-		EXPECT(context.position() == 0);\
 	}
 
 TEST_MATCH   (literal("abcd"), "abcd", 4);
@@ -95,3 +96,36 @@ TEST_MATCH   (whitespace, "/*//single \n  */", 16);
 TEST_MATCH   (whitespace, "  //abc\n\t\t/*xyz*/   abc", 20);
 TEST_NO_MATCH(whitespace, "*/ not a comment or whitespace");
 TEST_NO_MATCH(whitespace, "not a comment or whitespace");
+
+TEST_MATCH   (index, "0123456789", 10);
+TEST_MATCH   (index, "  0123456789 ", 12);
+TEST_MATCH   (index, "0123456789abcdef", 10);
+TEST_NO_MATCH(index, "a0");
+TEST_NO_MATCH(index, "⁰");
+
+TEST_MATCH   (range, "0123456789", 10);
+TEST_MATCH   (range, "  0123456789", 12);
+TEST_MATCH   (range, "0123456789abcdef", 10);
+TEST_MATCH   (range, "0123456789:0123456789", 21);
+TEST_MATCH   (range, "45:23", 5);
+TEST_MATCH   (range, "  45\n\n\t\t:  23  ", 13);
+TEST_MATCH   (range, "  45 : 23  ", 9);
+TEST_MATCH   (range, "  45 ; 23  ", 5);
+TEST_MATCH   (range, "23:45", 5);
+TEST_MATCH   (range, "23;45", 2);
+TEST_NO_MATCH(range, "x:y:z");
+TEST_NO_MATCH(range, ":9");
+TEST_NO_MATCH(range, "9:");
+
+TEST_MATCH   (slice, "[1,2:3,5:4,6,7]", 15);
+TEST_MATCH   (slice, "[1,2:3,5:4,6,7]xyz", 15);
+TEST_MATCH   (slice, " [ 1 , 2 : 3 , 5 : 4 , 6 , 7 ] ", 30);
+TEST_MATCH   (slice, " [ 1 , 2 : 3 , 5 : 4 , 6 , 7 ] xyz", 30);
+TEST_NO_MATCH(slice, "  x1,2,3,]");
+TEST_NO_MATCH(slice, "  [1,2,3,]");
+TEST_NO_MATCH(slice, "[1,2:,3]");
+TEST_NO_MATCH(slice, "[1,:5,3]");
+TEST_NO_MATCH(slice, "[1,]");
+TEST_NO_MATCH(slice, " [3:2,1,45:100");
+TEST_NO_MATCH(slice, " [3:2,1,45:100");
+TEST_NO_MATCH(slice, " [3:2,1,45:");

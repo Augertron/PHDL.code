@@ -35,8 +35,7 @@ namespace phdl { namespace parser { namespace grammar {
 			Context start(context);
 			for (auto c : characters) {
 				if (*context != c) {
-					context = start;
-					context.throw_error("expected literal " + value);
+					start.throw_error("expected literal " + value);
 				}
 				++context;
 			}
@@ -109,6 +108,71 @@ namespace phdl { namespace parser { namespace grammar {
 			}
 		}
 		return {};
+	}
+
+	ast::Index index(Context &context) {
+		MATCH(context, whitespace);
+		ast::Index index;
+		index.context = context;
+		while (true) {
+			if (
+				   (context->size() == 1)
+				&& (("0" <= *context) && (*context <= "9"))
+			) {
+				index.digits += *context;
+				++context;
+			} else if (index.digits.size() == 0) {
+				index.context.throw_error("expected index");
+			} else {
+				break;
+			}
+		}
+		return index;
+	}
+
+	ast::Range range(Context &context) {
+		MATCH(context, whitespace);
+		ast::Range range;
+		range.context = context;
+		auto index1 = REQUIRE(context, index);
+
+		MATCH(context, whitespace);
+		if (!MATCH(context,literal(":"))) {
+			range.index = index1;
+			return range;
+		}
+
+		MATCH(context, whitespace);
+		auto index2 = REQUIRE(context, index);
+		range.index = std::make_pair(index1, index2);
+		return range;
+	}
+
+	ast::Slice slice(Context &context) {
+		MATCH(context, whitespace);
+		ast::Slice slice;
+		slice.context = context;
+		if (!MATCH(context,literal("["))) {
+			slice.context.throw_error("expected slice");
+		}
+
+		MATCH(context, whitespace);
+		auto range1 = REQUIRE(context, range);
+		slice.ranges.push_back(range1);
+
+		while (true) {
+			MATCH(context, whitespace);
+			if (MATCH(context, literal("]"))) {
+				return slice;
+			} else if (!MATCH(context, literal(","))) {
+				context.throw_error("expected , for next range or ] for end-of-slice");
+			}
+
+			MATCH(context, whitespace);
+			auto rangeN = REQUIRE(context, range);
+			slice.ranges.push_back(rangeN);
+		}
+		return slice;
 	}
 
 	//static std::string parse_identifier(const Characters &characters) {

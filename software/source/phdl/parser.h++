@@ -110,10 +110,11 @@ namespace phdl { namespace parser {
 			Context context;
 		};
 
-		// We strictly limit allowed indices to [-2**15,2**15), under the
-		// assumption that a 64 Kibit bus should be wide enough for anybody.
+		// The language limits the allowed size of indicies, but the parser
+		// just grabs a sequence of decimal digits, so bounds are checked by
+		// the elaboration code.
 		struct Index : Node {
-			int16_t index;
+			std::string digits;
 		};
 
 		// A range consists of either a single index, or a pair of indices
@@ -232,6 +233,14 @@ namespace phdl { namespace parser {
 		// Match any effective whitespace (actual whitespace or comments).
 		ignored whitespace(Context &context);
 
+		// Parse an index.
+		ast::Index index(Context &context);
+
+		// Parse a range.
+		ast::Range range(Context &context);
+
+		// Parse a slice.
+		ast::Slice slice(Context &context);
 	}
 
 }}
