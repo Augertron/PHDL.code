@@ -56,6 +56,42 @@ TEST_MATCH   (actual_whitespace, "\r\n",1);
 TEST_MATCH   (actual_whitespace, "\r\nx",1);
 TEST_NO_MATCH(actual_whitespace, "x");
 
+TEST_MATCH   (single_line_comment, "//", 2);
+TEST_MATCH   (single_line_comment, "//\n", 3);
 TEST_MATCH   (single_line_comment, "// this is a comment", 20);
 TEST_MATCH   (single_line_comment, "//comment\n", 10);
 TEST_MATCH   (single_line_comment, "//comment\nxyz", 10);
+TEST_MATCH   (single_line_comment, "//comm/*en*/t/*\nxyz", 16);
+TEST_NO_MATCH(single_line_comment, "/not a comment\nxyz");
+TEST_NO_MATCH(single_line_comment, "not a comment\nxyz");
+
+TEST_MATCH   (multi_line_comment, "/**/1", 4);
+TEST_MATCH   (multi_line_comment, "/* a\nb\nc */", 11);
+TEST_MATCH   (multi_line_comment, "/*comment*/", 11);
+TEST_MATCH   (multi_line_comment, "/*comment*//", 11);
+TEST_MATCH   (multi_line_comment, "/*comment**/", 12);
+TEST_MATCH   (multi_line_comment, "/*com//ment*/", 13);
+TEST_MATCH   (multi_line_comment, "/*comm\nent*/xyz", 12);
+TEST_NO_MATCH(multi_line_comment, "/not a comment\nxyz");
+TEST_NO_MATCH(multi_line_comment, "*/not a comment\nxyz");
+TEST_NO_MATCH(multi_line_comment, "not a comment\nxyz");
+
+TEST_MATCH   (comment, "// single line comment", 22);
+TEST_MATCH   (comment, "/* multi\n line\r comment */", 26);
+TEST_MATCH   (comment, "///*single \n  */", 12);
+TEST_MATCH   (comment, "/*//single \n  */", 16);
+TEST_NO_MATCH(comment, "*/ not a comment");
+TEST_NO_MATCH(comment, "not a comment");
+
+TEST_MATCH   (whitespace, " /**/", 5);
+TEST_MATCH   (whitespace, "/**/ ", 5);
+TEST_MATCH   (whitespace, "//\n/**/", 7);
+TEST_MATCH   (whitespace, "\n // \n/*\n*/\n  \n", 15);
+TEST_MATCH   (whitespace, "// single line comment", 22);
+TEST_MATCH   (whitespace, "// single line comment", 22);
+TEST_MATCH   (whitespace, "/* multi\n line\r comment */", 26);
+TEST_MATCH   (whitespace, "///*single \n  */", 14);
+TEST_MATCH   (whitespace, "/*//single \n  */", 16);
+TEST_MATCH   (whitespace, "  //abc\n\t\t/*xyz*/   abc", 20);
+TEST_NO_MATCH(whitespace, "*/ not a comment or whitespace");
+TEST_NO_MATCH(whitespace, "not a comment or whitespace");

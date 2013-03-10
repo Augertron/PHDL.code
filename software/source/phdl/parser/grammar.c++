@@ -34,7 +34,10 @@ namespace phdl { namespace parser { namespace grammar {
 		return [=](Context &context) -> ignored {
 			Context start(context);
 			for (auto c : characters) {
-				if (*context != c) start.throw_error("expected literal " + value);
+				if (*context != c) {
+					context = start;
+					context.throw_error("expected literal " + value);
+				}
 				++context;
 			}
 			return {};
@@ -43,6 +46,7 @@ namespace phdl { namespace parser { namespace grammar {
 	
 	ignored end_of_file(Context &context) {
 		if (context->size() != 0) context.throw_error("expected end-of-file");
+		++context;
 		return {};
 	}
 
@@ -96,14 +100,15 @@ namespace phdl { namespace parser { namespace grammar {
 	ignored whitespace(Context &context) {
 		bool success = false;
 		while (true) {
-			if (!(
-				   MATCH(context,actual_whitespace)
-				|| MATCH(context,comment)
-			)) {
-				if (!success) context.throw_error("expected whitespace (or comment)");
-				else return {};
+			auto m1 = MATCH(context,actual_whitespace);
+			auto m2 = MATCH(context,comment);
+			if (m1 || m2) success = true;
+			else {
+				if (success) break;
+				context.throw_error("expected whitespace (or comment)");
 			}
 		}
+		return {};
 	}
 
 	//static std::string parse_identifier(const Characters &characters) {
