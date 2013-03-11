@@ -2,6 +2,165 @@ PHDL Output Netlist Descriptions
 ================================
 This document is intended to hold descriptions of the various netlist formats we wish to support.
 
+KiCAD PCBnew
+------------
+The KiCAD PCBnew PCB layout tool appears to be particularly easy to target from PHDL.  Similar to PADS, two files must be written, the .CMP and the .NET files. Neither of these files has any formal documentation but can be reverse engineered by inspection.
+
+KiCAD .CMP File
+~~~~~~~~~~~~~~~
+The .CMP file contains a list of every instance in the design with its associated layout decal.
+
+The following is an example for a board with a diode, two resistors and a chip.
+
+-------------------------------------------
+
+Cmp-Mod V01 Created by CvPcb (2013-mar-04)-testing date = Fri 08 Mar 2013 04:52:18 PM CET
+
+BeginCmp
+TimeStamp = /5139F8AB;
+Reference = D1;
+ValeurCmp = LED;
+IdModule  = LED-0603;
+EndCmp
+
+BeginCmp
+TimeStamp = /5139F809;
+Reference = R1;
+ValeurCmp = 100;
+IdModule  = SM0603;
+EndCmp
+
+BeginCmp
+TimeStamp = /5139EC4B;
+Reference = R2;
+ValeurCmp = 50;
+IdModule  = SM0603;
+EndCmp
+
+BeginCmp
+TimeStamp = /5139F8CC;
+Reference = U1;
+ValeurCmp = PIC12C508A;
+IdModule  = DIP-8__300;
+EndCmp
+
+EndListe
+
+-------------------------------------------
+
+KiCAD .NET File
+~~~~~~~~~~~~~~~
+The .NET file contains the actual connectivity data for the board.
+
+Below is the .NET file corresponding to the .CMP file above.
+-------------------------------------------
+
+(export (version D)
+  (design
+    (source /home/pedro/kicad/tute1/tute1.sch)
+    (date "Fri 08 Mar 2013 04:41:46 PM CET")
+    (tool "eeschema (2013-mar-04)-testing"))
+  (components
+    (comp (ref R2)
+      (value 50)
+      (libsource (lib device) (part R))
+      (sheetpath (names /) (tstamps /))
+      (tstamp 5139EC4B))
+    (comp (ref R1)
+      (value 100)
+      (libsource (lib device) (part R))
+      (sheetpath (names /) (tstamps /))
+      (tstamp 5139F809))
+    (comp (ref D1)
+      (value LED)
+      (libsource (lib device) (part LED))
+      (sheetpath (names /) (tstamps /))
+      (tstamp 5139F8AB))
+    (comp (ref U1)
+      (value PIC12C508A)
+      (libsource (lib microcontrollers) (part PIC12C508A))
+      (sheetpath (names /) (tstamps /))
+      (tstamp 5139F8CC)))
+  (libparts
+    (libpart (lib device) (part LED)
+      (footprints
+        (fp LED-3MM)
+        (fp LED-5MM)
+        (fp LED-10MM)
+        (fp LED-0603)
+        (fp LED-0805)
+        (fp LED-1206)
+        (fp LEDV))
+      (fields
+        (field (name Reference) D)
+        (field (name Value) LED)
+        (field (name Footprint) ~)
+        (field (name Datasheet) ~))
+      (pins
+        (pin (num 1) (name A) (type passive))
+        (pin (num 2) (name K) (type passive))))
+    (libpart (lib device) (part R)
+      (description Resistance)
+      (footprints
+        (fp R?)
+        (fp SM0603)
+        (fp SM0805)
+        (fp R?-*)
+        (fp SM1206))
+      (fields
+        (field (name Reference) R)
+        (field (name Value) R)
+        (field (name Footprint) ~)
+        (field (name Datasheet) ~))
+      (pins
+        (pin (num 1) (name ~) (type passive))
+        (pin (num 2) (name ~) (type passive))))
+    (libpart (lib microcontrollers) (part PIC12C508A)
+      (description "8-Bit CMOS Microcontroller")
+      (fields
+        (field (name Reference) U)
+        (field (name Value) PIC12C508A))
+      (pins
+        (pin (num 1) (name VDD) (type power_in))
+        (pin (num 2) (name GP5/OSC1) (type input))
+        (pin (num 3) (name GP4/OSC2) (type input))
+        (pin (num 4) (name GP3/MCLR) (type input))
+        (pin (num 5) (name GP2) (type input))
+        (pin (num 6) (name GP1) (type input))
+        (pin (num 7) (name GP0) (type input))
+        (pin (num 8) (name VSS) (type power_in)))))
+  (libraries
+    (library (logical device)
+      (uri /usr/share/kicad/library/device.lib))
+    (library (logical microcontrollers)
+      (uri /usr/share/kicad/library/microcontrollers.lib)))
+  (nets
+    (net (code 1) (name "")
+      (node (ref U1) (pin 4)))
+    (net (code 2) (name "")
+      (node (ref U1) (pin 5))
+      (node (ref R1) (pin 1)))
+    (net (code 3) (name "")
+      (node (ref U1) (pin 7))
+      (node (ref D1) (pin 2)))
+    (net (code 4) (name "")
+      (node (ref U1) (pin 3)))
+    (net (code 5) (name "")
+      (node (ref U1) (pin 2)))
+    (net (code 6) (name GND)
+      (node (ref U1) (pin 8)))
+    (net (code 7) (name VCC)
+      (node (ref U1) (pin 1))
+      (node (ref R2) (pin 2)))
+    (net (code 8) (name "")
+      (node (ref U1) (pin 6))
+      (node (ref R1) (pin 2)))
+    (net (code 9) (name "")
+      (node (ref R2) (pin 1))
+      (node (ref D1) (pin 1)))))
+
+-------------------------------------------
+
 
 Mentor PADS
 -----------
@@ -21,6 +180,7 @@ The *MISC* section can be empty or nonexistant.
 The .asc file is terminated by a *END* statement.
 
 Below is a little example .asc file.
+-------------------------------------------
 
 !PADS-POWERPCB-V9.0-MILS
 
@@ -56,6 +216,7 @@ U7.J3 U7.K3
 
 *END*
 
+-------------------------------------------
 
 
 
@@ -76,7 +237,7 @@ Each component/footprint association statement then has some extra strings and n
 The .p file is terminated by a *END* statement.
 
 Below is a sample .p file.
-==============================================================================
+-------------------------------------------
 
 *PADS-LIBRARY-PART-TYPES-V9*
 6VLX75T FF784 I TTL 0 34 0 0 0
@@ -120,4 +281,4 @@ GATE 0 6 1
 
 *END
 
-==============================================================================
+-------------------------------------------
