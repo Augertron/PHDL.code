@@ -4,6 +4,8 @@ Version 3.0.0 (draft)
 
 :leveloffset: 1
 
+include::PHDL_Language_Reference_Manual/Grammar.txt[]
+
 include::PHDL_Language_Reference_Manual/Introduction.txt[]
 
 include::PHDL_Language_Reference_Manual/Names.txt[]

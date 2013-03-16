@@ -9,7 +9,7 @@ comment start "#"
 keyword = "⇒"
 
 # Terminals
-type = '_[[:alnum:]_]+'
+type = ':[[:alnum:]_]+'
 
 # Productions
 usertype = '[[:alnum:]_]+'

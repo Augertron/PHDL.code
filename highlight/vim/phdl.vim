@@ -22,7 +22,7 @@ syntax match phdlError /\\./
 " Comments
 syntax match phdlTODO "TODO\|FIXME" contained
 syntax match phdlLineComment "//.*" contains=phdlTODO
-syntax region phdlBlockComment start="/\*" end="\*/" contains=phdlBlockComment,phdlTODO
+syntax region phdlBlockComment start="/\*" end="\*/" contains=phdlBlockComment,phdlLineComment,phdlTODO
 
 " Nets, Ports, and Pins
 syntax keyword phdlKeyword net port pin
