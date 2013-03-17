@@ -1,0 +1,86 @@
+PHDL Metasyntax Definition
+==========================
+Version 1.0.0 (draft)
+
+Various places in the PHDL project need to define syntax in a formal manner to avoid ambiguity and aid understand.
+In order to successfully accomplish this, we require a syntax definition for the way we will describe the syntaxes in question.
+We call this syntax about syntax our metasyntax, and define it in this document.
+
+Syntax
+------
+
+Below is the metasyntax written in its own syntax.
+This serves as both a definition and a fairly illustrative demo.
+
+[source,syntax]
+--------------------
+# Rules are either lexical or normal rules.
+Rule                   ⇒ Lexical_Rule | Normal_Rule
+
+# Lexical rule definition.
+# The body of the given rule is formed without implicit rules.
+Lexical_Rule           ⇒ Rule_Name "→" Rule_Body
+
+# Normal rule definition.
+# The body of the given rule is formed using all tagged implicit rules. At
+# least one implicit rule must match between every rule in the body to ensure
+# correct lexical boundaries.
+Normal_Rule            ⇒ Rule_Name "⇒" Rule_Body
+
+# Rule names can be tagged to make implicit rules.
+Rule_Name              ⇒ /\p{XID_Start}\p{XID_Continue}*/ Rule_Tag*
+Rule_Tag               ⇒ Rule_Tag_Ignore | Rule_Tag_Annotate
+
+# A rule marked :ignore will be called implicitly before each item in the body
+# of all normal rules.
+Rule_Tag_Ignore        ⇒ ":ignore"
+
+# A rule marked :annotate-* will be kept as an annotation on either the next or
+# previous non-implicit rule.
+Rule_Tag_Annotate      ⇒ ":annotate-next" | ":annotate-prev"
+
+# A rule body consists of other rule names, literals, and regular expressions
+# combined in several possible ways.
+#
+# "(" and ")" are just for grouping. They do not imply any additional syntax.
+#
+# A "|" is used to separate alternatives. In case of ambiguity, priority goes
+# first to the longest match, then to the first match.
+#
+# The following are used in a postfix fashion:
+#   ? - match zero or one  of the previous item.
+#   * - match zero or more of the previous item.
+#   + - match one  or more of the previous item.
+Rule_Body              ⇒ Rule_Name | Literal_Value | Regular_Expression
+                       | ("(" Rule_Body ")") | ("|" Rule_Body)
+                       | (Rule_Body ("?") | (Rule_Body "*") | (Rule_Body "+")
+
+# Literal value are quoted and can contain any characters besides " and \.
+# Three escapes sequences are allowed:
+#   \\      - a literal backslash
+#   \"      - a literal quote
+#   \x{...} - a unicode codepoint specified in hexadecimal
+Literal_Value          → "\"" (Literal_Character | Literal_Codepoint)* "\""
+Literal_Character      → /([^\\"]|\\\\|\\\")/
+Literal_Codepoint      → "\\x{" /\p{Decimal_Number}|\p{Hex_Digit}/+ "}"
+
+# Regular expressions are enclosed in /'s and are interpreted as Perl-style
+# Unicode regular expressions.
+Regular_Expression     → "/" /([^\\/]|\\\\|\\\/)*/ "/"
+
+# Whitespace is ignored.
+Whitespace :ignored    → /\p{Pattern_White_Space}+/
+
+# A "#" character starts a comment, which runs until the end of the line.
+# Comments are defined to be annotations about the following item if they
+# are the first non-whitespace on the line, otherwise they are annotations
+# about the previous item.
+Comment :annotate-next → /(?<=^\p{Pattern_White_Space}*)/ Comment_Line
+Comment :annotate-prev → /(?<!^\p{Pattern_White_Space}*)/ Comment_Line
+Comment_Line           → "#" (!End_of_Line)* End_Of_Line
+End_of_Line            → "\x{A}"
+
+# Other Lexical Boundaries
+Other_Boundary :ignore → /(?<=\p{XID_Continue})(?=\p{Pattern_Syntax})
+                       | /(?<=\p{Pattern_Syntax})(?=\p{XID_Continue})
+--------------------

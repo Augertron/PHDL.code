@@ -6,17 +6,19 @@
 comment start "#"
 
 # Keywords
-keyword = "⇒"
+keyword = "⇒|→"
 
-# Terminals
-type = ':[[:alnum:]_]+'
-
-# Productions
-usertype = '[[:alnum:]_]+'
+# Rules
+type = '[[:alnum:]_]+'
 
 # Literals
 environment string delim "\"" "\"" begin
 	specialchar = '\\.'
+end
+
+# Regular Expressions
+environment regexp delim "/" "/" begin
+	regexp = '\\/'
 end
 
 # Symbols
