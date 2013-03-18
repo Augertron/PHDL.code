@@ -1,0 +1,152 @@
+Unicode Conformance
+===================
+
+PHDL fully conforms to The Unicode Standard, Version 6.2.0 footnote:[The Unicode Consortium. The Unicode Standard, Version 6.2.0, defined by: _The Unicode Standard, Version 6.2_ (Mountain View, CA: The Unicode Consortium, 2012. ISBN 978-1-936213-07-8).].
+If there is any place that we diverge from the Unicode standard in either this document or in a PHDL implementation, it is a bug and should be reported as such.
+
+Below is a detailed report of our conformance status:
+
+Code Points Unassigned to Abstract Characters
+---------------------------------------------
+
+C1 Surrogate Codepoints::
+On input, surrogate codepoints result in an error.
+Surrogates codepoints are never generated.
+
+C2 Noncharacter Codepoints::
+On input, noncharacter codepoints result in an error.
+Noncharacter codepoints are never generated.
+
+C3 Unassigned Codepoints::
+Where unassigned codepoints are allowed, they are passed through generically without interpretation.
+Unassigned codepoints are only generated when directly entered through a user-provided escape sequence.
+
+Interpretation
+--------------
+
+C4 Character Semantics::
+All processed character sequences are interpreted according to the semantics specified by the standard.
+
+C5 Interpretation::
+Aside from those formally specified in our langauge syntax and semantics, we do not interpret any other character sequences.
+
+C6 Canonical Equivalence::
+We use normalization and so treat canonically-equivalent character sequences identically in all cases.
+
+Modification
+------------
+
+C7 Canonical Equivalence::
+Character sequences are not modified except where specifically indicated by compiler semantics.
+
+Character Encoding Forms
+------------------------
+
+C8 Encoding Sequences::
+All encoding forms used are done following the rules of their respective specifications.
+
+C9 Ill-Formed Sequences::
+No ill-formed sequences are ever generated.
+
+C10 Ill-Formed Code Units::
+Ill-formed code unit sequences are replaced with U+FFFD REPLACEMENT CHARACTER.
+
+Character Encoding Schemes
+--------------------------
+
+C11 Byte Order::
+All supported input encoding schemes are handled according to their respective specifications and with the correct byte order.
+
+Bidirectional Text
+------------------
+
+C12 Bidirectional Algorithm::
+In cases where PHDL is responsible for textual display, it applies the Bidirection Algorithm correctly.
+
+Normalization Forms
+-------------------
+
+C13 Normalization Form Production::
+All normalization production processes operate in accordance to the standard.
+
+C14 Normalization Form Determination::
+All normalization detection process operate in accordance to the standard.
+
+C15 Conformance Test::
+Normalization algorithms are tested against the standard's published conformance test.
+
+Normative References
+--------------------
+
+C16 Normative References::
+Normative references are done according to the standard.
+
+C17 Provisional Properties::
+Provisional properties are never used.
+
+Unicode Algorithms
+------------------
+
+C18 Algorithm Conformance::
+All algorithms are implemented in conformance with their respective specifications.
+
+C19 Tailoring::
+No algorithms used by PHDL are tailored.
+
+Default Casing Algorithms
+-------------------------
+
+C20 Default Casing::
+No case conversion, detection, or matching is done.
+
+Unicode Normalization Forms
+---------------------------
+
+PHDL conforms to Unicode Standard Annex #15, "Unicode Normalization Forms", revision 37, from Unicode 6.2.0.
+
+All input text is normalization to NFC before any syntax analysis is performed.
+Names are normalized to NFKC after they are completely parsed.
+
+Identifier and Pattern Syntax
+-----------------------------
+
+PHDL fully conforms to Unicode Standard Annex #31, "Unicode Identifier and Pattern Syntax", revision 17, from Unicode 6.2.0.
+
+UAX31-C1::
+Specification version information is given above.
+
+UAX31-C2::
+We conform to Level 1 of this specification.
+This is the highest level of conformance.
+Below we describe how we meeting the enumerated requirements.
+
+R1 Default Identifiers:::
+We meet this requirement using the following profile:
+* Names can start with either XID_Start, Decimal_Number, or Connector_Punctuation.
+* Names can continue with either XID_Continue as well as ZWJ or ZWNJ.
+
+R1a Restricted Format Characters:::
+We meet this requirement as specified by allowing ZWJ and ZWNJ in names only as recommended in the standard.
+
+R1b Stable Identifiers:::
+We meet this requirement by the following guarantee:
+* This standard will be updated to add explicit grandfathered codepoints to its identifier profile in the event that a future Unicode standard makes changes that require this action.
+
+R2 Alternative Identifiers:::
+This requirement is not applicable since we implement R1.
+
+R3 Pattern_White_Space and Pattern_Syntax_Characters:::
+We meet this requirement as specified.
+
+R4 Equivalent Normalized Identifiers:::
+We meet this requirement as follows:
+* All names are internally normalized to NFKC after they are completely parsed.
+
+R5 Equivalent Case-Insensitive Identifiers:::
+This requirement is not applicable since we implement R4.
+
+R6 Filtered Normalized Identifiers:::
+This requirement is not applicable since we implement R4.
+
+R7 Filtered Case-Insensitive Identifiers:::
+This requirement is not applicable since we implement R4.

@@ -24,7 +24,7 @@ Names can start with digits.
 For example, there is no problem having names like `1234`, `8_bit`, or `2DIR`.
 
 In addition, our full Unicode support allows us to give more descriptive names such as `"I²C_SDA"`.
-And of course, non-ASCII identifiers, such as `empêche`, `λαμβάνω`, `คงที่`, `ошибка`, `"قطب سالب"`, `相対売買`, and `"😃→😨"` work fine as well.
+And of course, Unicode identifiers, such as `empêche`, `λαμβάνω`, `คงที่`, `ошибка`, `قطبسالب`, `相対売買`, and `"😃→😨"` work fine as well.
 (Backends which transcode to legacy encodings always must do so in a standard, round-trip-reversable way footnote:[Examples of such methods include Base64, Quoted-Printable, UTF-7, UTF-EBCDIC, and so forth.].)
 
 [source,phdl]
@@ -72,32 +72,41 @@ Thus, the assignment statements below are all exactly equivalent:
 "1234" = "abcd";
 --------------------
 
-Syntax
-------
+Semantics
+---------
 
-[source,syntax]
---------------------
-Name                   ⇒ Name_Simple | Name_Quoted
-Value                  ⇒ Name
+General semantics of names as used in the language is as follows.
+The names referred to are as defined in the syntax section.
 
-# Local rules
-Name_Simple            ⇒ _Name_Simple_Codepoint_Start _Name_Simple_Codepoint_Continue*
-Name_Quoted            ⇒ "\"" (_Name_Quoted_Codepoint | Name_Quoted_Escape)* "\""
-Name_Quoted_Escape     ⇒ (Name_Escaped_Backslash | Name_Escaped_Quote | Name_Escaped_Codepoint)
-Name_Escaped_Backslash ⇒ "\\\\"
-Name_Escaped_Quote     ⇒ "\\\""
-Name_Escaped_Codepoint ⇒ "\\x{" _Name_Escaped_Codepoint_Hex_Value "}"
---------------------
+Names::
+Most places where names can be used, they can be used in a list.
+However, whether multiple names are allowed or how many names are expected is often context sensitive.
+Exactly what is allowed in the context of any particular construct is described along with the construct itself.
+For example, a 3 bit net could be assigned a list of 1, 2, or 3 nets; which is valid depends on widths.
 
-_Name_Simple_Codepoint::
-A Unicode codepoint with either the `ID_Start` property, or a general category of either `Nd` or `Pc`.
+Name_Expanded::
+Expanded names are only semantically correct in certain contexts.
+These contexts are described along with the individual constructs where they are valid.
+For example, an expanded name is invalid in a package name declaration.
 
-_Name_Simple_Codepoint::
-A Unicode codepoint with the `ID_Continue` property.
+Name_Qualified::
+Qualified names are not universally valid.
+Where they can be used again depends on context, and will be described along with the constructs which allow them.
+For example, trying to define a port with a qualified name is non-sensical.
 
-_Name_Quoted_Codepoint::
-Any Unicode valid codepoint except for `"` (`U+22 QUOTATION MARK`) or `\` (`U+5C REVERSE SOLIDUS`).
+Name_Sliced::
+Slices on names are only valid in certain contexts.
+Even when allowed, the semantics of the slice ranges may determine whether a construct is valid or not.
+Where slices can be used is described allow with the constructs that allow them.
+For example, a device declaration with a slice isn't allowed.
 
-_Name_Escaped_Codepoint_Hex_Value::
-An sequence of Unicode codepoints each with the `ASCII_Hex_Digit` property.
-When interpreted as a hexadecimal number written most-significant-digit-first, the resulting value must indicate a valid Unicode codepoint.
+Name_Prefix::
+The prefix of names determines if they are normal names, attributes, or parameters.
+Different types of names are allowed in different contexts.
+Each construct which requires names will define which types of names are valid in that context.
+For example, attributes can only be used in attribute declarations and assignments.
+
+Name_Escaped_Codepoint::
+The codepoint given in an escaped codepoint can be any codepoint, assigned or not, between U+0 and U+10FFFF.
+An normalization pass is run on the identifier after these codepoints are expanded.
+This means that any attempt to put in an invalid codepoint (such as a surrogate) will result in getting a standard U+FFFD replacement character instead.

@@ -12,6 +12,8 @@ PHDL does not perform physical layout, but outputs traditional schematic and net
 About this Manual
 -----------------
 
+This language reference manual is the official specification of the PHDL language.
+
 This manual contains a mix of two types of content: _normative_ and _informative_.
 Generally, the which type is which will be obvious from context.
 In situations where there is ambiguity, the type of information is marked explictly.
@@ -25,7 +27,8 @@ This includes general explanatory text, language examples, and so forth.
 The important aspect of informative content is that it's enlightening.
 
 Since informative content is less precise, normative content should be used as the final arbiter if there is any confusion about language requirements.
-However, if there is ever any actual conflict or disagreement between normative and informative content, please file a bug footnote:[Bugs about this document, or the PHDL implementation itself can be filed http://sourceforge.net/p/phdl/bugs/], as that means this document has an error!
+If there is ever any actual conflict or disagreement between normative and informative content, please file a bug, as that means this document has an error.
+Similarly, if anything conflicts between this document and the behavior of an actual PHDL implementation, please file bug, as this indicates a bug in either the implementation or in this document.
 
 Language Concepts
 -----------------
@@ -35,6 +38,7 @@ For example, we've got the designs we're making, the devices we're putting on th
 Conceptually, this is no different from the concepts used in graphical schematics, but lets look at the specific ways that PHDL uses certain terminology.
 
 Creating _designs_ are the high-level goal of using PHDL.
+Almost everything has an associated _block_ where _statements_ are given.
 They consist primarily of connecting the _pins_ of _instances_ of individual _devices_.
 When designs have _ports_, they can be instanced like devices inside other designs.
 Either way, we connect things up with _nets_.
@@ -44,7 +48,97 @@ For convenience, _arrays_ of nets and instances can be created.
 Parts of arrays are accessed via _slices_.
 
 _Names_ are logical names we give to things.
-_Attributes_ are general name-value pairs that can be applied to various objects to pass information to backends.
+_Attributes_ can be applied to various things to pass information to backends.
 _Parameters_ allow a device or design to be parameterized.
 
 Each of these concepts is covered in detail in the sections that follow.
+
+Simple Example
+--------------
+
+Here is an example of a simple, non-hierarchical, complete PHDL design.
+This defines a little board that implements two low-voltage Schmitt triggers with some header pins and a pill battery holder.
+(The point here isn't the design, but just to show what basic PHDL looks like.)
+
+[source,phdl]
+--------------------
+design Dual_Schmitt_Trigger_Board {
+
+	net pwr, gnd;
+	net in[1:2], out[1:2];
+	net opamp_in[1:2];
+
+	// Hook up battery to our pwr and ground nets.
+	instance battery of Battery_Holder {
+		"+" = pwr;
+		"-" = gnd;
+	};
+
+	// Hook up inputs and outputs to header.
+	instance header of Header {
+		p = in[1],out[1],in[2],out[2];
+	};
+
+	// Size the feedback resistors twice as large as the input ones to set the
+	// trip point at V_max/2. Only the ratio really matters, but we don't want
+	// resistors with strange values.
+	instance R_in[1:2] of Resistor { @value = "500 Ω"; };
+	instance R_fb[1:2] of Resistor { @value =  "1 kΩ"; };
+
+/* Commented this out because it didn't work. (The values were too big.)
+	instance R_in[1:2] of Resistor { @value = "500 kΩ"; };
+	instance R_fb[1:2] of Resistor { @value =   "1 MΩ"; };
+*/
+
+	// Hook up resistors to inputs and outputs.
+	R_in.a = in;
+	R_fb.b = out;
+
+	// Hook up the resistors to the opamp inputs.
+	opamp_in = R_in.b;
+	opamp_in = R_fb.a;
+
+	// Hook up the op-amp. Be sure to ground the *negative* side so we get the
+	// desired positive feedback.
+	instance opamp of Dual_Opamp {
+		VCC    = pwr;
+		GND    = gnd;
+		"IN+"  = opamp_in;
+		"IN-"  = <gnd>;
+		OUT    = out;
+	};
+};
+
+// Simple header for input and output.
+device Header is 1933202 {
+	pin p[1:4] = 1,2,3,4;
+};
+
+/* Generic resistor from the precision CMF50 series. Really any resistors would
+ * do; we just need them to be ¼ W and at least 5% tolerance.
+ *
+ * We use an attribute for the value since we don't want to make a new device
+ * for each value.
+ */
+device Resistor is CMF50_x_JNEK {
+	attribute @value;
+	pin a = 1;
+	pin b = 2;
+};
+
+// Simple pill-battery holder chosen somewhat arbitrarily.
+device Battery_Holder is "BH1/3N-C" {
+	pin "+" = "+";
+	pin "-" = "-";
+};
+
+// We are using the common LM358N dual-opamp chip.
+device Dual_Opamp is LM358N {
+	pin OUT  [1:2] = 1, 7;
+	pin "IN+"[1:2] = 3, 5;
+	pin "IN-"[1:2] = 2, 6;
+	pin GND        = 4;
+	pin VCC        = 8;
+};
+--------------------
+

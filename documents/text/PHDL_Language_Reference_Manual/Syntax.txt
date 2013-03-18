@@ -1,0 +1,66 @@
+Syntax
+======
+
+To help quickly get started understanding PHDL, below is the complete PHDL syntax.
+The syntax is purposefully kept small by unifying the syntax for many language concepts, even when in practice they differ significantly.
+This helps greatly both for implementations and for human understandibility.
+
+However, this also means that more is allowed syntactically in the language than is semantically valid.
+The additional required semantic constraints are described in the sections on individual language elements.
+
+[source,syntax]
+--------------------
+# Top-level file content
+File                   ⇒ Statement*
+
+# Unified statement constructs
+Statement              ⇒ Statement_Type? Names Statement_Body ";"
+Statement_Type         ⇒ "attribute" | "design" | "device"
+                       | "instance" | "net" | "package"
+                       | "parameter" | "pin" | "port"
+Statement_Body         ⇒ Statement_Basis* Statement_Block? Statement_Assignment?
+Statement_Basis        ⇒ ("of" | "is") Name
+Statement_Block        ⇒ "{" (Statement | Assignment)* "}"
+Statement_Assignment   ⇒ "=" Names
+
+# Names (also encompasses values)
+Names                  ⇒ Name ("," Name)*
+Name                   ⇒ Name_Expanded | Name_Qualified
+Name_Expanded          ⇒ "<" Name_Qualified ">"
+Name_Qualified         ⇒ Name_Sliced ("." Name_Sliced)
+Name_Sliced            ⇒ Name_Basic Slice?
+Name_Basic             → Name_Prefix (Name_Simple | Name_Quoted)
+Name_Prefix            → ("@" | "$")?
+Name_Simple            → Name_Simple_Start Name_Simple_Continue*
+Name_Simple_Start      → /\p{XID_Start|\p{Decimal_Number}|\p{Connector_Punctuation}/
+Name_Simple_Continue   → /\p{XID_Continue}/
+                       | "\x{200C}" | "\x{200D}"
+Name_Quoted            → "\"" (Name_Quoted_Character | Name_Quoted_Escape)* "\""
+Name_Quoted_Character  → !("\"" | "\\")
+Name_Quoted_Escape     → Name_Escaped_Backslash | Name_Escaped_Quote | Name_Escaped_Codepoint
+Name_Escaped_Backslash → "\\\\"
+Name_Escaped_Quote     → "\\\""
+Name_Escaped_Codepoint → "\\x{" /\p{Decimal_Number}|\p{Hex_Digit}/+ "}"
+
+# Slices (used with names)
+Slice                  ⇒ "[" Slice_Body "]"
+Slice_Body             ⇒ Slice_Range ("," Slice_Range)*
+Slice_Range            ⇒ Slice_Index (":" Slice_Index)?
+Slice_Index            → /\p{Decimal_Number}+/
+
+# Whitespace
+Whitespace :skip       → /\p{Pattern_White_Space}+/
+
+# Comments
+Comment :annotate-next → /(?<=^\p{Pattern_White_Space}*)/ Comment_Any
+Comment :annotate-prev → /(?<!^\p{Pattern_White_Space}*)/ Comment_Any
+Comment_Any            → Comment_Single_Line | Comment_Multi_Line
+Comment_Single_Line    → "//" (!:Comment_End_of_Line)* :Comment_End_of_Line
+Comment_Multi_Line     → "/*" (Comment_Any | !("/*" | "*/")* "*/"
+Command_End_of_line    → \x{A}|\x{B}|\x{C}|\x{D}|\x{D}\x{A}/
+                       | /\x{85}|\x{2028}|\x{2029}/
+
+# Other Lexical Boundaries
+Other_Boundary :ignore → /(?<=\p{XID_Continue})(?=\p{Pattern_Syntax})
+                       | /(?<=\p{Pattern_Syntax})(?=\p{XID_Continue})
+--------------------

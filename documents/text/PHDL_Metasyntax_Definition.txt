@@ -1,6 +1,6 @@
 PHDL Metasyntax Definition
 ==========================
-Version 1.0.0 (draft)
+Version 1.0.0~1
 
 Various places in the PHDL project need to define syntax in a formal manner to avoid ambiguity and aid understand.
 In order to successfully accomplish this, we require a syntax definition for the way we will describe the syntaxes in question.

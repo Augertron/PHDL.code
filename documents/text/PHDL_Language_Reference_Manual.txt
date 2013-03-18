@@ -1,12 +1,12 @@
 PHDL Language Reference Manual
 ==============================
-Version 3.0.0 (draft)
+Version 3.0.0~1
 
 :leveloffset: 1
 
-include::PHDL_Language_Reference_Manual/Grammar.txt[]
-
 include::PHDL_Language_Reference_Manual/Introduction.txt[]
+
+include::PHDL_Language_Reference_Manual/Syntax.txt[]
 
 include::PHDL_Language_Reference_Manual/Names.txt[]
 
@@ -17,6 +17,8 @@ include::PHDL_Language_Reference_Manual/Attributes.txt[]
 include::PHDL_Language_Reference_Manual/Pins.txt[]
 
 include::PHDL_Language_Reference_Manual/Slices.txt[]
+
+include::PHDL_Language_Reference_Manual/Unicode.txt[]
 
 // TODO:
 //include::PHDL_Language_Reference_Manual/Ports.txt[]

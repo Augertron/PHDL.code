@@ -20,7 +20,7 @@ environment comment delim "/*" "*/" multiline nested begin
 end
 
 # Nets, Ports, and Pins
-keyword = "net|port|pin"
+keyword = "net|port|pin|open"
 
 # Instances
 keyword = "instance|of"
