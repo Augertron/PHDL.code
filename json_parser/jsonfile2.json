@@ -1,61 +1,58 @@
 {
     "design_name": "tute1",
     "source_file": "tute1.phdl",
+
     "component_list": {
         "RES0603": {
             "footprint":"CR0603",
             "pin_list": [1, 2]
         },
-        "LED0603":
-        {
+        "LED0603": {
             "footprint":"LED-0603",
             "pin_list": [1, 2]
         },
-        "PIC12C508A":
-        {
+        "PIC12C508A": {
             "footprint":"DIP-8__300",
             "pin_list": [1, 2, 3, 4, 5, 6, 7, 8]
         }
     },
-    "instance_list": [
-        {
+
+    "instance_list": {
+        "cur_lim_res": {
             "refdes": "R1",
             "comp_name": "RES0603"
         },
-        {
+        "filt_res": {
             "refdes": "R2",
             "comp_name": "RES0603"
         },
-        {
+        "led1": {
             "refdes": "D1",
             "comp_name": "LED0603"
         },
-        {
+        "pic_micro": {
             "refdes": "U1",
             "comp_name": "PIC12C508A"
         }
-    ],
-    "net_list": [
-        {
-            "name":"SIG1",
+    },
+
+    "net_list": {
+        "SIG1": {
             "conn_list":["U1.5", "R1.1"]
         },
-        {
-            "name":"SIG2",
+        "SIG2": {
             "conn_list":["U1.7", "D1.2"]
         },
-        {
-            "name":"SIG3",
+        "SIG3": {
             "conn_list":["R2.1", "D1.1"]
         },
-        {
-            "name":"GND",
+        "GND": {
             "conn_list":["U1.8"]
         },
-        {
-            "name":"VCC",
+        "VCC": {
             "conn_list":["U1.1", "R2.2", "U1.3"]
         }
-    ]
+    }
+
 }
 
