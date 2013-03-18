@@ -9,14 +9,12 @@ import os
 
 # This is the function that generates the output for PADS Layout.
 def genPADS(jlist, basefilename):
-    #print "Hey! We are in the genPADS procedure."
     asc_filename = basefilename + ".asc"
-    p_filename = basefilename + ".p"
     print "Writing to", asc_filename
     fp = open(asc_filename,"w")
-    print >> fp, "!PADS-POWERPCB-V9.0-MILS"
+    fp.write("!PADS-POWERPCB-V9.0-MILS\n")
 
-    print >> fp, "\n*PART*"
+    fp.write("\n*PART*\n")
     # We need to get the list of component types so we can look up the layout footprint.
     comp_list = jlist["component_list"]
     # Now we get the list of actual part instances in the design.
@@ -24,28 +22,43 @@ def genPADS(jlist, basefilename):
     inst_list = jlist["instance_list"]
     for a in inst_list:
         comp_name = inst_list[a]["comp_name"]
-        print >>fp, "{} {}@{}".format(inst_list[a]["refdes"], comp_name, comp_list[comp_name]["footprint"])
+        fp.write("{} {}@{}\n".format(inst_list[a]["refdes"], comp_name, comp_list[comp_name]["footprint"]))
 
 
-    print >> fp, "\n*CONNECTION*"
+    fp.write("\n*CONNECTION*\n")
     net_list = j1["net_list"]
     for a in net_list:
-        print >> fp, "*SIGNAL*", a
+        fp.write("*SIGNAL* " + a + "\n")
         conn_list = net_list[a]["conn_list"]
         # Mentor prints these connections two per line so here is some extra logic to make that happen.
         line_index = 0
         for b in conn_list:
             if line_index%2 == 0:
-                print >> fp, b,
+                fp.write(b + " ")
             else:
-                print >> fp ,b
+                fp.write(b + "\n")
             line_index += 1
+        fp.write("\n")
 
-
-    print >> fp, "\n\n*MISC*"
-    print >> fp, "\n*END*\n"
+    fp.write("\n\n*MISC*\n")
+    fp.write("\n*END*\n")
     fp.close()
 
+
+    # Here we write the Mentor .p file.
+    p_filename = basefilename + ".p"
+    print "Writing to", p_filename
+    fp = open(p_filename,"w")
+    fp.write("*PADS-LIBRARY-PART-TYPES-V9*\n")
+    comp_list = jlist["component_list"]
+    for a in comp_list:
+        fp.write("{} {} I TTL 0 1 0 0 0\n".format(a, comp_list[a]["footprint"]))
+        fp.write("GATE 0 {} 1\n".format(len(comp_list[a]["pin_list"])))
+        for b in comp_list[a]["pin_list"]:
+            fp.write("{} 0 L\n".format(b))
+        fp.write("\n")
+    fp.write("*END*\n")
+    fp.close()
 
 
 
