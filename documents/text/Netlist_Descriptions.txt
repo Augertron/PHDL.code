@@ -164,7 +164,7 @@ Below is the .NET file corresponding to the .CMP file above.
 
 Mentor PADS
 -----------
-To support the PADS layout tool we need to generate two output files.  The .p file that lists the parts used in the design and associates them with the layout decal.  The .asc file holds the actual netlist data.
+To support the PADS layout tool we need to generate two output files.  The .p file lists the parts used in the design and associates them with the layout decal.  The .asc file holds the actual netlist data.
 
 
 PADS .ASC File
