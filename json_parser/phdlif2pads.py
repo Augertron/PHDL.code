@@ -40,7 +40,7 @@ def genPADS(jlist, basefilename):
             line_index += 1
         fp.write("\n")
 
-    fp.write("\n\n*MISC*\n")
+    fp.write("\n*MISC*\n")
     fp.write("\n*END*\n")
     fp.close()
 
