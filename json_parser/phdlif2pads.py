@@ -30,15 +30,19 @@ def genPADS(jlist, basefilename):
     for a in net_list:
         fp.write("*SIGNAL* " + a + "\n")
         conn_list = net_list[a]["conn_list"]
-        # Mentor prints these connections two per line so here is some extra logic to make that happen.
-        line_index = 0
-        for b in conn_list:
-            if line_index%2 == 0:
-                fp.write(b + " ")
-            else:
-                fp.write(b + "\n")
-            line_index += 1
-        fp.write("\n")
+        # Mentor prints these connections in a way I did not expect. They print 
+        # two pins per line but the first one is the same as the second one from
+        # the previous line. This means you cannot make a single pin net.
+        # I don't think we want PHDLIF to be restricted in that way so I have to 
+        # detect that here and delete it.
+        if len(conn_list) < 2:
+            print "SIGNAL " + a + " is a single pin net, deleting\n"
+        else:
+            conn = conn_list.pop()
+            while (len(conn_list) > 0):
+                last_conn = conn
+                conn = conn_list.pop()
+                fp.write(last_conn + " " + conn + "\n")
 
     fp.write("\n*MISC*\n")
     fp.write("\n*END*\n")
