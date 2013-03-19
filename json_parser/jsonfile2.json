@@ -6,18 +6,33 @@
     "component_list": {
         "RES0603": {
             "footprint":"CR0603",
-            "attribute":{"attr1":"attr1_val", "attr2":"attr2_val"},
-            "pin_list": [1, 2]
+            "attr_list":{"attr1":"attr1_val", "attr2":"attr2_val"},
+            "pin_list": {
+                "pin1":{"pin_number":"1", "attr_list":{"attr1":"attr1_val", "attr2":"attr2_val"}},
+                "pin2":{"pin_number":"2", "attr_list":{"attr1":"attr1_val", "attr2":"attr2_val"}}
+            }
         },
         "LED0603": {
             "footprint":"LED-0603",
-            "attribute":{"attr1":"attr1_val", "attr2":"attr2_val"},
-            "pin_list": [1, 2]
+            "attr_list":{"attr1":"attr1_val", "attr2":"attr2_val"},
+            "pin_list": {
+                "anode":  {"pin_number":"1", "attr_list":{"attr1":"attr1_val", "attr2":"attr2_val"}},
+                "cathode":{"pin_number":"2", "attr_list":{"attr1":"attr1_val", "attr2":"attr2_val"}}
+            }
         },
         "PIC12C508A": {
             "footprint":"DIP-8__300",
-            "attribute":{"attr1":"attr1_val", "attr2":"attr2_val"},
-            "pin_list": [1, 2, 3, 4, 5, 6, 7, 8]
+            "attr_list":{"attr1":"attr1_val", "attr2":"attr2_val"},
+            "pin_list": {
+                "VDD":           {"pin_number":"1", "attr_list":{"attr1":"attr1_val", "attr2":"attr2_val"}},
+                "GP5-OSC1-CLKIN":{"pin_number":"2", "attr_list":{"attr1":"attr1_val", "attr2":"attr2_val"}},
+                "GP4-OSC2":      {"pin_number":"3", "attr_list":{"attr1":"attr1_val", "attr2":"attr2_val"}},
+                "GP3_MCLR_VPP":  {"pin_number":"4", "attr_list":{"attr1":"attr1_val", "attr2":"attr2_val"}},
+                "GP2-T0CLKI":    {"pin_number":"5", "attr_list":{"attr1":"attr1_val", "attr2":"attr2_val"}},
+                "GP1":           {"pin_number":"6", "attr_list":{"attr1":"attr1_val", "attr2":"attr2_val"}},
+                "GP0":           {"pin_number":"7", "attr_list":{"attr1":"attr1_val", "attr2":"attr2_val"}},
+                "VSS":           {"pin_number":"8", "attr_list":{"attr1":"attr1_val", "attr2":"attr2_val"}}
+            }
         }
     },
 
@@ -25,45 +40,45 @@
         "cur_lim_res": {
             "refdes": "R1",
             "comp_name": "RES0603",
-            "attribute":{"attr1":"attr1_val", "attr2":"attr2_val"}
+            "attr_list":{"attr1":"attr1_val", "attr2":"attr2_val"}
         },
         "filt_res": {
             "refdes": "R2",
             "comp_name": "RES0603",
-            "attribute":{"attr1":"attr1_val", "attr2":"attr2_val"}
+            "attr_list":{"attr1":"attr1_val", "attr2":"attr2_val"}
         },
         "led1": {
             "refdes": "D1",
             "comp_name": "LED0603",
-            "attribute":{"attr1":"attr1_val", "attr2":"attr2_val"}
+            "attr_list":{"attr1":"attr1_val", "attr2":"attr2_val"}
         },
         "pic_micro": {
             "refdes": "U1",
             "comp_name": "PIC12C508A",
-            "attribute":{"attr1":"attr1_val", "attr2":"attr2_val"}
+            "attr_list":{"attr1":"attr1_val", "attr2":"attr2_val"}
         }
     },
 
     "net_list": {
         "SIG1": {
             "conn_list":["U1.5", "R1.1"],
-            "attribute":{"attr1":"attr1_val", "attr2":"attr2_val"}
+            "attr_list":{"attr1":"attr1_val", "attr2":"attr2_val"}
         },
         "SIG2": {
             "conn_list":["U1.7", "D1.2"],
-            "attribute":{"attr1":"attr1_val", "attr2":"attr2_val"}
+            "attr_list":{"attr1":"attr1_val", "attr2":"attr2_val"}
         },
         "SIG3": {
             "conn_list":["R2.1", "D1.1"],
-            "attribute":{"attr1":"attr1_val", "attr2":"attr2_val"}
+            "attr_list":{"attr1":"attr1_val", "attr2":"attr2_val"}
         },
         "GND": {
             "conn_list":["U1.8"],
-            "attribute":{"attr1":"attr1_val", "attr2":"attr2_val"}
+            "attr_list":{"attr1":"attr1_val", "attr2":"attr2_val"}
         },
         "VCC": {
             "conn_list":["U1.1", "R2.2", "U1.3"],
-            "attribute":{"attr1":"attr1_val", "attr2":"attr2_val"}
+            "attr_list":{"attr1":"attr1_val", "attr2":"attr2_val"}
         }
     }
 

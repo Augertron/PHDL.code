@@ -55,7 +55,8 @@ def genPADS(jlist, basefilename):
         fp.write("{} {} I TTL 0 1 0 0 0\n".format(a, comp_list[a]["footprint"]))
         fp.write("GATE 0 {} 1\n".format(len(comp_list[a]["pin_list"])))
         for b in comp_list[a]["pin_list"]:
-            fp.write("{} 0 L\n".format(b))
+            pin = comp_list[a]["pin_list"][b]
+            fp.write("{} 0 L\n".format(pin["pin_number"]))
         fp.write("\n")
     fp.write("*END*\n")
     fp.close()
