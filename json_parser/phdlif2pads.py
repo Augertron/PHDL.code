@@ -1,12 +1,82 @@
 #! /usr/bin/env python
 
 # This little program reads the PHDLIF JSON file and
-# generates the Mentor PADS Layout .asc and .p files.
+# generates netlist output for several layout tools.
 
 import sys
 import json
 import os
+from time import gmtime, strftime
 
+#####################################################3
+# This function generates the output for KiCAD layout.
+def genKiCAD(jlist, basefilename):
+    net_filename = basefilename + ".net"
+    print "Writing to", net_filename
+    fp = open(net_filename,"w")
+    fp.write("(export (version D) \n")
+
+    # Write out the design section. It looks like some header information.
+    fp.write("  (design \n")
+    fp.write("    (source " + basefilename + ".json) \n") 
+    fp.write("    (date \"" + strftime("%Y-%m-%d %H:%M:%S", gmtime()) + "\") \n") 
+    fp.write("    (tool \"phdl\")) \n") 
+
+    # Write out the components section. It is a list of instances on the board.
+    fp.write("  (components \n")
+    inst_list = jlist["instance_list"]
+    for a in inst_list:
+        fp.write("    (comp (ref " + inst_list[a]["refdes"] + ") \n")
+        fp.write("      (value ?) \n")
+        fp.write("      (libsource (lib ?) (part " + inst_list[a]["comp_name"] + " )) \n")
+        fp.write("    ) \n")
+    fp.write("  ) \n")
+
+    # Write the libparts section.
+    fp.write("  (libparts \n")
+    # We need to write one "libpart" entry for each type of part used in the design.
+    # Let's create of list of unique parts.
+    libpart_list = []
+    comp_list = jlist["component_list"]
+    for a in inst_list:
+        libpart_list.append(inst_list[a]["comp_name"])
+    for a in libpart_list:
+        fp.write("    (libpart (lib ?) (part " + a + ") \n")
+        fp.write("      (footprints (fp " + comp_list[a]["footprint"] + ")) \n")
+        fp.write("      (fields ?) \n")
+        fp.write("      (pins \n")
+        pin_list = comp_list[a]["pin_list"]
+        for b in pin_list:
+            fp.write("        (pin (num " + pin_list[b]["pin_number"] + ") (name " + b + ") (type ?)) \n")
+        fp.write("      ) \n")
+        fp.write("    ) \n")
+    fp.write("  ) \n")
+
+    # Let's write the libraries section. 
+    # I don't know what it is for so I will just write a stub for now.
+    fp.write("  (libraries ? \n")
+    fp.write("  ) \n")
+
+    # Let's write the nets section. 
+    net_list = jlist["net_list"]
+    fp.write("  (nets \n")
+    for a in net_list:
+        fp.write("    (net (code ?) (name " + a + ") \n")
+        conn_list = net_list[a]["conn_list"]
+        for b in conn_list:
+            # This is tricky because connections are stored like "U1.7" in the PHDLIF JSON file bu
+            # we need the refdes and the pin number separated, hence splitpath below.
+            fp.write("      (node (ref " + os.path.splitext(b)[0] + ") (pin " + os.path.splitext(b)[1][1:] + ")) \n")
+        fp.write("    ) \n")
+    fp.write("  ) \n")
+
+
+    fp.write(") \n")
+    fp.close()
+
+
+
+#####################################################################3
 # This is the function that generates the output for PADS Layout.
 def genPADS(jlist, basefilename):
     asc_filename = basefilename + ".asc"
@@ -26,7 +96,7 @@ def genPADS(jlist, basefilename):
 
 
     fp.write("\n*CONNECTION*\n")
-    net_list = j1["net_list"]
+    net_list = jlist["net_list"]
     for a in net_list:
         # Mentor prints these connections in a way I did not expect. They print 
         # two pins per line but the first one is the same as the second one from
@@ -35,7 +105,7 @@ def genPADS(jlist, basefilename):
         # detect that here and delete it.
         conn_list = net_list[a]["conn_list"]
         if len(conn_list) < 2:
-            print "SIGNAL " + a + " is a single pin net, deleting\n"
+            print "Signal " + a + " is a single pin net, deleting"
         else:
             fp.write("*SIGNAL* " + a + "\n")
             conn = conn_list.pop()
@@ -73,7 +143,7 @@ def genPADS(jlist, basefilename):
 from optparse import OptionParser
 usage_str="usage: %prog [options] inputfile"
 parser = OptionParser(usage=usage_str, add_help_option=True)
-parser.add_option("-n", "--netformat", action="store",       dest="netformat",   default="PADS",       help="Selects output format. Use PADS for Mentor PADS.", metavar="FILE")
+parser.add_option("-n", "--netformat", action="store",       dest="netformat",   default="PADS",       help="Selects output format. Use PADS for Mentor PADS. Use kicad for KiCAD.", metavar="FILE")
 parser.add_option("-q",     "--quiet", action="store_false", dest="verbose",     default="store_true", help="don't print status messages to stderr")
 (options, args) = parser.parse_args()
 if len(args) != 1:
@@ -81,7 +151,6 @@ if len(args) != 1:
 else:
     print "reading %s..." % args[0]
     basefilename = os.path.splitext(args[0])[0]
-    #print "base filename =", basefilename
 
     # This loads the JSON file into a python dictionary, I think.
     fp = open(args[0],"r")
@@ -91,8 +160,11 @@ else:
     if options.netformat == "PADS":
         print "PADS output selected"
         genPADS(jlist=j1, basefilename=basefilename)
+    elif options.netformat == "kicad":
+        print "KiCad output selected"
+        genKiCAD(jlist=j1, basefilename=basefilename)
     else:
-        print "nonsupported output selected"
+        print "nonsupported output" + options.netformat + "selected"
 
 
 
