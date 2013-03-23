@@ -12,7 +12,7 @@ namespace phdl { namespace unicode {
 		// Unicode White_Space property.
 		const char    *data  = c.data();
 		const int32_t length = c.size();
-		phdl_assert(length >= 0, "character too big");
+		dynamic_assert(length >= 0, "character too big");
 		int32_t position = 0;
 		char32_t codepoint;
 		U8_NEXT(data, position, length, codepoint);

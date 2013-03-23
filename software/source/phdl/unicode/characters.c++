@@ -12,7 +12,7 @@ namespace phdl { namespace unicode {
 		// now, we're just going to make sure this works and hope that we
 		// never see a string that's too long.
 		int32_t length = int32_t(string.size());
-		phdl_assert(size_t(length) == string.size(), "can't handle long strings");
+		dynamic_assert(size_t(length) == string.size(), "can't handle long strings");
 
 		// Create a UText object to let our string to work break iterator
 		UErrorCode icu_error = U_ZERO_ERROR;
@@ -22,21 +22,21 @@ namespace phdl { namespace unicode {
 			string.size(),
 			&icu_error
 		);
-		phdl_assert(U_SUCCESS(icu_error), "couldn't create UText");
+		dynamic_assert(U_SUCCESS(icu_error), "couldn't create UText");
 
 		// Create a break iterator
 		auto *break_iterator = icu::BreakIterator::createCharacterInstance(
 			icu::Locale::getRoot(),
 			icu_error
 		);
-		phdl_assert(U_SUCCESS(icu_error), "couldn't create break iterator");
+		dynamic_assert(U_SUCCESS(icu_error), "couldn't create break iterator");
 
 		// Point the break iterator at our string
 		break_iterator->setText(
 			string_utext,
 			icu_error
 		);
-		phdl_assert(U_SUCCESS(icu_error), "error setting text on break iterator");
+		dynamic_assert(U_SUCCESS(icu_error), "error setting text on break iterator");
 
 		// Iterate through all of the boundaries and grab all of the
 		// characters between them.

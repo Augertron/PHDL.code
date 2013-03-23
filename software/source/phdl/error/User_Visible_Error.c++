@@ -46,7 +46,7 @@ namespace phdl { namespace error {
 			case Severity::Warning: return "warning";
 			case Severity::Debug:   return "debug";
 			case Severity::Context: return "context";
-			default: phdl_assert(false, "invalid severity level");
+			default: dynamic_assert(false, "invalid severity level");
 		}
 	}
 

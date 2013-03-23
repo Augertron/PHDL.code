@@ -20,12 +20,12 @@ namespace phdl { namespace unicode {
 		const auto *normalizer = icu::Normalizer2::getInstance (
 			nullptr, "nfc", UNORM2_COMPOSE, icu_error
 		);
-		phdl_assert(U_SUCCESS(icu_error), "couldn't get normalizer instance");
+		dynamic_assert(U_SUCCESS(icu_error), "couldn't get normalizer instance");
 
 		// Normalize our string
 		icu::UnicodeString normalized_utf16;
 		normalizer->normalize(unnormalized_utf16, normalized_utf16, icu_error);
-		phdl_assert(U_SUCCESS(icu_error), "normalization failed");
+		dynamic_assert(U_SUCCESS(icu_error), "normalization failed");
 
 		// Convert back to UTF-8
 		std::string normalized_utf8;
