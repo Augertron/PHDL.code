@@ -7,6 +7,9 @@
 #include <string>
 #include <type_traits>
 
+// Wrapper for assert to give a nicer, more consistent interface.
+#include <dynamic_assert.h++>
+
 // Rather than completely abstract the few features that Boost Exception gives
 // us, we are instead explicitly declaring Boost Exception a public part of our
 // interface. This means that direct use of boost::error_info tag definitions,
@@ -21,9 +24,6 @@
 
 // We need the unicode Characters type using in our user-visible errors.
 #include <phdl/unicode.h++>
-
-// Wrapper for assert to give a nicer, more consistent interface.
-#include <phdl/dynamic_assert.h++>
 
 namespace phdl { namespace error {
 
