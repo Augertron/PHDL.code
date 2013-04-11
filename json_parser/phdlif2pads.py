@@ -143,7 +143,7 @@ def genPADS(jlist, basefilename):
 from optparse import OptionParser
 usage_str="usage: %prog [options] inputfile"
 parser = OptionParser(usage=usage_str, add_help_option=True)
-parser.add_option("-n", "--netformat", action="store",       dest="netformat",   default="PADS",       help="Selects output format. Use PADS for Mentor PADS. Use kicad for KiCAD.", metavar="FILE")
+parser.add_option("-n", "--netformat", action="store",       dest="netformat",   default="PADS",       help="Selects output format. Use PADS for Mentor PADS. Use kicad for KiCAD.", metavar="FORMAT")
 parser.add_option("-q",     "--quiet", action="store_false", dest="verbose",     default="store_true", help="don't print status messages to stderr")
 (options, args) = parser.parse_args()
 if len(args) != 1:
