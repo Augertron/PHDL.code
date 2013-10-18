@@ -97,7 +97,8 @@ Default Casing Algorithms
 -------------------------
 
 C20 Default Casing::
-No case conversion, detection, or matching is done.
+NFKC_Casefold is used to determine the equivalence of names.
+No other case conversion, detection, or matching is done.
 
 Unicode Normalization Forms
 ---------------------------
@@ -139,14 +140,15 @@ R3 Pattern_White_Space and Pattern_Syntax_Characters:::
 We meet this requirement as specified.
 
 R4 Equivalent Normalized Identifiers:::
-We meet this requirement as follows:
-* All names are internally normalized to NFKC after they are completely parsed.
+This requirement is not applicable since we implement R5.
 
 R5 Equivalent Case-Insensitive Identifiers:::
-This requirement is not applicable since we implement R4.
+We meet this requirement as follows:
+* All names are internally normalized with the NFKC operation after they are completely parsed.
+* Two names which differ in NFKC form, but match in NFKC_Casefold form are disallowed.
 
 R6 Filtered Normalized Identifiers:::
-This requirement is not applicable since we implement R4.
+This requirement is not applicable since we implement R5.
 
 R7 Filtered Case-Insensitive Identifiers:::
-This requirement is not applicable since we implement R4.
+This requirement is not applicable since we implement R5.
