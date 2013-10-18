@@ -1,3 +1,4 @@
+Building multiple binaries for subcommands, e.g. phdl-normalize, phdl-tokenize, phdl-compile, etc
 Parse into phdl::parser::ast
 Define phdl::model
 Transform phdl::parser::ast into phdl::model
