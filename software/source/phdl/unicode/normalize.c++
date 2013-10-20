@@ -2,23 +2,24 @@
 #include <phdl/unicode.h++>
 
 // Standard headers
-#include <locale>
+//#include <locale>
 
 // ICU headers
 #include <unicode/normalizer2.h>
 
 // Qt headers
-#include <QtCore/QString>
+//#include <QtCore/QString>
 
 // Boost headers
-#include <boost/locale.hpp>
+//#include <boost/locale.hpp>
 
 namespace phdl { namespace unicode {
 
 	std::string normalize(const std::string &unnormalized_utf8) {
 		// TODO: once ICU supports doing normalization over a UText interface
-		// directly on our UTF-8, we'll directly normalize UTF-8. Until then,
-		// we'll convert to UTF-16, normalize, and convert back to UTF-8.
+		// directly on our UTF-8 string, we'll be able to directly normalize
+		// without intermediate conversion. Until then, we'll convert to
+		// UTF-16, then normalize, then convert back to UTF-8.
 
 		// Convert to UTF-16 string
 		const auto unnormalized_utf16 =
@@ -67,6 +68,5 @@ namespace phdl { namespace unicode {
 	//	(void)init;
 	//	return boost::locale::normalize(unnormalized_utf8, boost::locale::norm_nfc);
 	//}
-
 
 }}

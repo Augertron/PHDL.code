@@ -70,6 +70,12 @@ TEST(multiple_invalid_sequences) {
 	EXPECT(normalize("\xfc\x83wx\x86\xf8yz\x80") == u8"\ufffdwx\ufffd\ufffdyz\ufffd");
 }
 
+TEST(standard_recommended_replacement_conversion_policy) {
+	std::string before =   "\x61""\xf1\x80\x80""\xe1\x80""\xc2"  "\x62""\x80"  "\x63""\x80"  "\xbf"  "\x64";
+	std::string after  = u8"\x61""\ufffd"      "\ufffd"  "\ufffd""\x62""\ufffd""\x63""\ufffd""\ufffd""\x64";
+	EXPECT(normalize(before) == after);
+}
+
 TEST(surrogates_replaced) {
 	EXPECT(normalize("wx\xed\xa0\x80yz") == u8"wx\ufffdyz"); // D+D800
 	EXPECT(normalize("wx\xed\xb0\x80yz") == u8"wx\ufffdyz"); // D+DC00
