@@ -2,6 +2,18 @@
 
 #include <phdl/unicode.h++>
 
+#include <iostream>
+
+#include <boost/format.hpp>
+
+void print_string_bytes(const std::string &s) {
+	std::cerr << "[";
+	for (char c : s) {
+		std::cerr << boost::format(" %02x") % (int(c)& 0xff);
+	}
+	std::cerr << " ]\n";
+}
+
 using phdl::unicode::normalize;
 
 TEST(basic_normalization_works) {
@@ -43,12 +55,7 @@ TEST(invalid_sequences_replaced) {
 	EXPECT(normalize("wxyz\xff") == u8"wxyz\ufffd");
 }
 
-TEST(multiple_invalid_sequences) {
-	EXPECT(normalize("\xc0wx\xfc\xf9yz\x8a")     == u8"\ufffdwx\ufffd\ufffdyz\ufffd");
-	EXPECT(normalize("\xfc\x83wx\x86\xf8yz\x80") == u8"\ufffdwx\ufffd\ufffdyz\ufffd");
-}
-
-TEST(long_sequences_replaced) {
+TEST(long_sequences_replaced_once) {
 	EXPECT(normalize("wx\xc0\x8ayz"                ) == u8"wx\ufffdyz"); // U+A (long)
 	EXPECT(normalize("wx\xe0\x80\x8ayz"            ) == u8"wx\ufffdyz"); // U+A (long)
 	EXPECT(normalize("wx\xf0\x80\x80\x8ayz"        ) == u8"wx\ufffdyz"); // U+A (long)
@@ -56,6 +63,11 @@ TEST(long_sequences_replaced) {
 	EXPECT(normalize("wx\xfc\x80\x80\x80\x80\x8ayz") == u8"wx\ufffdyz"); // U+A (long)
 	EXPECT(normalize("wx\xf8\x86\xb0\xb0\xb0yz"    ) == u8"wx\ufffdyz"); // U+110000
 	EXPECT(normalize("wx\xfc\x83\xbf\xbf\xbf\xbfyz") == u8"wx\ufffdyz"); // U+3FFFFFF
+}
+
+TEST(multiple_invalid_sequences) {
+	EXPECT(normalize("\xc0wx\xfc\xf9yz\x8a")     == u8"\ufffdwx\ufffd\ufffdyz\ufffd");
+	EXPECT(normalize("\xfc\x83wx\x86\xf8yz\x80") == u8"\ufffdwx\ufffd\ufffdyz\ufffd");
 }
 
 TEST(surrogates_replaced) {

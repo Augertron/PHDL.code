@@ -1,13 +1,15 @@
-QT_INCLUDE_DIR=/usr/include/qt4
+QT_INCLUDE_DIR=/usr/include/qt5
 QT_INCLUDES=-I$(QT_INCLUDE_DIR)
-QT_LIBRARIES=-lQtCore
+QT_LIBRARIES=-lQt5Core
 
 ICU_LIBRARIES=-licuuc -licui18n
 
-INCLUDES=-Isource $(QT_INCLUDES)
-LIBRARIES=$(ICU_LIBRARIES) $(QT_LIBRARIES)
+BOOST_LIBRARIES=-lboost_locale
 
-COMPILE_BASE=g++ -std=c++11 -fwrapv -pipe -pthread -Wall -Werror -Wextra --optimize=2
+INCLUDES=-Isource $(QT_INCLUDES)
+LIBRARIES=$(ICU_LIBRARIES) $(QT_LIBRARIES) $(BOOST_LIBRARIES)
+
+COMPILE_BASE=g++ -std=c++11 -fwrapv -fPIC -pipe -pthread -Wall -Werror -Wextra --optimize=2
 COMPILE=$(COMPILE_BASE) -c -MMD -MP $(INCLUDES)
 LINK=$(COMPILE_BASE) $(LIBRARIES) $(INCLUDES)
 

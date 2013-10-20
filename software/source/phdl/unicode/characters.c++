@@ -1,6 +1,9 @@
 #include <phdl/error.h++>
 #include <phdl/unicode.h++>
 
+// Standard
+#include <limits>
+
 // ICU headers
 #include <unicode/brkiter.h>
 
@@ -11,8 +14,9 @@ namespace phdl { namespace unicode {
 		// We can get around this by doing something more complex, but for
 		// now, we're just going to make sure this works and hope that we
 		// never see a string that's too long.
+		uint64_t max_length = std::numeric_limits<int32_t>::max();
+		dynamic_assert(string.size() <= max_length, "can't handle long strings");
 		int32_t length = int32_t(string.size());
-		dynamic_assert(size_t(length) == string.size(), "can't handle long strings");
 
 		// Create a UText object to let our string to work break iterator
 		UErrorCode icu_error = U_ZERO_ERROR;

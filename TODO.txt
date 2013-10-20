@@ -1,7 +1,10 @@
 Building multiple binaries for subcommands, e.g. phdl-normalize, phdl-tokenize, phdl-compile, etc
+Add more detailed copyright information (GPLv3)
+PHDL LRM document
+	Make list of chapters to write for language manual
+	Split docs into multiple files for easier management
 Parse into phdl::parser::ast
 Define phdl::model
 Transform phdl::parser::ast into phdl::model
 Define rich backend interface (e.g. pretty-printing, graphviz)
 Define flat backend interface (e.g. netlist generation, DRC)
-PHDL LRM document

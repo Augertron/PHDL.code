@@ -1,15 +1,24 @@
 #include <phdl/error.h++>
 #include <phdl/unicode.h++>
 
+// Standard headers
+#include <locale>
+
 // ICU headers
 #include <unicode/normalizer2.h>
+
+// Qt headers
+#include <QtCore/QString>
+
+// Boost headers
+#include <boost/locale.hpp>
 
 namespace phdl { namespace unicode {
 
 	std::string normalize(const std::string &unnormalized_utf8) {
-		// FIXME: until ICU supports doing normalization over a UText interface
-		// directly on our UTF-8, we'll use the less efficient approach of
-		// converting to UTF-16, normalizing, and converting back to UTF-8.
+		// TODO: once ICU supports doing normalization over a UText interface
+		// directly on our UTF-8, we'll directly normalize UTF-8. Until then,
+		// we'll convert to UTF-16, normalize, and convert back to UTF-8.
 
 		// Convert to UTF-16 string
 		const auto unnormalized_utf16 =
@@ -33,5 +42,31 @@ namespace phdl { namespace unicode {
 
 		return normalized_utf8;
 	}
+
+	//std::string normalize(const std::string &unnormalized_utf8) {
+	//	// Convert to QString (UTF-16)
+	//	const QString unnormalized_utf16 = QString::fromUtf8(unnormalized_utf8.data(), unnormalized_utf8.size());
+
+	//	// Normalize our string
+	//	const QString normalized_utf16 = unnormalized_utf16.normalized(QString::NormalizationForm_C);
+
+	//	// Convert back to UTF-8
+	//	const std::string normalized_utf8 = normalized_utf16.toStdString();
+
+	//	return normalized_utf8;
+	//}
+	
+	//static bool normalize_init() {
+	//	boost::locale::generator gen;
+	//	std::locale::global(gen("en_US.UTF-8"));
+	//	return true;
+	//};
+
+	//std::string normalize(const std::string &unnormalized_utf8) {
+	//	static bool init = normalize_init();
+	//	(void)init;
+	//	return boost::locale::normalize(unnormalized_utf8, boost::locale::norm_nfc);
+	//}
+
 
 }}
