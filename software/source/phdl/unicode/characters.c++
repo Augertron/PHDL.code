@@ -14,9 +14,9 @@ namespace phdl { namespace unicode {
 		// We can get around this by doing something more complex, but for
 		// now, we're just going to make sure this works and hope that we
 		// never see a string that's too long.
-		uint64_t max_length = std::numeric_limits<int32_t>::max();
+		uint64_t const max_length = std::numeric_limits<int32_t>::max();
 		dynamic_assert(string.size() <= max_length, "can't handle long strings");
-		int32_t length = int32_t(string.size());
+		int32_t const length = int32_t(string.size());
 
 		// Create a UText object to let our string to work break iterator
 		UErrorCode icu_error = U_ZERO_ERROR;
