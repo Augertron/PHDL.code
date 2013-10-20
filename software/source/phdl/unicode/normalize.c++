@@ -44,6 +44,9 @@ namespace phdl { namespace unicode {
 		return normalized_utf8;
 	}
 
+	// The versions below didn't work because neither of them followed the
+	// replacement conversion policy recommended by the Unicode standard.
+
 	//std::string normalize(const std::string &unnormalized_utf8) {
 	//	// Convert to QString (UTF-16)
 	//	const QString unnormalized_utf16 = QString::fromUtf8(unnormalized_utf8.data(), unnormalized_utf8.size());
