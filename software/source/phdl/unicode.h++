@@ -11,9 +11,10 @@ namespace phdl { namespace unicode {
 	using Character  = std::string;
 	using Characters = std::vector<Character>;
 
-	// Normalize the given string to NFC. Invalid sequences are replaced
-	// with the standard Unicode replacement character, U+FFFD.
-	std::string normalize(const std::string &);
+	// Normalize the given string to the given mode. Invalid sequences are
+	// replaced with the standard Unicode replacement character, U+FFFD.
+	enum class Normalization { None, NFD, NFKD, NFC, NFKC, NFKC_Casefold };
+	std::string normalize(const std::string &, Normalization = Normalization::NFC);
 
 	// Split the given string into individual characters.
 	Characters split_characters(const std::string &);

@@ -15,27 +15,38 @@
 
 namespace phdl { namespace unicode {
 
-	std::string normalize(const std::string &unnormalized_utf8) {
+	std::string normalize(const std::string &unnormalized_utf8, Normalization mode) {
 		// TODO: once ICU supports doing normalization over a UText interface
 		// directly on our UTF-8 string, we'll be able to directly normalize
 		// without intermediate conversion. Until then, we'll convert to
 		// UTF-16, then normalize, then convert back to UTF-8.
 
 		// Convert to UTF-16 string
-		const auto unnormalized_utf16 =
-			icu::UnicodeString::fromUTF8(unnormalized_utf8);
+		auto const unnormalized_utf16 = icu::UnicodeString::fromUTF8(unnormalized_utf8);
 
-		// Get a pointer to the global NFC normalizer
+		// Determine the desired ICU normalizer name and mode.
+		char const *icu_norm2_name = nullptr;
+		UNormalization2Mode icu_norm2_mode;
+
+		switch (mode) {
+			case Normalization::NFD          : icu_norm2_name = "nfd"    ; icu_norm2_mode = UNORM2_DECOMPOSE; break;
+			case Normalization::NFKD         : icu_norm2_name = "nfkd"   ; icu_norm2_mode = UNORM2_DECOMPOSE; break;
+			case Normalization::NFC          : icu_norm2_name = "nfc"    ; icu_norm2_mode = UNORM2_COMPOSE;   break;
+			case Normalization::NFKC         : icu_norm2_name = "nfkc"   ; icu_norm2_mode = UNORM2_COMPOSE;   break;
+			case Normalization::NFKC_Casefold: icu_norm2_name = "nfkc_cf"; icu_norm2_mode = UNORM2_COMPOSE;   break;
+			case Normalization::None         :                                                                break;
+			default: dynamic_assert(false, "invalid normalization mode");
+		}
+
+		// If normalization was requested, normalize our string.
 		UErrorCode icu_error = U_ZERO_ERROR;
-		const auto *normalizer = icu::Normalizer2::getInstance (
-			nullptr, "nfc", UNORM2_COMPOSE, icu_error
-		);
-		dynamic_assert(U_SUCCESS(icu_error), "couldn't get normalizer instance");
-
-		// Normalize our string
 		icu::UnicodeString normalized_utf16;
-		normalizer->normalize(unnormalized_utf16, normalized_utf16, icu_error);
-		dynamic_assert(U_SUCCESS(icu_error), "normalization failed");
+		if (icu_norm2_name) {
+			auto const * const icu_norm2 = icu::Normalizer2::getInstance (nullptr, icu_norm2_name, icu_norm2_mode, icu_error);
+			dynamic_assert(U_SUCCESS(icu_error), "couldn't get normalizer instance");
+			icu_norm2->normalize(unnormalized_utf16, normalized_utf16, icu_error);
+			dynamic_assert(U_SUCCESS(icu_error), "normalization failed");
+		}
 
 		// Convert back to UTF-8
 		std::string normalized_utf8;
@@ -43,33 +54,5 @@ namespace phdl { namespace unicode {
 
 		return normalized_utf8;
 	}
-
-	// The versions below didn't work because neither of them followed the
-	// replacement conversion policy recommended by the Unicode standard.
-
-	//std::string normalize(const std::string &unnormalized_utf8) {
-	//	// Convert to QString (UTF-16)
-	//	const QString unnormalized_utf16 = QString::fromUtf8(unnormalized_utf8.data(), unnormalized_utf8.size());
-
-	//	// Normalize our string
-	//	const QString normalized_utf16 = unnormalized_utf16.normalized(QString::NormalizationForm_C);
-
-	//	// Convert back to UTF-8
-	//	const std::string normalized_utf8 = normalized_utf16.toStdString();
-
-	//	return normalized_utf8;
-	//}
-	
-	//static bool normalize_init() {
-	//	boost::locale::generator gen;
-	//	std::locale::global(gen("en_US.UTF-8"));
-	//	return true;
-	//};
-
-	//std::string normalize(const std::string &unnormalized_utf8) {
-	//	static bool init = normalize_init();
-	//	(void)init;
-	//	return boost::locale::normalize(unnormalized_utf8, boost::locale::norm_nfc);
-	//}
 
 }}
