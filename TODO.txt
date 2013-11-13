@@ -8,3 +8,4 @@ Define phdl::model
 Transform phdl::parser::ast into phdl::model
 Define rich backend interface (e.g. pretty-printing, graphviz)
 Define flat backend interface (e.g. netlist generation, DRC)
+Compiler error message pointer line should use same leading whitespace to match printed line tabs/spaces
