@@ -1,4 +1,7 @@
+UTF-8 Unicode processing
+Tokenization based on codepoints / graphemes
 Building multiple binaries for subcommands, e.g. phdl-normalize, phdl-tokenize, phdl-compile, etc
+Make full front-to-back skeleton so we have something to build on
 Add more detailed copyright information (GPLv3)
 PHDL LRM document
 	Make list of chapters to write for language manual
