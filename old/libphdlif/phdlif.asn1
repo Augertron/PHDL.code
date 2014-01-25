@@ -1,0 +1,70 @@
+PHDL-Intermediate-Format DEFINITIONS AUTOMATIC TAGS ::= BEGIN
+
+	Design ::= SEQUENCE {
+		info       Info,
+		devices    Devices,
+		instances  Instances,
+		nets       Nets
+	}
+
+	Info ::= SEQUENCE {
+		name        Name,
+		attributes  Attributes OPTIONAL,
+		...
+	}
+
+	Attributes ::= SEQUENCE OF Attribute
+
+	Attribute ::= SEQUENCE {
+		name   Name,
+		value  Value
+	}
+
+	Name ::= UTF8String
+
+	Value ::= CHOICE {
+		null    NULL,
+		bool    BOOLEAN,
+		number  INTEGER,
+		string  UTF8String,
+		bytes   OCTET STRING,
+		...
+	}
+
+	Devices ::= SEQUENCE OF Device
+
+	Device ::= SEQUENCE {
+		info        Info,
+		attributes  Attributes OPTIONAL,
+		pins        Pins
+	}
+
+	Pins ::= SEQUENCE OF Pin
+
+	Pin ::= SEQUENCE {
+		info  Info
+	}
+
+	Instances ::= SEQUENCE OF Instance
+
+	Instance ::= SEQUENCE {
+		info    Info,
+		device  Name
+	}
+
+	Nets ::= SEQUENCE OF Net
+
+	Net ::= SEQUENCE {
+		info         Info,
+		connections  Connections
+	}
+
+	Connections ::= SEQUENCE OF Connection
+
+	Connection ::= SEQUENCE {
+		info      Info,
+		instance  Name,
+		pin       Name
+	}
+
+END
