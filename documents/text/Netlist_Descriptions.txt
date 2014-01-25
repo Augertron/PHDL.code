@@ -1,0 +1,284 @@
+PHDL Output Netlist Descriptions
+================================
+This document is intended to hold descriptions of the various netlist formats we wish to support.
+
+KiCAD PCBnew
+------------
+The KiCAD PCBnew PCB layout tool appears to be particularly easy to target from PHDL.  Similar to PADS, two files must be written, the .CMP and the .NET files. Neither of these files has any formal documentation but can be reverse engineered by inspection.
+
+KiCAD .CMP File
+~~~~~~~~~~~~~~~
+The .CMP file contains a list of every instance in the design with its associated layout decal.
+
+The following is an example for a board with a diode, two resistors and a chip.
+
+-------------------------------------------
+
+Cmp-Mod V01 Created by CvPcb (2013-mar-04)-testing date = Fri 08 Mar 2013 04:52:18 PM CET
+
+BeginCmp
+TimeStamp = /5139F8AB;
+Reference = D1;
+ValeurCmp = LED;
+IdModule  = LED-0603;
+EndCmp
+
+BeginCmp
+TimeStamp = /5139F809;
+Reference = R1;
+ValeurCmp = 100;
+IdModule  = SM0603;
+EndCmp
+
+BeginCmp
+TimeStamp = /5139EC4B;
+Reference = R2;
+ValeurCmp = 50;
+IdModule  = SM0603;
+EndCmp
+
+BeginCmp
+TimeStamp = /5139F8CC;
+Reference = U1;
+ValeurCmp = PIC12C508A;
+IdModule  = DIP-8__300;
+EndCmp
+
+EndListe
+
+-------------------------------------------
+
+KiCAD .NET File
+~~~~~~~~~~~~~~~
+The .NET file contains the actual connectivity data for the board.
+
+Below is the .NET file corresponding to the .CMP file above.
+-------------------------------------------
+
+(export (version D)
+  (design
+    (source /home/pedro/kicad/tute1/tute1.sch)
+    (date "Fri 08 Mar 2013 04:41:46 PM CET")
+    (tool "eeschema (2013-mar-04)-testing"))
+  (components
+    (comp (ref R2)
+      (value 50)
+      (libsource (lib device) (part R))
+      (sheetpath (names /) (tstamps /))
+      (tstamp 5139EC4B))
+    (comp (ref R1)
+      (value 100)
+      (libsource (lib device) (part R))
+      (sheetpath (names /) (tstamps /))
+      (tstamp 5139F809))
+    (comp (ref D1)
+      (value LED)
+      (libsource (lib device) (part LED))
+      (sheetpath (names /) (tstamps /))
+      (tstamp 5139F8AB))
+    (comp (ref U1)
+      (value PIC12C508A)
+      (libsource (lib microcontrollers) (part PIC12C508A))
+      (sheetpath (names /) (tstamps /))
+      (tstamp 5139F8CC)))
+  (libparts
+    (libpart (lib device) (part LED)
+      (footprints
+        (fp LED-3MM)
+        (fp LED-5MM)
+        (fp LED-10MM)
+        (fp LED-0603)
+        (fp LED-0805)
+        (fp LED-1206)
+        (fp LEDV))
+      (fields
+        (field (name Reference) D)
+        (field (name Value) LED)
+        (field (name Footprint) ~)
+        (field (name Datasheet) ~))
+      (pins
+        (pin (num 1) (name A) (type passive))
+        (pin (num 2) (name K) (type passive))))
+    (libpart (lib device) (part R)
+      (description Resistance)
+      (footprints
+        (fp R?)
+        (fp SM0603)
+        (fp SM0805)
+        (fp R?-*)
+        (fp SM1206))
+      (fields
+        (field (name Reference) R)
+        (field (name Value) R)
+        (field (name Footprint) ~)
+        (field (name Datasheet) ~))
+      (pins
+        (pin (num 1) (name ~) (type passive))
+        (pin (num 2) (name ~) (type passive))))
+    (libpart (lib microcontrollers) (part PIC12C508A)
+      (description "8-Bit CMOS Microcontroller")
+      (fields
+        (field (name Reference) U)
+        (field (name Value) PIC12C508A))
+      (pins
+        (pin (num 1) (name VDD) (type power_in))
+        (pin (num 2) (name GP5/OSC1) (type input))
+        (pin (num 3) (name GP4/OSC2) (type input))
+        (pin (num 4) (name GP3/MCLR) (type input))
+        (pin (num 5) (name GP2) (type input))
+        (pin (num 6) (name GP1) (type input))
+        (pin (num 7) (name GP0) (type input))
+        (pin (num 8) (name VSS) (type power_in)))))
+  (libraries
+    (library (logical device)
+      (uri /usr/share/kicad/library/device.lib))
+    (library (logical microcontrollers)
+      (uri /usr/share/kicad/library/microcontrollers.lib)))
+  (nets
+    (net (code 1) (name "")
+      (node (ref U1) (pin 4)))
+    (net (code 2) (name "")
+      (node (ref U1) (pin 5))
+      (node (ref R1) (pin 1)))
+    (net (code 3) (name "")
+      (node (ref U1) (pin 7))
+      (node (ref D1) (pin 2)))
+    (net (code 4) (name "")
+      (node (ref U1) (pin 3)))
+    (net (code 5) (name "")
+      (node (ref U1) (pin 2)))
+    (net (code 6) (name GND)
+      (node (ref U1) (pin 8)))
+    (net (code 7) (name VCC)
+      (node (ref U1) (pin 1))
+      (node (ref R2) (pin 2)))
+    (net (code 8) (name "")
+      (node (ref U1) (pin 6))
+      (node (ref R1) (pin 2)))
+    (net (code 9) (name "")
+      (node (ref R2) (pin 1))
+      (node (ref D1) (pin 1)))))
+
+-------------------------------------------
+
+
+Mentor PADS
+-----------
+To support the PADS layout tool we need to generate two output files.  The .p file lists the parts used in the design and associates them with the layout decal.  The .asc file holds the actual netlist data.
+
+
+PADS .ASC File
+~~~~~~~~~~~~~~
+The PADS .asc file is required to have an invariable header followed by three sections, *PART*, *CONNECTION* and *MISC*.  
+
+The *PART* section contains a list of every device instantiated in the design, by reference designator. A device identifier then follows the reference designator.  This device identifier is made up of <schematic symbol name>@<layout decal name>.  In Mentor DxDesigner the schematic symbol name comes directly from the DEVICE attribute placed on the schematic symbol.  The layout decal name comes directly from the PKG_TYPE attribute attached to the schematic symbol.
+
+The *CONNECTION* section lists each net in the design followed by a list of the part pins attached to it.
+
+The *MISC* section can be empty or nonexistant.
+
+The .asc file is terminated by a *END* statement.
+
+Below is a little example .asc file.
+-------------------------------------------
+
+!PADS-POWERPCB-V9.0-MILS
+
+*PART*
+U13 6VLX75T@FF784
+U8 AD9739@AD9739
+U7 ADC12D1000@ADC12D1000
+U12 ADCLK914@ADCLK914
+T1 ADTL2-18_6-2@ADTL2-18
+P2 ATX12V@ATX12V
+C31 CAP_0402@CC0402
+C32 CAP_0402@CC0402
+C33 CAP_0402@CC0402
+C34 CAP_0402@CC0402
+
+*CONNECTION*
+*SIGNAL* $4I4\$1N1965
+R31.2 U13.N7
+*SIGNAL* $4I4\$1N1804
+DS2.1 R30.1
+*SIGNAL* $4I4\$1N1790
+DS1.1 R29.1
+*SIGNAL* $4I3\PCIE_PRSNT_N
+P1.A1 P1.B31
+*SIGNAL* $4I280\ADC_VTC
+U7.G1 U7.G3
+U7.G3 U7.G4
+U7.G4 U7.H2
+U7.H2 U7.J3
+U7.J3 U7.K3
+
+*MISC*
+
+*END*
+
+-------------------------------------------
+
+
+
+PADS .P File
+~~~~~~~~~~~~
+The requirement for the PADS .p file is often misunderstood.  It was created back in the day when surface mount devices were just being introduced. Board layout drafters were given the option of switching between say a 16 pin DIP through-hole package and a 16 pin SOIC surface mount package.  These days, selection of component footprint is an important decision usually made by the engineer at schematic capture time therefor more than one layout footprint is never associated with a component.
+
+Still, the .p file is required to get a netlist into PADS Layout.  Without the .p file the layout engineer must spend hours of time going through each component and reassociating it with its layout footprint.  Fortunately the .p file is easy to generate from board connectivity data.
+
+The .p file begings with an invariable header followed by a list of component/footprint associations. 
+
+The first string in the component/footprint associations is the DEVICE attribute on the Mentor DxDesigner schematic symbol.  We can just take the symbol name from the device declaration.  It just has to be unique.
+
+The second string is the layout footprint for the part. In DxDesigner this comes from the PKG_TYPE attribute.  In PHDL 2.0 we ended up using the LIBRARY attrubute for this. That was bad. Every layout tool needs this so we should be able to come up with something that works for all layout tools. That will make our PHDL designs portable.
+
+Each component/footprint association statement then has some extra strings and numbers that don't seem to do anything. Then there is a GATE statement with a list of all the pins on the part.
+
+The .p file is terminated by a *END* statement.
+
+Below is a sample .p file.
+-------------------------------------------
+
+*PADS-LIBRARY-PART-TYPES-V9*
+6VLX75T FF784 I TTL 0 34 0 0 0
+GATE 0 26 1
+N14 0 L
+N13 0 L
+AH6 0 B
+AG6 0 L
+H6 0 L
+L6 0 B
+AF6 0 S
+T13 0 L
+T14 0 L
+N7 0 L
+M6 0 B
+...
+
+
+AD9739 AD9739 I TTL 0 1 0 0 0
+GATE 0 160 1
+M10 0 S
+G13 0 L
+C3 0 L
+D3 0 L
+P1 0 S
+N1 0 S
+P11 0 S
+N11 0 S
+P12 0 S
+...
+
+
+ADTL2-18_6-2 ADTL2-18 I TTL 0 1 0 0 0
+GATE 0 6 1
+2 0 U
+5 0 U
+6 0 U
+4 0 U
+1 0 U
+3 0 U
+
+*END*
+
+-------------------------------------------
